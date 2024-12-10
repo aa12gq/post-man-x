@@ -2,7 +2,7 @@
   <div class="main-layout">
     <!-- 左侧边栏 -->
     <div class="sidebar">
-      <el-tabs>
+      <el-tabs type="border-card">
         <!-- 收藏夹 -->
         <el-tab-pane label="收藏夹" name="favorites">
           <div class="sidebar-content">
@@ -69,113 +69,244 @@
               <!-- RPC 请求区域 -->
               <template v-if="requestForm.type === 'rpc'">
                 <div class="rpc-workspace">
-                  <!-- 顶部操作栏 -->
+                  <!-- 顶部工具栏 -->
                   <div class="rpc-toolbar">
-                    <div class="url-section">
-                      <el-input
-                        v-model="requestForm.url"
-                        placeholder="gRPC Server URL (e.g. localhost:9000)"
-                        class="server-url"
-                      >
-                        <template #append>
-                          <el-button @click="loadServices" :loading="loadingServices">
-                            Connect
-                          </el-button>
-                        </template>
-                      </el-input>
-                    </div>
-                    <div class="method-section">
-                      <el-select
-                        v-model="selectedMethod"
-                        placeholder="Select Service/Method"
-                        class="method-select"
-                        :loading="loadingMethods"
-                        filterable
-                      >
-                        <!-- 服务分组 -->
-                        <el-option-group
-                          v-for="service in rpcServices"
-                          :key="service.name"
-                          :label="service.name"
+                    <div class="toolbar-section">
+                      <div class="url-section">
+                        <el-input
+                          v-model="requestForm.url"
+                          placeholder="Enter gRPC Server URL"
+                          class="server-url"
                         >
-                          <!-- 方法列表 -->
-                          <el-option
-                            v-for="method in service.methods"
-                            :key="`${service.name}.${method.name}`"
-                            :label="`${getSimpleServiceName(service.name)}/${method.name}`"
-                            :value="`${service.name}|${method.name}`"
+                          <template #prepend>
+                            <div class="url-label">SERVER URL</div>
+                          </template>
+                        </el-input>
+                      </div>
+                      <div class="method-section">
+                        <el-select
+                          v-model="selectedMethod"
+                          placeholder="Select Method"
+                          class="method-select"
+                          :loading="loadingMethods"
+                          filterable
+                        >
+                          <!-- 服务分组 -->
+                          <el-option-group
+                            v-for="service in rpcServices"
+                            :key="service.name"
+                            :label="service.name"
                           >
-                            <div class="method-option">
-                              <span class="method-name">{{ method.name }}</span>
-                            </div>
-                          </el-option>
-                        </el-option-group>
-
-                        <!-- 底部刷新按钮 -->
-                        <template #footer>
-                          <div class="select-footer">
-                            <el-button
-                              class="refresh-button"
-                              :loading="loadingServices"
-                              @click.stop="loadServices"
-                              size="small"
-                              text
+                            <!-- 方法列表 -->
+                            <el-option
+                              v-for="method in service.methods"
+                              :key="`${service.name}.${method.name}`"
+                              :label="`${getSimpleServiceName(service.name)}/${
+                                method.name
+                              }`"
+                              :value="`${service.name}|${method.name}`"
                             >
-                              <el-icon class="refresh-icon" :class="{ 'is-loading': loadingServices }">
-                                <Refresh />
-                              </el-icon>
-                              刷新服务列表
-                            </el-button>
-                          </div>
-                        </template>
-                      </el-select>
+                              <div class="method-option">
+                                <span class="method-name">{{
+                                  method.name
+                                }}</span>
+                              </div>
+                            </el-option>
+                          </el-option-group>
+
+                          <!-- 底部刷新按钮 -->
+                          <template #footer>
+                            <div class="select-footer">
+                              <el-button
+                                class="refresh-button"
+                                :loading="loadingServices"
+                                @click.stop="loadServices"
+                                size="small"
+                                text
+                              >
+                                <el-icon
+                                  class="refresh-icon"
+                                  :class="{ 'is-loading': loadingServices }"
+                                >
+                                  <Refresh />
+                                </el-icon>
+                                刷新服务列表
+                              </el-button>
+                            </div>
+                          </template>
+                        </el-select>
+                      </div>
+                      <el-button
+                        type="primary"
+                        @click="sendRequest"
+                        :loading="loading"
+                        class="invoke-button"
+                      >
+                        <el-icon><CaretRight /></el-icon>
+                        Invoke
+                      </el-button>
                     </div>
-                    <el-button
-                      type="primary"
-                      @click="sendRequest"
-                      :loading="loading"
-                    >
-                      Invoke
-                    </el-button>
                   </div>
 
                   <!-- 请求/响应区域 -->
                   <div class="request-response-panel">
                     <!-- 请求区域 -->
                     <div class="request-section">
-                      <div class="section-header">
-                        <div class="header-left">
-                          <span>Request Message</span>
-                        </div>
-                        <div class="header-right">
-                          <el-button 
-                            size="small"
-                            type="primary"
-                            plain
-                            @click="generateExample"
-                            :disabled="!selectedMethod"
-                          >
-                            生成示例参数
-                          </el-button>
-                        </div>
-                      </div>
-                      <div class="section-content">
-                        <el-input
-                          v-model="requestForm.params"
-                          type="textarea"
-                          :rows="8"
-                          placeholder="Enter request message"
-                        />
-                      </div>
+                      <!-- 请求选项卡 -->
+                      <el-tabs type="border-card" class="request-tabs">
+                        <!-- Message 选项卡 -->
+                        <el-tab-pane label="Message" name="message">
+                          <div class="tab-content">
+                            <div class="content-header">
+                              <span class="header-title">Request Message</span>
+                            </div>
+                            <div class="content-body">
+                              <el-input
+                                v-model="requestForm.params"
+                                type="textarea"
+                                :rows="15"
+                                resize="none"
+                                class="code-editor"
+                              />
+                              <!-- 底部示例按钮 -->
+                              <div class="message-footer">
+                                <el-button
+                                  size="small"
+                                  type="primary"
+                                  link
+                                  @click="generateExample"
+                                  :disabled="!selectedMethod"
+                                >
+                                  Use example message
+                                </el-button>
+                              </div>
+                            </div>
+                          </div>
+                        </el-tab-pane>
+
+                        <!-- Authorization 选项卡 -->
+                        <el-tab-pane label="Authorization" name="auth">
+                          <div class="auth-container">
+                            <!-- 左侧类型选择 -->
+                            <div class="auth-type-sidebar">
+                              <el-radio-group
+                                v-model="authType"
+                                class="auth-type-list"
+                              >
+                                <el-radio label="noauth">No Auth</el-radio>
+                                <el-radio label="apikey">API Key</el-radio>
+                                <el-radio label="bearer">Bearer Token</el-radio>
+                                <el-radio label="basic">Basic Auth</el-radio>
+                              </el-radio-group>
+                            </div>
+
+                            <!-- 右侧表单区域 -->
+                            <div class="auth-form-container">
+                              <!-- No Auth -->
+                              <template v-if="authType === 'noauth'">
+                                <div class="auth-info">
+                                  <el-alert
+                                    title="This request does not use any authorization"
+                                    type="info"
+                                    :closable="false"
+                                  />
+                                </div>
+                              </template>
+
+                              <!-- API Key -->
+                              <template v-if="authType === 'apikey'">
+                                <el-form label-position="top" class="auth-form">
+                                  <el-form-item label="Key">
+                                    <el-input
+                                      v-model="auth.apiKey.key"
+                                      placeholder="Parameter Key"
+                                    />
+                                  </el-form-item>
+                                  <el-form-item label="Value">
+                                    <el-input
+                                      v-model="auth.apiKey.value"
+                                      placeholder="Parameter Value"
+                                    />
+                                  </el-form-item>
+                                  <el-form-item label="Added to">
+                                    <el-radio-group v-model="auth.apiKey.in">
+                                      <el-radio label="header">Header</el-radio>
+                                      <el-radio label="query"
+                                        >Query Params</el-radio
+                                      >
+                                    </el-radio-group>
+                                  </el-form-item>
+                                </el-form>
+                              </template>
+
+                              <!-- Bearer Token -->
+                              <template v-if="authType === 'bearer'">
+                                <el-form label-position="top" class="auth-form">
+                                  <el-form-item label="Token">
+                                    <el-input
+                                      v-model="auth.bearer.token"
+                                      type="textarea"
+                                      :rows="3"
+                                      placeholder="Bearer Token"
+                                    />
+                                  </el-form-item>
+                                  <div class="auth-description">
+                                    Adds an Authorization header: Bearer
+                                    &lt;token&gt;
+                                  </div>
+                                </el-form>
+                              </template>
+
+                              <!-- Basic Auth -->
+                              <template v-if="authType === 'basic'">
+                                <el-form label-position="top" class="auth-form">
+                                  <el-form-item label="Username">
+                                    <el-input
+                                      v-model="auth.basic.username"
+                                      placeholder="Username"
+                                    />
+                                  </el-form-item>
+                                  <el-form-item label="Password">
+                                    <el-input
+                                      v-model="auth.basic.password"
+                                      type="password"
+                                      show-password
+                                      placeholder="Password"
+                                    />
+                                  </el-form-item>
+                                  <div class="auth-description">
+                                    Adds an Authorization header: Basic
+                                    &lt;credentials&gt;
+                                  </div>
+                                </el-form>
+                              </template>
+                            </div>
+                          </div>
+                        </el-tab-pane>
+
+                        <!-- Metadata 选项卡 -->
+                        <el-tab-pane label="Metadata" name="metadata">
+                          <div class="tab-content">
+                            <div class="content-header">
+                              <span class="header-title">Metadata</span>
+                            </div>
+                            <div class="content-body">
+                              <HeadersManager v-model="requestHeaders" />
+                            </div>
+                          </div>
+                        </el-tab-pane>
+                      </el-tabs>
                     </div>
 
                     <!-- 响应区域 -->
-                    <div class="response-section" v-if="response">
+                    <div class="response-section">
                       <div class="section-header">
-                        <span>Response</span>
-                        <span class="response-time" v-if="responseTime">
-                          {{ responseTime }}ms
-                        </span>
+                        <div class="header-title">Response</div>
+                        <div class="header-info" v-if="responseTime">
+                          <el-tag size="small" type="success"
+                            >{{ responseTime }}ms</el-tag
+                          >
+                        </div>
                       </div>
                       <div class="section-content">
                         <ResponseViewer
@@ -190,7 +321,7 @@
 
               <!-- HTTP 请求区域 -->
               <template v-else>
-                <!-- 原有的 HTTP 请求内容 -->
+                <!-- 原有的 HTTP 请求容 -->
               </template>
             </div>
           </div>
@@ -219,7 +350,7 @@ import FavoriteManager from "./FavoriteManager.vue";
 import ResponseHeaders from "./ResponseHeaders.vue";
 import FavoriteService from "../services/FavoriteService";
 import type { FavoriteRequest } from "../services/FavoriteService";
-import { Refresh } from '@element-plus/icons-vue'
+import { Refresh, CaretRight } from "@element-plus/icons-vue";
 
 // 基础状态
 const loading = ref(false);
@@ -282,19 +413,19 @@ const selectedService = ref("");
 const loadingServices = ref(false);
 const loadingMethods = ref(false);
 
-// 选中的方法（级联选择器的值）
-const selectedMethod = ref<string>('');
+// 选中的方法（级联选择��的值）
+const selectedMethod = ref<string>("");
 
 // 服务和方法的级联选项
 const serviceMethodOptions = computed(() => {
-  return rpcServices.value.map(service => ({
+  return rpcServices.value.map((service) => ({
     name: service.name,
-    methods: service.methods.map(method => ({
+    methods: service.methods.map((method) => ({
       name: method.name,
       inputType: method.inputType,
       outputType: method.outputType,
-      inputExample: method.inputExample
-    }))
+      inputExample: method.inputExample,
+    })),
   }));
 });
 
@@ -309,21 +440,66 @@ watch(
   }
 );
 
+// 授权相关的状态
+const authType = ref<"noauth" | "apikey" | "bearer" | "basic">("noauth");
+const auth = reactive({
+  apiKey: {
+    key: "",
+    value: "",
+    in: "header",
+  },
+  bearer: {
+    token: "",
+  },
+  basic: {
+    username: "",
+    password: "",
+  },
+});
+
+// 在发送请求前处理授权信息
+const getAuthHeaders = () => {
+  const headers: Record<string, string> = {};
+
+  switch (authType.value) {
+    case "apikey":
+      if (auth.apiKey.in === "header") {
+        headers[auth.apiKey.key] = auth.apiKey.value;
+      }
+      break;
+    case "bearer":
+      if (auth.bearer.token) {
+        headers["Authorization"] = `Bearer ${auth.bearer.token}`;
+      }
+      break;
+    case "basic":
+      if (auth.basic.username || auth.basic.password) {
+        const credentials = btoa(
+          `${auth.basic.username}:${auth.basic.password}`
+        );
+        headers["Authorization"] = `Basic ${credentials}`;
+      }
+      break;
+  }
+
+  return headers;
+};
+
 const sendRequest = async () => {
   loading.value = true;
   const startTime = Date.now();
-  response.value = '';  // 清除之前的响应
+  response.value = ""; // 清除之前的响应
 
   try {
     // 验证必要的字段
     if (!requestForm.value.url) {
-      throw new Error('请输入请求地址');
+      throw new Error("请输入请求地址");
     }
 
-    if (requestForm.value.type === 'rpc') {
-      console.log('Current RPC method:', requestForm.value.rpcMethod);  // 添加日志
+    if (requestForm.value.type === "rpc") {
+      console.log("Current RPC method:", requestForm.value.rpcMethod);
       if (!selectedMethod.value) {
-        throw new Error('请选择服务和方法');
+        throw new Error("请选择服务和方法");
       }
     }
 
@@ -331,9 +507,14 @@ const sendRequest = async () => {
     const params = requestForm.value.params
       ? JSON.parse(requestForm.value.params)
       : {};
-    const headers = requestHeaders.value
-      .filter((h) => h.enabled)
-      .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {});
+
+    // 合并请求头和授权头
+    const headers = {
+      ...requestHeaders.value
+        .filter((h) => h.enabled)
+        .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {}),
+      ...getAuthHeaders()
+    };
 
     if (requestForm.value.type === "http") {
       result = await axios({
@@ -341,22 +522,23 @@ const sendRequest = async () => {
         url: `${requestForm.value.protocol}://${requestForm.value.url}`,
         data: requestForm.value.method !== "GET" ? params : undefined,
         params: requestForm.value.method === "GET" ? params : undefined,
-        headers,
+        headers
       });
 
       response.value = JSON.stringify(result.data, null, 2);
       responseHeaders.value = result.headers;
-    } else {  // RPC 请求
-      const [serviceName, methodName] = selectedMethod.value.split('|');
+    } else {
+      // RPC 请求
+      const [serviceName, methodName] = selectedMethod.value.split("|");
       if (!serviceName || !methodName) {
-        throw new Error('请选择服务和方法');
+        throw new Error("请选择服务和方法");
       }
 
-      console.log('Sending RPC request:', {
+      console.log("Sending RPC request:", {
         url: requestForm.value.url,
         serviceName,
         methodName,
-        params
+        params,
       });
 
       const rpcResult = await RpcClient.sendRequest(
@@ -366,10 +548,10 @@ const sendRequest = async () => {
         params
       );
 
-      console.log('RPC response:', rpcResult);
+      console.log("RPC response:", rpcResult);
 
       // 确保响应数据正确设置
-      if (rpcResult && typeof rpcResult === 'object') {
+      if (rpcResult && typeof rpcResult === "object") {
         response.value = JSON.stringify(rpcResult, null, 2);
       } else {
         response.value = String(rpcResult);
@@ -447,26 +629,28 @@ const loadRequest = (historyItem: any) => {
 };
 
 const loadServices = async () => {
-  if (!requestForm.value.url || requestForm.value.type !== 'rpc') return;
+  if (!requestForm.value.url || requestForm.value.type !== "rpc") return;
 
   loadingServices.value = true;
   try {
     const url = requestForm.value.url.trim();
-    console.log('Loading services for URL:', url);
+    console.log("Loading services for URL:", url);
     const services = await RpcClient.getServices(url);
-    
+
     // 初始化服务列表
-    rpcServices.value = services.map(service => ({
+    rpcServices.value = services.map((service) => ({
       name: service.name,
-      methods: []  // 初始化空方法列表
+      methods: [], // 初始化空方法列表
     }));
-    
+
     // 自动加载所有服务的方法
     await Promise.all(
-      rpcServices.value.map(async service => {
+      rpcServices.value.map(async (service) => {
         try {
           const methods = await RpcClient.getServiceMethods(url, service.name);
-          const serviceIndex = rpcServices.value.findIndex(s => s.name === service.name);
+          const serviceIndex = rpcServices.value.findIndex(
+            (s) => s.name === service.name
+          );
           if (serviceIndex !== -1) {
             rpcServices.value[serviceIndex].methods = methods;
           }
@@ -475,10 +659,10 @@ const loadServices = async () => {
         }
       })
     );
-    
-    console.log('Loaded all services and methods:', rpcServices.value);
+
+    console.log("Loaded all services and methods:", rpcServices.value);
   } catch (error: any) {
-    console.error('Failed to load services:', error);
+    console.error("Failed to load services:", error);
     ElMessage.error(`加载服务失败: ${error.message}`);
     rpcServices.value = [];
   } finally {
@@ -524,7 +708,7 @@ const handleServiceChange = async (serviceName: string) => {
 const handleMethodChange = (methodName: string) => {
   const method = rpcMethods.value.find((m) => m.name === methodName);
   if (method && method.inputExample) {
-    // 使用生成的示例据
+    // 使用成的示例据
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
   }
 };
@@ -582,26 +766,26 @@ const invokeMethod = (method: any) => {
 
 // 处理方法选择
 const handleMethodSelect = (value: string) => {
-  console.log('Method selected:', value);  // 添加日志
+  console.log("Method selected:", value); // 添加日志
   if (!value) return;
-  
-  const [serviceName, methodName] = value.split('|');
+
+  const [serviceName, methodName] = value.split("|");
   if (!serviceName || !methodName) return;
-  
-  console.log('Parsed service and method:', { serviceName, methodName });  // 添加日志
-  
+
+  console.log("Parsed service and method:", { serviceName, methodName }); // 添加日志
+
   // 更新选中的服务
   selectedService.value = serviceName;
-  
+
   // 更新选中的方法
   requestForm.value.rpcMethod = methodName;
-  
+
   // 自动生成示例参数
-  const service = rpcServices.value.find(s => s.name === serviceName);
-  const method = service?.methods?.find(m => m.name === methodName);
-  
-  console.log('Found method:', method);  // 添加日志
-  
+  const service = rpcServices.value.find((s) => s.name === serviceName);
+  const method = service?.methods?.find((m) => m.name === methodName);
+
+  console.log("Found method:", method); // 添加日志
+
   if (method?.inputExample) {
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
   }
@@ -610,18 +794,18 @@ const handleMethodSelect = (value: string) => {
 // 添加生成示例参数的方法
 const generateExample = () => {
   if (!selectedMethod.value) return;
-  
-  const [serviceName, methodName] = selectedMethod.value.split('|');
+
+  const [serviceName, methodName] = selectedMethod.value.split("|");
   if (!serviceName || !methodName) return;
-  
-  const service = rpcServices.value.find(s => s.name === serviceName);
-  const method = service?.methods?.find(m => m.name === methodName);
-  
+
+  const service = rpcServices.value.find((s) => s.name === serviceName);
+  const method = service?.methods?.find((m) => m.name === methodName);
+
   if (method?.inputExample) {
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
-    ElMessage.success('已生成示例参数');
+    ElMessage.success("已生成示例参数");
   } else {
-    ElMessage.warning('该方法没有示例参数');
+    ElMessage.warning("该方法��有示例参数");
   }
 };
 
@@ -636,428 +820,221 @@ onMounted(() => {
 
 // 获取简化的服务名（去掉包名前缀）
 const getSimpleServiceName = (fullName: string) => {
-  const parts = fullName.split('.');
-  return parts[parts.length - 1];  // 返回最后一个部分作为服务名
+  const parts = fullName.split(".");
+  return parts[parts.length - 1]; // 返回最后一个部分作为服务名
 };
 </script>
 
 <style scoped>
+/* 主布局 */
 .main-layout {
   display: flex;
   height: 100vh;
-  overflow: hidden;
+  background-color: #f0f2f5;
 }
 
+/* 侧边栏 */
 .sidebar {
   width: 300px;
-  border-right: 1px solid #dcdfe6;
-  background-color: #f5f7fa;
-  display: flex;
-  flex-direction: column;
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.sidebar-content {
-  padding: 10px;
-  height: 100%;
-  overflow-y: auto;
-}
-
+/* 主内容区 */
 .main-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 20px;
   overflow: hidden;
 }
 
+/* 请求表单 */
 .request-form {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  padding: 0;
 }
 
-.request-header {
-  padding: 10px;
-  border-bottom: 1px solid #dcdfe6;
-  background-color: #fff;
-  flex-shrink: 0;
-}
-
-.request-type-url {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.request-type-select {
-  width: 120px;
-}
-
-.protocol-select {
-  width: 100px;
-}
-
-.url-input {
-  flex: 1;
-}
-
-.send-button {
-  width: 80px;
-}
-
-.request-content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  background-color: #fff;
-}
-
-.rpc-request-area {
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #dcdfe6;
-  flex-shrink: 0;
-}
-
-.service-url-section {
-  padding: 10px;
-  border-bottom: 1px solid #dcdfe6;
-}
-
-.services-section {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-}
-
-.params-response-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.tree-node {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 0;
-}
-
-.service-name {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.method-node {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 0;
-}
-
-.method-name {
-  color: #666;
-  font-size: 13px;
-}
-
-.response-section {
-  flex: 1;
-  border-top: 1px solid #dcdfe6;
-  padding: 20px;
-  background-color: #fff;
-  overflow: auto;
-}
-
-.params-response-area :deep(.el-tabs) {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.params-response-area :deep(.el-tabs__content) {
-  flex: 1;
-  overflow: auto;
-  padding: 20px;
-}
-
-:deep(.el-tree-node__content) {
-  height: auto;
-  padding: 8px 0;
-}
-
-:deep(.el-tree-node.is-expanded > .el-tree-node__children) {
-  padding-left: 20px;
-}
-
-.url-input :deep(.el-input__wrapper) {
-  box-shadow: none;
-}
-
-.url-input :deep(.el-input-group__append) {
-  padding: 0;
-}
-
-.url-input :deep(.el-input-group__append) button {
-  border: none;
-  margin: -1px;
-  border-radius: 0 4px 4px 0;
-}
-
-.add-tab-button {
-  margin: 0 10px;
-}
-
-:deep(.el-tabs__header) {
-  margin: 0;
-}
-
-:deep(.el-tabs__nav-wrap) {
-  padding: 0 10px;
-}
-
-:deep(.el-tabs__content) {
-  height: 100%;
-  padding: 0;
-}
-
-:deep(.el-tab-pane) {
-  height: 100%;
-}
-
-/* RPC 工作区样式 */
-.rpc-workspace {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  background-color: #fff;
-}
-
-/* 顶部具栏 */
-.rpc-toolbar {
-  display: flex;
-  gap: 16px;
+/* 请求类型切换 */
+.request-type-switch {
   padding: 16px;
-  border-bottom: 1px solid #dcdfe6;
-  background-color: #f5f7fa;
+  background-color: #fff;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+/* RPC 工作区 */
+.rpc-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 工具栏 */
+.rpc-toolbar {
+  padding: 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.toolbar-section {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .url-section {
-  flex: 3; /* 增加 URL 输入框的宽度比例 */
+  flex: 3;
+  min-width: 0;
 }
 
 .method-section {
-  flex: 2; /* 增加方法选择框的宽度比例 */
+  flex: 2;
+  min-width: 0;
 }
 
-.server-url,
+.server-url {
+  width: 100%;
+}
+
 .method-select {
   width: 100%;
 }
 
-/* 请求/响应区域 */
+/* URL 输入框 */
+.url-label {
+  padding: 0 12px;
+  color: #606266;
+  font-weight: 500;
+  background-color: #f5f7fa;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* 请求响应区域 */
 .request-response-panel {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 20px;
   overflow: hidden;
-  min-width: 0;
 }
 
-.request-section,
-.response-section {
-  flex: 1;
+.panel-row {
+  height: 100%;
+}
+
+.panel-col {
+  height: 100%;
+}
+
+.panel-section {
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #dcdfe6;
 }
 
+/* 面板头部 */
 .section-header {
-  padding: 12px 16px;
+  padding: 16px;
   background-color: #f5f7fa;
-  border-bottom: 1px solid #dcdfe6;
+  border-bottom: 1px solid #e4e7ed;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 面板内容 */
 .section-content {
   flex: 1;
   padding: 16px;
   overflow: auto;
 }
 
-/* 树形控件样式 */
-.tree-node {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 8px 0;
-}
-
-.node-label {
-  font-size: 14px;
-  color: #666;
-}
-
-.node-label.is-service {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-/* 响应时间样式 */
-.response-time {
-  color: #666;
-  font-size: 12px;
-}
-
-/* Element Plus 组件样式覆盖 */
-:deep(.el-tree-node__content) {
-  height: auto;
-  padding: 4px 0;
-}
-
-:deep(.el-tree-node.is-expanded > .el-tree-node__children) {
-  padding-left: 24px;
-}
-
-:deep(.el-input__wrapper),
-:deep(.el-textarea__wrapper) {
-  box-shadow: none !important;
-  border: 1px solid #dcdfe6;
-}
-
-:deep(.el-button--small) {
-  padding: 8px 16px;
-}
-
-/* 确保内容区填满可用空间 */
-.request-form {
-  display: flex;
-  flex-direction: column;
+/* 代码编辑��� */
+.code-editor {
   height: 100%;
-  overflow: hidden;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
 
-.request-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
+:deep(.el-textarea__inner) {
+  height: 100% !important;
+  font-family: inherit;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 12px;
+  line-height: 1.6;
 }
 
-.method-item {
-  width: 100%;
+/* 按钮样式 */
+.invoke-button {
+  width: 100px;
+  flex-shrink: 0;
+  height: 40px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 4px 0;
+  justify-content: center;
+  gap: 4px;
 }
 
-.method-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* 标签页样式 */
+:deep(.el-tabs--border-card) {
+  box-shadow: none;
+  height: 100%;
 }
 
-.method-type {
-  font-size: 12px;
-  color: #666;
+:deep(.el-tabs__content) {
+  padding: 0;
+  height: calc(100% - 40px);
 }
 
-.service-name {
-  font-weight: bold;
-  color: #2c3e50;
+:deep(.el-tab-pane) {
+  height: 100%;
 }
 
-/* 方法选择器样式 */
-:deep(.el-select-dropdown.el-popper) {
-  margin-top: 4px !important;
-  min-width: 400px !important;
-}
-
-:deep(.el-select-dropdown__wrap) {
-  max-height: 400px;
+/* 下拉框样式 */
+:deep(.el-select-dropdown) {
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 :deep(.el-select-group__title) {
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #2c3e50;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #606266;
   background-color: #f5f7fa;
-  position: sticky;
-  top: 0;
-  z-index: 1;
 }
 
 :deep(.el-select-dropdown__item) {
-  height: auto;
   padding: 8px 12px;
-  line-height: 1.4;
-}
-
-.method-option {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.method-name {
   font-size: 13px;
-  color: #2c3e50;
-  flex-shrink: 0;
 }
 
-.method-type {
-  font-size: 12px;
-  color: #666;
-  text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 刷新图标样式 */
-.refresh-icon {
-  cursor: pointer;
-  font-size: 16px;
-  color: #909399;
-  margin-right: 8px;
-  transition: all 0.3s;
-}
-
-.refresh-icon:hover {
-  color: #409EFF;
-}
-
-.refresh-icon.is-loading {
-  animation: rotating 2s linear infinite;
-}
-
-@keyframes rotating {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 调整选择器内部布局 */
-:deep(.el-select .el-input__wrapper) {
-  padding-left: 8px;
-}
-
-:deep(.el-select .el-input__prefix) {
-  display: flex;
-  align-items: center;
+/* 响应时间标签 */
+.header-info .el-tag {
+  padding: 0 8px;
+  height: 24px;
+  line-height: 22px;
+  border-radius: 4px;
 }
 </style>
