@@ -77,11 +77,7 @@
                           v-model="requestForm.url"
                           placeholder="Enter gRPC Server URL"
                           class="server-url"
-                        >
-                          <template #prepend>
-                            <div class="url-label">SERVER URL</div>
-                          </template>
-                        </el-input>
+                        />
                       </div>
                       <div class="method-section">
                         <el-select
@@ -124,13 +120,16 @@
                                 size="small"
                                 text
                               >
+                                Use server reflection
                                 <el-icon
                                   class="refresh-icon"
-                                  :class="{ 'is-loading': loadingServices }"
+                                  :class="{
+                                    'is-loading': loadingServices,
+                                  }"
+                                  style="margin-left: 2px"
                                 >
                                   <Refresh />
                                 </el-icon>
-                                刷新服务列表
                               </el-button>
                             </div>
                           </template>
@@ -301,7 +300,7 @@
                       </el-tabs>
                     </div>
 
-                    <!-- 响应区域 -->
+                    <!-- 响应区�� -->
                     <div class="response-section">
                       <div class="section-header">
                         <div class="header-title">Response</div>
@@ -361,7 +360,7 @@ import CodeEditor from "./CodeEditor.vue";
 const loading = ref(false);
 const responseTime = ref<number | null>(null);
 
-// 请求表单的基本结构
+// 请求表单的基本构
 const baseForm = {
   type: "rpc",
   protocol: "http",
@@ -421,7 +420,7 @@ const loadingMethods = ref(false);
 // 选中的方法（级联选择的值）
 const selectedMethod = ref<string>("");
 
-// 服务和方法的级联项
+// 服务和方法的级项
 const serviceMethodOptions = computed(() => {
   return rpcServices.value.map((service) => ({
     name: service.name,
@@ -566,7 +565,7 @@ const sendRequest = async () => {
 
     responseTime.value = Date.now() - startTime;
 
-    // 添加到历史记录
+    // 添加历史记录
     requestHistory.value.unshift({
       type: requestForm.value.type,
       url: requestForm.value.url,
@@ -749,7 +748,7 @@ const removeTab = (targetName: string) => {
 const handleNodeClick = (data: any) => {
   console.log("Node clicked:", data);
   if (!data.methods) {
-    // 点击的是服务节点
+    // 点击��是服务节点
     selectedService.value = data.name;
     handleServiceChange(data.name);
   } else {
@@ -837,31 +836,37 @@ const activePane = ref("message"); //设置默认选中的标签页
 .main-layout {
   display: flex;
   height: 100vh;
+  width: 100vw;
   background-color: #f0f2f5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* 侧边栏 */
 .sidebar {
   width: 300px;
   background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  border-right: 1px solid #e4e7ed;
 }
 
 /* 右侧主内容区 */
 .main-content {
   flex: 1;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
 /* 请求表单 */
 .request-form {
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -877,6 +882,7 @@ const activePane = ref("message"); //设置默认选中的标签页
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -894,12 +900,12 @@ const activePane = ref("message"); //设置默认选中的标签页
 }
 
 .url-section {
-  flex: 3;
+  flex: 2;
   min-width: 0;
 }
 
 .method-section {
-  flex: 2;
+  flex: 3;
   min-width: 0;
 }
 
@@ -911,30 +917,21 @@ const activePane = ref("message"); //设置默认选中的标签页
   width: 100%;
 }
 
-/* URL 输入框 */
-.url-label {
-  padding: 0 12px;
-  color: #606266;
-  font-weight: 500;
-  background-color: #f5f7fa;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
 /* 请求响应区域 */
 .request-response-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   padding: 20px;
-  overflow: hidden;
+  gap: 20px;
+  height: calc(100vh - 140px);
+  overflow: auto;
+  padding-bottom: 60px;
 }
 
 /* 请求区域 */
 .request-section {
-  height: 400px; /* 修改为固定高度 */
+  flex: 0 0 400px; /* 固定高度 */
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -945,13 +942,14 @@ const activePane = ref("message"); //设置默认选中的标签页
 /* 响应区域 */
 .response-section {
   flex: 1;
-  min-height: 300px;
   display: flex;
   flex-direction: column;
   background: #fff;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   overflow: hidden;
+  min-height: calc(100vh - 600px);
+  margin-bottom: 0px;
 }
 
 .section-header {
@@ -968,16 +966,17 @@ const activePane = ref("message"); //设置默认选中的标签页
   flex: 1;
   position: relative;
   overflow: hidden;
-  padding: 0;
+  padding-bottom: 20px;
 }
 
-/* Monaco 编辑器容器样式 - 响应区域 */
+/* Monaco 编辑器容器样式 */
 .section-content :deep(.monaco-editor-container) {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  height: 100% !important;
 }
 
 /* 标签页样式 */
@@ -1171,5 +1170,58 @@ const activePane = ref("message"); //设置默认选中的标签页
 /* Monaco 编辑器容器样式 */
 :deep(.monaco-editor-container) {
   flex: 1;
+}
+
+/* 标签页容器样式 */
+:deep(.el-tabs) {
+  height: 100%;
+}
+
+:deep(.el-tabs__content) {
+  height: calc(100% - 40px);
+  padding: 0;
+}
+
+/* 工具栏布局调整 */
+.toolbar-section {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.url-section {
+  flex: 2;
+  min-width: 0;
+}
+
+.method-section {
+  flex: 3;
+  min-width: 0;
+}
+
+/* 移除 URL 输入框前缀 */
+:deep(.el-input-group__prepend) {
+  display: none;
+}
+
+/* 服务选择下拉框样式 */
+:deep(.el-select-dropdown) {
+  min-width: 400px !important;
+}
+
+/* 调整下拉选项的宽度 */
+:deep(.el-select-dropdown__item) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 请求内容区域 */
+.request-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

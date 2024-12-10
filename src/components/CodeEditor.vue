@@ -25,7 +25,7 @@ onMounted(() => {
     editor = monaco.editor.create(editorContainer.value, {
       value: props.modelValue,
       language: props.language || 'json',
-      theme: 'vs-dark',
+      theme: 'vs',
       automaticLayout: true,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
