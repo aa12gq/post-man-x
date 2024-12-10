@@ -160,47 +160,35 @@ ipcMain.handle('get-rpc-methods', async (event, params) => {
   }
 })
 
-// 生成字段值
-function generateFieldValue(type: string, fieldName?: string): any {
-  // 移除包名前缀和修饰符
-  const cleanType = type.replace(/^repeated\s+/, '').replace(/^map<.+>/, '')
-  const isRepeated = type.startsWith('repeated')
-  const isMap = type.startsWith('map<')
+// 生成示例数据
+function generateExampleData(typeName: string, messages: Map<string, any[]>) {
+  console.log('Generating example for type:', typeName);
+  const messageFields = messages.get(typeName);
+  if (!messageFields) {
+    console.log('No fields found for type:', typeName);
+    return {};
+  }
 
-  let value = null
+  console.log('Fields found:', messageFields);
+  const example = {};
+  for (const field of messageFields) {
+    example[field.name] = generateFieldValue(field.type);
+  }
+  return example;
+}
+
+// 生成字段值
+function generateFieldValue(type: string): any {
+  // 移除包名前缀和修饰符
+  const cleanType = type.replace(/^repeated\s+/, '').replace(/^map<.+>/, '');
+  const isRepeated = type.startsWith('repeated');
+  const isMap = type.startsWith('map<');
+
+  let value = null;
   switch (cleanType.toLowerCase()) {
     case 'string':
-      // 根据字段名生成更有意义的假数据
-      if (fieldName) {
-        switch (fieldName.toLowerCase()) {
-          case 'identity_key':
-            value = 'user_123456'
-            break
-          case 'business_scenario':
-            value = 'login'
-            break
-          case 'answer':
-            value = 'abcd'
-            break
-          case 'trace_id':
-            value = '1234567890abcdef'
-            break
-          case 'name':
-            value = 'John Doe'
-            break
-          case 'email':
-            value = 'example@email.com'
-            break
-          case 'phone':
-            value = '13800138000'
-            break
-          default:
-            value = `sample_${fieldName}`
-        }
-      } else {
-        value = 'sample_string'
-      }
-      break
+      value = 'example string';
+      break;
     case 'int32':
     case 'int64':
     case 'sint32':
@@ -209,57 +197,36 @@ function generateFieldValue(type: string, fieldName?: string): any {
     case 'uint64':
     case 'fixed32':
     case 'fixed64':
-      if (fieldName?.toLowerCase().includes('age')) {
-        value = 25
-      } else if (fieldName?.toLowerCase().includes('timestamp')) {
-        value = Date.now()
-      } else if (fieldName?.toLowerCase().includes('id')) {
-        value = 12345
-      } else {
-        value = 100
-      }
-      break
+      value = 123;
+      break;
     case 'double':
     case 'float':
-      if (fieldName?.toLowerCase().includes('price')) {
-        value = 99.99
-      } else if (fieldName?.toLowerCase().includes('score')) {
-        value = 85.5
-      } else {
-        value = 3.14
-      }
-      break
+      value = 3.14;
+      break;
     case 'bool':
-      value = true
-      break
+      value = true;
+      break;
     case 'bytes':
-      value = 'base64_encoded_data'
-      break
+      value = 'base64_encoded_data';
+      break;
     case 'timestamp':
-      value = new Date().toISOString()
-      break
+      value = new Date().toISOString();
+      break;
     case 'duration':
-      value = '1h30m'
-      break
-    case 'imagecaptchatype':
-      value = 1 
-      break
-    case 'slidecaptchatype':
-      value = 1 
-      break
+      value = '1h30m';
+      break;
     default:
-      // 检查是否是枚举类型
       if (cleanType.toLowerCase().endsWith('type') || type.includes('enum')) {
-        value = 1  // 枚举类型默认值
+        value = 1;  // 枚举类型默认值
       } else {
-        value = {}  // 其他消息类型
+        value = {};  // 其他消息类型
       }
   }
 
   if (isMap) {
-    return { "key1": value, "key2": value }
+    return { "key1": value, "key2": value };
   }
-  return isRepeated ? [value, value] : value
+  return isRepeated ? [value, value] : value;
 }
 
 // 处理 RPC 请求
