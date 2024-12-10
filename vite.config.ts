@@ -24,5 +24,8 @@ export default defineConfig({
       '@': '/src',
       '@element-plus/icons-vue': '@element-plus/icons-vue/dist/index.js'
     }
+  },
+  optimizeDeps: {
+    include: ['monaco-editor']
   }
 }) 

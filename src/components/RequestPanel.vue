@@ -153,7 +153,11 @@
                     <!-- 请求区域 -->
                     <div class="request-section">
                       <!-- 请求选项卡 -->
-                      <el-tabs type="border-card" class="request-tabs">
+                      <el-tabs
+                        type="border-card"
+                        class="request-tabs"
+                        v-model="activePane"
+                      >
                         <!-- Message 选项卡 -->
                         <el-tab-pane label="Message" name="message">
                           <div class="tab-content">
@@ -161,13 +165,12 @@
                               <span class="header-title">Request Message</span>
                             </div>
                             <div class="content-body">
-                              <el-input
-                                v-model="requestForm.params"
-                                type="textarea"
-                                :rows="15"
-                                resize="none"
-                                class="code-editor"
-                              />
+                              <div class="editor-container">
+                                <CodeEditor
+                                  v-model="requestForm.params"
+                                  language="json"
+                                />
+                              </div>
                               <!-- 底部示例按钮 -->
                               <div class="message-footer">
                                 <el-button
@@ -309,9 +312,10 @@
                         </div>
                       </div>
                       <div class="section-content">
-                        <ResponseViewer
-                          :response="response"
-                          :response-time="responseTime"
+                        <CodeEditor
+                          v-model="response"
+                          language="json"
+                          :readOnly="true"
                         />
                       </div>
                     </div>
@@ -351,6 +355,7 @@ import ResponseHeaders from "./ResponseHeaders.vue";
 import FavoriteService from "../services/FavoriteService";
 import type { FavoriteRequest } from "../services/FavoriteService";
 import { Refresh, CaretRight } from "@element-plus/icons-vue";
+import CodeEditor from "./CodeEditor.vue";
 
 // 基础状态
 const loading = ref(false);
@@ -379,7 +384,7 @@ interface Tab {
 const tabs = ref<Tab[]>([
   {
     id: "1",
-    name: "新请求",
+    name: "New Request",
     form: reactive({ ...baseForm }),
     response: "",
     responseTime: null,
@@ -413,10 +418,10 @@ const selectedService = ref("");
 const loadingServices = ref(false);
 const loadingMethods = ref(false);
 
-// 选中的方法（级联选择��的值）
+// 选中的方法（级联选择的值）
 const selectedMethod = ref<string>("");
 
-// 服务和方法的级联选项
+// 服务和方法的级联项
 const serviceMethodOptions = computed(() => {
   return rpcServices.value.map((service) => ({
     name: service.name,
@@ -491,7 +496,7 @@ const sendRequest = async () => {
   response.value = ""; // 清除之前的响应
 
   try {
-    // 验证必要的字段
+    // 验证必要
     if (!requestForm.value.url) {
       throw new Error("请输入请求地址");
     }
@@ -508,12 +513,12 @@ const sendRequest = async () => {
       ? JSON.parse(requestForm.value.params)
       : {};
 
-    // 合并请求头和授权头
+    // 合并请求头授权头
     const headers = {
       ...requestHeaders.value
         .filter((h) => h.enabled)
         .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {}),
-      ...getAuthHeaders()
+      ...getAuthHeaders(),
     };
 
     if (requestForm.value.type === "http") {
@@ -522,7 +527,7 @@ const sendRequest = async () => {
         url: `${requestForm.value.protocol}://${requestForm.value.url}`,
         data: requestForm.value.method !== "GET" ? params : undefined,
         params: requestForm.value.method === "GET" ? params : undefined,
-        headers
+        headers,
       });
 
       response.value = JSON.stringify(result.data, null, 2);
@@ -643,7 +648,7 @@ const loadServices = async () => {
       methods: [], // 初始化空方法列表
     }));
 
-    // 自动加载所有服务的方法
+    // 自动加载所有服务方法
     await Promise.all(
       rpcServices.value.map(async (service) => {
         try {
@@ -684,7 +689,7 @@ const handleServiceChange = async (serviceName: string) => {
       (s) => s.name === serviceName
     );
     if (serviceIndex !== -1) {
-      // 将方法转换为树节点格式
+      // 将方法转换树节点格式
       rpcServices.value[serviceIndex].methods = methods.map((method) => ({
         name: method.name,
         label: method.name,
@@ -708,7 +713,7 @@ const handleServiceChange = async (serviceName: string) => {
 const handleMethodChange = (methodName: string) => {
   const method = rpcMethods.value.find((m) => m.name === methodName);
   if (method && method.inputExample) {
-    // 使用成的示例据
+    // 使用成示���
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
   }
 };
@@ -718,7 +723,7 @@ const addTab = () => {
   const newTabId = String(tabs.value.length + 1);
   tabs.value.push({
     id: newTabId,
-    name: "新请求",
+    name: "New Request",
     form: reactive({ ...baseForm }),
     response: "",
     responseTime: null,
@@ -805,7 +810,7 @@ const generateExample = () => {
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
     ElMessage.success("已生成示例参数");
   } else {
-    ElMessage.warning("该方法��有示例参数");
+    ElMessage.warning("该方法没有示例参数");
   }
 };
 
@@ -823,6 +828,8 @@ const getSimpleServiceName = (fullName: string) => {
   const parts = fullName.split(".");
   return parts[parts.length - 1]; // 返回最后一个部分作为服务名
 };
+
+const activePane = ref("message"); //设置默认选中的标签页
 </script>
 
 <style scoped>
@@ -840,7 +847,7 @@ const getSimpleServiceName = (fullName: string) => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* 主内容区 */
+/* 右侧主内容区 */
 .main-content {
   flex: 1;
   padding: 20px;
@@ -918,59 +925,156 @@ const getSimpleServiceName = (fullName: string) => {
 /* 请求响应区域 */
 .request-response-panel {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   padding: 20px;
   overflow: hidden;
 }
 
-.panel-row {
-  height: 100%;
-}
-
-.panel-col {
-  height: 100%;
-}
-
-.panel-section {
-  height: 100%;
-  background-color: #fff;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
+/* 请求区域 */
+.request-section {
+  height: 400px; /* 修改为固定高度 */
   display: flex;
   flex-direction: column;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
 }
 
-/* 面板头部 */
+/* 响应区域 */
+.response-section {
+  flex: 1;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
 .section-header {
-  padding: 16px;
+  flex-shrink: 0;
+  padding: 12px 16px;
   background-color: #f5f7fa;
-  border-bottom: 1px solid #e4e7ed;
+  border-bottom: 1px solid #dcdfe6;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #303133;
-}
-
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-/* 面板内容 */
 .section-content {
   flex: 1;
-  padding: 16px;
-  overflow: auto;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
 }
 
-/* 代码编辑��� */
+/* Monaco 编辑器容器样式 - 响应区域 */
+.section-content :deep(.monaco-editor-container) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* 标签页样式 */
+.request-tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.el-tabs--border-card) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.el-tabs__header) {
+  flex-shrink: 0;
+}
+
+:deep(.el-tabs__content) {
+  flex: 1;
+  overflow: hidden;
+}
+
+:deep(.el-tab-pane) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 内容区域样式 */
+.tab-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-header {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.content-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.editor-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+}
+
+/* Monaco 编辑器容器样式 */
+:deep(.monaco-editor-container) {
+  height: 100% !important;
+}
+
+/* 底部按钮区域 */
+.message-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  padding: 4px 16px;
+  background-color: #f5f7fa;
+  border-top: 1px solid #e4e7ed;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* 响应区域标题栏 */
+.section-header {
+  padding: 12px 16px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #dcdfe6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 代码编辑器 */
 .code-editor {
   height: 100%;
   font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
@@ -1036,5 +1140,36 @@ const getSimpleServiceName = (fullName: string) => {
   height: 24px;
   line-height: 22px;
   border-radius: 4px;
+}
+
+/* 内容区域样式 */
+.tab-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-header {
+  padding: 12px 16px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.content-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Monaco 编辑器容器样式 */
+:deep(.monaco-editor-container) {
+  flex: 1;
 }
 </style>
