@@ -1,0 +1,31 @@
+# Source files
+src/
+tests/
+protos/
+
+# Configuration files
+.eslintrc
+.prettierrc
+tsconfig.json
+vite.config.ts
+electron-builder.json5
+
+# Development files
+*.map
+*.test.*
+*.spec.*
+
+# Git files
+.git
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+
+# Build scripts
+scripts/
+
+# Documentation
+docs/
+*.md 
