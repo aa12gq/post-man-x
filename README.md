@@ -143,8 +143,8 @@
 1. 克隆仓库
 
    ```bash
-   git clone https://github.com/your-repo/your-project.git
-   cd your-project
+   git clone https://github.com/vtyug/rpc-postman.git
+   cd rpc-postman
    ```
 
 2. 安装依赖
