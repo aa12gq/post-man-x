@@ -363,7 +363,7 @@ const responseTime = ref<number | null>(null);
 
 // 请求表单的基本结构
 const baseForm = {
-  type: "http",
+  type: "rpc",
   protocol: "http",
   url: "",
   method: "GET",
@@ -713,7 +713,7 @@ const handleServiceChange = async (serviceName: string) => {
 const handleMethodChange = (methodName: string) => {
   const method = rpcMethods.value.find((m) => m.name === methodName);
   if (method && method.inputExample) {
-    // 使用成示���
+    // 使用成示
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
   }
 };
