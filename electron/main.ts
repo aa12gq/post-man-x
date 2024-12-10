@@ -20,12 +20,13 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: path.join(process.cwd(), 
-      process.platform === 'darwin' 
-        ? 'build/icons/icon.icns'
-        : process.platform === 'win32'
-          ? 'build/icons/icon.ico'
-          : 'build/icons/icon.png'
+    icon: path.join(
+      process.cwd(),
+      process.platform === "darwin"
+        ? "build/icons/icon.icns"
+        : process.platform === "win32"
+        ? "build/icons/icon.ico"
+        : "build/icons/icon.png"
     ),
     webPreferences: {
       nodeIntegration: false,
@@ -148,7 +149,7 @@ ipcMain.handle("get-rpc-methods", async (event, params) => {
       // 生成示例输入参数
       const inputExample = {};
       for (const field of fields) {
-        inputExample[field.name] = generateFieldValue(field.type, field.name);
+        inputExample[field.name] = generateFieldValue(field.type);
       }
 
       console.log("Generated example:", inputExample);
