@@ -142,15 +142,17 @@
     </el-tabs>
 
     <!-- 响应结果 -->
-    <ResponseViewer
-      v-if="response"
-      :response="response"
-      :response-time="responseTime"
-    />
-    <ResponseHeaders
-      v-if="responseHeaders"
-      :headers="responseHeaders"
-    />
+    <div class="response-section" v-if="response || responseHeaders">
+      <ResponseViewer
+        v-if="response"
+        :response="response"
+        :response-time="responseTime"
+      />
+      <ResponseHeaders
+        v-if="responseHeaders && Object.keys(responseHeaders).length > 0"
+        :headers="responseHeaders"
+      />
+    </div>
 
     <!-- 保存收藏对话框 -->
     <el-dialog
@@ -234,8 +236,18 @@ watch(() => requestForm.type, (newType) => {
 const sendRequest = async () => {
   loading.value = true
   const startTime = Date.now()
+  response.value = ''  // 清除之前的响应
   
   try {
+    // 验证必要的字段
+    if (!requestForm.url) {
+      throw new Error('请输入请求地址')
+    }
+
+    if (requestForm.type === 'rpc' && !requestForm.rpcMethod) {
+      throw new Error('请选择 RPC 方法')
+    }
+
     let result
     const params = requestForm.params ? JSON.parse(requestForm.params) : {}
     const headers = requestHeaders.value
@@ -250,18 +262,42 @@ const sendRequest = async () => {
         params: requestForm.method === 'GET' ? params : undefined,
         headers
       })
+
+      response.value = JSON.stringify(result.data, null, 2)
+      responseHeaders.value = result.headers
     } else {
-      result = await RpcClient.sendRequest(
+      // 获取当前选中的服务
+      const service = rpcServices.value.find(s => s.name === selectedService.value)
+      if (!service) {
+        throw new Error('请选择服务')
+      }
+
+      console.log('Sending RPC request:', {
+        url: requestForm.url,
+        service: service.name,
+        method: requestForm.rpcMethod,
+        params
+      })
+
+      const rpcResult = await RpcClient.sendRequest(
         requestForm.url,
+        service.name,
         requestForm.rpcMethod,
-        params,
-        { headers }
+        params
       )
+
+      console.log('RPC response:', rpcResult)
+
+      // 确保响应数据正确设置
+      if (rpcResult && typeof rpcResult === 'object') {
+        response.value = JSON.stringify(rpcResult, null, 2)
+      } else {
+        response.value = String(rpcResult)
+      }
+      responseHeaders.value = {}
     }
     
-    response.value = JSON.stringify(result.data, null, 2)
     responseTime.value = Date.now() - startTime
-    responseHeaders.value = result.headers
     
     // 添加到历史记录
     requestHistory.value.unshift({
@@ -271,8 +307,10 @@ const sendRequest = async () => {
       params: requestForm.params
     })
   } catch (error: any) {
+    console.error('Request failed:', error)
     ElMessage.error(`请求错误: ${error.message}`)
     response.value = `错误: ${error.message}`
+    responseHeaders.value = {}
   } finally {
     loading.value = false
   }
@@ -361,9 +399,9 @@ const handleServiceChange = async (serviceName: string) => {
 
 const handleMethodChange = (methodName: string) => {
   const method = rpcMethods.value.find(m => m.name === methodName)
-  if (method) {
-    // 可以根据参数类型生成参数模板
-    requestForm.params = '{}'
+  if (method && method.inputExample) {
+    // 使用生成的示例据
+    requestForm.params = JSON.stringify(method.inputExample, null, 2)
   }
 }
 </script>
@@ -373,8 +411,12 @@ const handleMethodChange = (methodName: string) => {
   padding: 20px;
 }
 
-.response-panel {
+.response-section {
   margin-top: 20px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: #fff;
 }
 
 .response-header {

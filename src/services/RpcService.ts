@@ -3,6 +3,7 @@ export interface RpcMethod {
   inputType: string
   outputType: string
   description?: string
+  inputExample?: any
 }
 
 export interface RpcService {
@@ -44,16 +45,18 @@ export class RpcClient {
     methodName: string,
     params: any
   ): Promise<any> {
+    console.log('RpcClient.sendRequest:', { url, serviceName, methodName, params })
     const result = await window.electronAPI.rpcRequest({
       url,
       serviceName,
       methodName,
       params
     })
+    console.log('RpcClient response:', result)
     if (!result.success) {
       throw new Error(result.error)
     }
-    return result.data
+    return result.data || {}
   }
 }
 

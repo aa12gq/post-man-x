@@ -68,7 +68,7 @@ ipcMain.handle('get-rpc-services', async (event, params) => {
   }
 })
 
-// 获取 RPC 方法列表
+// 获取 RPC 方法列表和类型定义
 ipcMain.handle('get-rpc-methods', async (event, params) => {
   try {
     if (!params?.url || !params?.serviceName) {
@@ -78,23 +78,75 @@ ipcMain.handle('get-rpc-methods', async (event, params) => {
     const cleanUrl = params.url.toString().replace(/^(http|https):\/\//, '')
     console.log('Getting methods for service:', params.serviceName)
     
-    const { stdout, stderr } = await execAsync(`grpcurl -plaintext ${cleanUrl} describe ${params.serviceName}`)
+    // 获取服务定义
+    const { stdout: serviceInfo, stderr: serviceErr } = await execAsync(
+      `grpcurl -plaintext ${cleanUrl} describe ${params.serviceName}`
+    )
     
-    if (stderr) {
-      console.error('grpcurl stderr:', stderr)
-      throw new Error(stderr)
+    if (serviceErr) {
+      console.error('grpcurl stderr:', serviceErr)
+      throw new Error(serviceErr)
     }
 
     // 解析方法列表
-    const methodRegex = /rpc\s+(\w+)\s*\(([^)]+)\)\s+returns\s+\(([^)]+)\)/g
+    const methodRegex = /rpc\s+(\w+)\s*\(\s*\.([^\s]+)\s*\)\s*returns\s*\(\s*\.([^\s]+)/g
     const methods = []
     let match
 
-    while ((match = methodRegex.exec(stdout)) !== null) {
+    while ((match = methodRegex.exec(serviceInfo)) !== null) {
+      const [, methodName, inputType, outputType] = match
+      console.log(`Processing method: ${methodName}, input: ${inputType}`)
+
+      // 获取请求消息类型的详细定义
+      const { stdout: typeInfo, stderr: typeErr } = await execAsync(
+        `grpcurl -plaintext ${cleanUrl} describe ${inputType}`
+      )
+
+      if (typeErr) {
+        console.error(`Error getting type info for ${inputType}:`, typeErr)
+        continue
+      }
+
+      console.log(`Type info for ${inputType}:`, typeInfo)
+
+      // 解析字段定义
+      const fields = []
+      // 修改正则表达式以更准确地匹配字段
+      const messageRegex = /message\s+\w+\s*{([^}]+)}/
+      const fieldRegex = /\s*(\w+)\s+(\w+)\s*=\s*(\d+)/g
+
+      const messageMatch = messageRegex.exec(typeInfo)
+      if (messageMatch) {
+        const messageContent = messageMatch[1]
+        console.log('Message content:', messageContent)
+
+        let fieldMatch
+        while ((fieldMatch = fieldRegex.exec(messageContent)) !== null) {
+          const [, fieldType, fieldName, fieldNumber] = fieldMatch
+          console.log('Field match:', { fieldType, fieldName, fieldNumber })
+          fields.push({
+            name: fieldName,
+            type: fieldType,
+            number: parseInt(fieldNumber)
+          })
+        }
+      }
+
+      console.log('Parsed fields:', fields)
+
+      // 生成示例输入参数
+      const inputExample = {}
+      for (const field of fields) {
+        inputExample[field.name] = generateFieldValue(field.type, field.name)
+      }
+
+      console.log('Generated example:', inputExample)
+
       methods.push({
-        name: match[1],
-        inputType: match[2].trim(),
-        outputType: match[3].trim()
+        name: methodName,
+        inputType: inputType.split('.').pop(),
+        outputType: outputType.split('.').pop(),
+        inputExample
       })
     }
 
@@ -107,6 +159,108 @@ ipcMain.handle('get-rpc-methods', async (event, params) => {
     }
   }
 })
+
+// 生成字段值
+function generateFieldValue(type: string, fieldName?: string): any {
+  // 移除包名前缀和修饰符
+  const cleanType = type.replace(/^repeated\s+/, '').replace(/^map<.+>/, '')
+  const isRepeated = type.startsWith('repeated')
+  const isMap = type.startsWith('map<')
+
+  let value = null
+  switch (cleanType.toLowerCase()) {
+    case 'string':
+      // 根据字段名生成更有意义的假数据
+      if (fieldName) {
+        switch (fieldName.toLowerCase()) {
+          case 'identity_key':
+            value = 'user_123456'
+            break
+          case 'business_scenario':
+            value = 'login'
+            break
+          case 'answer':
+            value = 'abcd'
+            break
+          case 'trace_id':
+            value = '1234567890abcdef'
+            break
+          case 'name':
+            value = 'John Doe'
+            break
+          case 'email':
+            value = 'example@email.com'
+            break
+          case 'phone':
+            value = '13800138000'
+            break
+          default:
+            value = `sample_${fieldName}`
+        }
+      } else {
+        value = 'sample_string'
+      }
+      break
+    case 'int32':
+    case 'int64':
+    case 'sint32':
+    case 'sint64':
+    case 'uint32':
+    case 'uint64':
+    case 'fixed32':
+    case 'fixed64':
+      if (fieldName?.toLowerCase().includes('age')) {
+        value = 25
+      } else if (fieldName?.toLowerCase().includes('timestamp')) {
+        value = Date.now()
+      } else if (fieldName?.toLowerCase().includes('id')) {
+        value = 12345
+      } else {
+        value = 100
+      }
+      break
+    case 'double':
+    case 'float':
+      if (fieldName?.toLowerCase().includes('price')) {
+        value = 99.99
+      } else if (fieldName?.toLowerCase().includes('score')) {
+        value = 85.5
+      } else {
+        value = 3.14
+      }
+      break
+    case 'bool':
+      value = true
+      break
+    case 'bytes':
+      value = 'base64_encoded_data'
+      break
+    case 'timestamp':
+      value = new Date().toISOString()
+      break
+    case 'duration':
+      value = '1h30m'
+      break
+    case 'imagecaptchatype':
+      value = 1 
+      break
+    case 'slidecaptchatype':
+      value = 1 
+      break
+    default:
+      // 检查是否是枚举类型
+      if (cleanType.toLowerCase().endsWith('type') || type.includes('enum')) {
+        value = 1  // 枚举类型默认值
+      } else {
+        value = {}  // 其他消息类型
+      }
+  }
+
+  if (isMap) {
+    return { "key1": value, "key2": value }
+  }
+  return isRepeated ? [value, value] : value
+}
 
 // 处理 RPC 请求
 ipcMain.handle('rpc-request', async (event, params) => {
@@ -126,8 +280,12 @@ ipcMain.handle('rpc-request', async (event, params) => {
     const tmpFile = path.join(app.getPath('temp'), 'rpc-request.json')
     await fs.promises.writeFile(tmpFile, JSON.stringify(params.params || {}))
 
+    // 构建完整的服务方法名
+    const fullMethodName = `${params.serviceName}/${params.methodName}`
+    console.log('Full method name:', fullMethodName)
+
     const { stdout, stderr } = await execAsync(
-      `grpcurl -plaintext -d @ ${cleanUrl} ${params.serviceName}/${params.methodName} < ${tmpFile}`
+      `grpcurl -plaintext -d @ ${cleanUrl} "${fullMethodName}" < ${tmpFile}`
     )
     
     if (stderr) {
@@ -144,6 +302,14 @@ ipcMain.handle('rpc-request', async (event, params) => {
     return { 
       success: false, 
       error: error.message 
+    }
+  } finally {
+    // 清理临时文件
+    try {
+      const tmpFile = path.join(app.getPath('temp'), 'rpc-request.json')
+      await fs.promises.unlink(tmpFile)
+    } catch (error) {
+      console.error('Failed to clean up temp file:', error)
     }
   }
 })
