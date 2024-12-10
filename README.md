@@ -16,7 +16,7 @@
 <img src="docs/images/divider.gif" alt="divider"/><br><br>
 
 <p align="center">
-  <img src="./docs/images/screenshot.png" alt="RPC Postman Screenshot" width="500">
+  <img src="./docs/images/screenshot.png" alt="RPC Postman Screenshot" width="800">
 </p>
 
 </div>
