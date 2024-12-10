@@ -1,28 +1,28 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
+import renderer from 'vite-plugin-electron-renderer'
 
 export default defineConfig({
   plugins: [
     vue(),
-    electron({
-      entry: 'electron/main.ts',
-      vite: {
-        build: {
-          outDir: 'dist-electron'
-        }
-      }
-    }),
-    electron({
-      entry: 'electron/preload.ts',
-      onstart(options) {
-        options.reload()
+    electron([
+      {
+        entry: 'electron/main.ts',
       },
-      vite: {
-        build: {
-          outDir: 'dist-electron'
-        }
-      }
-    })
-  ]
+      {
+        entry: 'electron/preload.ts',
+        onstart(options) {
+          options.reload()
+        },
+      },
+    ]),
+    renderer(),
+  ],
+  resolve: {
+    alias: {
+      '@': '/src',
+      '@element-plus/icons-vue': '@element-plus/icons-vue/dist/index.js'
+    }
+  }
 }) 

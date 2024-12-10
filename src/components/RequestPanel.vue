@@ -102,7 +102,7 @@
                           <el-option
                             v-for="method in service.methods"
                             :key="`${service.name}.${method.name}`"
-                            :label="method.name"
+                            :label="`${getSimpleServiceName(service.name)}/${method.name}`"
                             :value="`${service.name}|${method.name}`"
                           >
                             <div class="method-option">
@@ -110,6 +110,24 @@
                             </div>
                           </el-option>
                         </el-option-group>
+
+                        <!-- 底部刷新按钮 -->
+                        <template #footer>
+                          <div class="select-footer">
+                            <el-button
+                              class="refresh-button"
+                              :loading="loadingServices"
+                              @click.stop="loadServices"
+                              size="small"
+                              text
+                            >
+                              <el-icon class="refresh-icon" :class="{ 'is-loading': loadingServices }">
+                                <Refresh />
+                              </el-icon>
+                              刷新服务列表
+                            </el-button>
+                          </div>
+                        </template>
                       </el-select>
                     </div>
                     <el-button
@@ -201,6 +219,7 @@ import FavoriteManager from "./FavoriteManager.vue";
 import ResponseHeaders from "./ResponseHeaders.vue";
 import FavoriteService from "../services/FavoriteService";
 import type { FavoriteRequest } from "../services/FavoriteService";
+import { Refresh } from '@element-plus/icons-vue'
 
 // 基础状态
 const loading = ref(false);
@@ -278,17 +297,6 @@ const serviceMethodOptions = computed(() => {
     }))
   }));
 });
-
-// 监听 URL 变化，自动加载服务
-watch(
-  () => requestForm.value.url,
-  (newUrl) => {
-    console.log("URL changed:", newUrl);
-    if (requestForm.value.type === "rpc" && newUrl) {
-      loadServices();
-    }
-  }
-);
 
 // 监听类型变化
 watch(
@@ -393,7 +401,7 @@ const sendRequest = async () => {
 
 const saveToFavorites = () => {
   if (!favoriteForm.name) {
-    ElMessage.warning("请输入名称");
+    ElMessage.warning("请输入称");
     return;
   }
 
@@ -450,7 +458,7 @@ const loadServices = async () => {
     // 初始化服务列表
     rpcServices.value = services.map(service => ({
       name: service.name,
-      methods: []  // 初���化空方法列表
+      methods: []  // 初始化空方法列表
     }));
     
     // 自动加载所有服务的方法
@@ -625,6 +633,12 @@ onMounted(() => {
     loadServices();
   }
 });
+
+// 获取简化的服务名（去掉包名前缀）
+const getSimpleServiceName = (fullName: string) => {
+  const parts = fullName.split('.');
+  return parts[parts.length - 1];  // 返回最后一个部分作为服务名
+};
 </script>
 
 <style scoped>
@@ -1009,5 +1023,41 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 刷新图标样式 */
+.refresh-icon {
+  cursor: pointer;
+  font-size: 16px;
+  color: #909399;
+  margin-right: 8px;
+  transition: all 0.3s;
+}
+
+.refresh-icon:hover {
+  color: #409EFF;
+}
+
+.refresh-icon.is-loading {
+  animation: rotating 2s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 调整选择器内部布局 */
+:deep(.el-select .el-input__wrapper) {
+  padding-left: 8px;
+}
+
+:deep(.el-select .el-input__prefix) {
+  display: flex;
+  align-items: center;
 }
 </style>

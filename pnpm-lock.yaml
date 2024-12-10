@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@element-plus/icons-vue':
+        specifier: ^2.3.1
+        version: 2.3.1(vue@3.5.13(typescript@5.7.2))
       '@grpc/grpc-js':
         specifier: ^1.12.4
         version: 1.12.4
@@ -44,7 +47,10 @@ importers:
         version: 5.4.11(@types/node@20.17.9)
       vite-plugin-electron:
         specifier: ^0.28.0
-        version: 0.28.8
+        version: 0.28.8(vite-plugin-electron-renderer@0.14.6)
+      vite-plugin-electron-renderer:
+        specifier: ^0.14.6
+        version: 0.14.6
       vue-tsc:
         specifier: ^1.8.27
         version: 1.8.27(typescript@5.7.2)
@@ -1508,6 +1514,9 @@ packages:
   verror@1.10.1:
     resolution: {integrity: sha512-veufcmxri4e3XSrT0xwfUR7kguIkaxBeosDg00yDWhk49wdwkSUrvvsm7nc75e1PUyvIeZj6nS8VQRYz2/S4Xg==}
     engines: {node: '>=0.6.0'}
+
+  vite-plugin-electron-renderer@0.14.6:
+    resolution: {integrity: sha512-oqkWFa7kQIkvHXG7+Mnl1RTroA4sP0yesKatmAy0gjZC4VwUqlvF9IvOpHd1fpLWsqYX/eZlVxlhULNtaQ78Jw==}
 
   vite-plugin-electron@0.28.8:
     resolution: {integrity: sha512-ir+B21oSGK9j23OEvt4EXyco9xDCaF6OGFe0V/8Zc0yL2+HMyQ6mmNQEIhXsEsZCSfIowBpwQBeHH4wVsfraeg==}
@@ -3205,7 +3214,11 @@ snapshots:
       extsprintf: 1.4.1
     optional: true
 
-  vite-plugin-electron@0.28.8: {}
+  vite-plugin-electron-renderer@0.14.6: {}
+
+  vite-plugin-electron@0.28.8(vite-plugin-electron-renderer@0.14.6):
+    optionalDependencies:
+      vite-plugin-electron-renderer: 0.14.6
 
   vite@5.4.11(@types/node@20.17.9):
     dependencies:
