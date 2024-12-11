@@ -73,10 +73,12 @@
                   <div class="rpc-toolbar">
                     <div class="toolbar-section">
                       <div class="url-section">
-                        <el-input
+                        <el-autocomplete
                           v-model="requestForm.url"
-                          placeholder="Enter gRPC Server URL"
+                          :fetch-suggestions="handleFetchSuggestions"
+                          placeholder="Enter Server URL"
                           class="server-url"
+                          clearable
                         />
                       </div>
                       <div class="method-section">
@@ -538,6 +540,7 @@ import FavoriteService from "../services/FavoriteService";
 import type { FavoriteRequest } from "../services/FavoriteService";
 import { Refresh, CaretRight, Document } from "@element-plus/icons-vue";
 import CodeEditor from "./CodeEditor.vue";
+import ServiceUrlHistoryService from "../services/ServiceUrlHistoryService";
 
 // 在文件添加类型定义
 type RequestType = "rpc" | "http";
@@ -741,7 +744,7 @@ const sendRequest = async () => {
   loading.value = true;
   const startTime = Date.now();
   response.value = "";
-  requestMessage.value = ""; // 清除之前的请求报文
+  requestMessage.value = "";
 
   try {
     if (!requestForm.value.url) {
@@ -785,6 +788,9 @@ const sendRequest = async () => {
         params
       );
 
+      // 请求成功后保存地址到历史记录
+      ServiceUrlHistoryService.addToHistory(requestForm.value.url);
+
       if (result && typeof result === "object") {
         response.value = JSON.stringify(result, null, 2);
       } else {
@@ -818,6 +824,9 @@ const sendRequest = async () => {
         params: requestForm.value.method === "GET" ? params : undefined,
         headers,
       });
+
+      // 请求成功后保存地址到历史记录
+      ServiceUrlHistoryService.addToHistory(requestForm.value.url);
 
       response.value = JSON.stringify(result.data, null, 2);
       responseHeaders.value = Object.fromEntries(
@@ -1111,6 +1120,7 @@ onMounted(() => {
     console.log("Loading services on mount");
     loadServices();
   }
+  urlHistory.value = ServiceUrlHistoryService.getHistory();
 });
 
 // 获取简化的服务名（去掉包名前缀）
@@ -1202,6 +1212,30 @@ const getRemoteAddress = computed(() => {
     return requestForm.value.url.split("/")[0];
   }
 });
+
+// 添加服务地址历史记录
+const urlHistory = ref<string[]>([]);
+
+// 在 onMounted 中加载历史记录
+onMounted(() => {
+  urlHistory.value = ServiceUrlHistoryService.getHistory();
+});
+
+// 添加类型定义
+interface FetchSuggestionsCallback {
+  (suggestions: Array<{ value: string }>): void;
+}
+
+// 修改自动完成的类型
+const handleFetchSuggestions = (
+  query: string,
+  cb: FetchSuggestionsCallback
+) => {
+  const results = urlHistory.value
+    .filter((url) => url.toLowerCase().includes(query.toLowerCase()))
+    .map((url) => ({ value: url }));
+  cb(results);
+};
 </script>
 
 <style scoped>
@@ -1549,7 +1583,7 @@ const getRemoteAddress = computed(() => {
   opacity: 0.8;
 }
 
-/* 方法名称本 */
+/* 方法名称 */
 :deep(.el-select-dropdown__item) span {
   margin-left: 12px; /* 文本和图标之间的间距 */
   white-space: nowrap;
@@ -1702,5 +1736,29 @@ const getRemoteAddress = computed(() => {
 
 :deep(.el-collapse-item__wrap) {
   border-bottom: none;
+}
+
+/* 添加自动完成框的样式 */
+.server-url {
+  width: 100%;
+}
+
+:deep(.el-autocomplete-suggestion) {
+  min-width: 100% !important;
+}
+
+:deep(.el-autocomplete-suggestion__wrap) {
+  padding: 0;
+}
+
+:deep(.el-autocomplete-suggestion__list) {
+  margin: 0;
+  padding: 0;
+}
+
+:deep(.el-autocomplete-suggestion__item) {
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 </style>
