@@ -1,7 +1,14 @@
 <template>
   <div class="main-layout">
+    <!-- 折叠按钮 -->
+    <div class="sidebar-toggle" @click="toggleSidebar">
+      <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
+        <CaretLeft />
+      </el-icon>
+    </div>
+
     <!-- 左侧边栏 -->
-    <div class="sidebar">
+    <div class="sidebar" :class="{ 'is-collapsed': isSidebarCollapsed }">
       <el-tabs type="border-card">
         <!-- 收藏夹 -->
         <el-tab-pane label="收藏夹" name="favorites">
@@ -364,7 +371,9 @@
         <h3 class="section-title">基本信息</h3>
         <div class="detail-item">
           <span class="item-label">请求类型:</span>
-          <el-tag size="small" class="request-type-tag">{{ requestForm.type.toUpperCase() }}</el-tag>
+          <el-tag size="small" class="request-type-tag">{{
+            requestForm.type.toUpperCase()
+          }}</el-tag>
         </div>
         <div class="detail-item">
           <span class="item-label">请求地址:</span>
@@ -538,7 +547,12 @@ import FavoriteManager from "./FavoriteManager.vue";
 import ResponseHeaders from "./ResponseHeaders.vue";
 import FavoriteService from "../services/FavoriteService";
 import type { FavoriteRequest } from "../services/FavoriteService";
-import { Refresh, CaretRight, Document } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  CaretRight,
+  Document,
+  CaretLeft,
+} from "@element-plus/icons-vue";
 import CodeEditor from "./CodeEditor.vue";
 import ServiceUrlHistoryService from "../services/ServiceUrlHistoryService";
 
@@ -1109,7 +1123,7 @@ const generateExample = () => {
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
     ElMessage.success("已生成示例参数");
   } else {
-    ElMessage.warning("该方法没有示例参数");
+    ElMessage.warning("该方���没有示例参数");
   }
 };
 
@@ -1232,6 +1246,12 @@ const handleFetchSuggestions = (
     .map((url) => ({ value: url }));
   cb(results);
 };
+
+const isSidebarCollapsed = ref(false);
+
+const toggleSidebar = () => {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+};
 </script>
 
 <style scoped>
@@ -1248,12 +1268,81 @@ const handleFetchSuggestions = (
   bottom: 0;
 }
 
+.sidebar {
+  position: relative;
+}
+
+/* 折叠按钮 */
+.sidebar-toggle {
+  position: absolute;
+  /* left: 300px; */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  width: 24px;
+  height: 48px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: left 0.3s ease;
+  color: var(--text-color);
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--header-bg);
+}
+
+.sidebar-toggle .el-icon {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-toggle .is-collapsed {
+  transform: rotate(180deg);
+}
+
+/* 当侧边栏收起时，调整折叠按钮的位置 */
+.sidebar.is-collapsed ~ .sidebar-toggle {
+  left: 0;
+}
+
+/* 主内容区域随侧边栏状态调整 */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar.is-collapsed ~ .main-content {
+  margin-left: 0;
+}
+
+.sidebar:not(.is-collapsed) ~ .main-content {
+  margin-left: 0;
+}
+
 /* 左侧边栏 */
 .sidebar {
   width: 300px;
   background-color: var(--bg-color);
   box-shadow: none;
   border-right: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.is-collapsed {
+  width: 0;
+  padding: 0;
+  margin: 0;
+  border-right: none;
 }
 
 /* 右侧主内容区 */
