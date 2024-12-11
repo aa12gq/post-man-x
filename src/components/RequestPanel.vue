@@ -340,7 +340,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, computed, onMounted } from "vue";
+import {
+  ref,
+  reactive,
+  watch,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import axios from "axios";
 import RpcClient, { RpcService, RpcMethod } from "../services/RpcService";
 import { ElMessage } from "element-plus";
@@ -640,22 +647,48 @@ const loadRequest = (historyItem: any) => {
   activeTab.value = "request";
 };
 
+const urlDebounceTimer = ref<NodeJS.Timeout | null>(null);
+
+const debounceLoadServices = (url: string) => {
+  if (urlDebounceTimer.value) {
+    clearTimeout(urlDebounceTimer.value);
+  }
+
+  urlDebounceTimer.value = setTimeout(() => {
+    if (url && requestForm.value.type === "rpc") {
+      loadServices();
+    }
+  }, 500);
+};
+
+watch(
+  () => requestForm.value.url,
+  (newUrl) => {
+    debounceLoadServices(newUrl);
+  }
+);
+
 const loadServices = async () => {
-  if (!requestForm.value.url || requestForm.value.type !== "rpc") return;
+  if (!requestForm.value.url || requestForm.value.type !== "rpc") {
+    rpcServices.value = [];
+    selectedMethod.value = "";
+    return;
+  }
 
   loadingServices.value = true;
   try {
     const url = requestForm.value.url.trim();
     console.log("Loading services for URL:", url);
+
+    selectedMethod.value = "";
+
     const services = await RpcClient.getServices(url);
 
-    // 初始化服务列表
     rpcServices.value = services.map((service) => ({
       name: service.name,
-      methods: [], // 初始化空方法列表
+      methods: [],
     }));
 
-    // 自动加载所有服务方法
     await Promise.all(
       rpcServices.value.map(async (service) => {
         try {
@@ -703,7 +736,7 @@ const handleServiceChange = async (serviceName: string) => {
         inputType: method.inputType,
         outputType: method.outputType,
         inputExample: method.inputExample,
-        isMethod: true, // 标记这是一个方节点
+        isMethod: true,
       }));
     }
 
@@ -833,10 +866,16 @@ onMounted(() => {
 // 获取简化的服务名（去掉包名前缀）
 const getSimpleServiceName = (fullName: string) => {
   const parts = fullName.split(".");
-  return parts[parts.length - 1]; // 返回最后一个部分作为服务名
+  return parts.slice(-2).join(".");
 };
 
 const activePane = ref("message"); //设置默认选中的标签页
+
+onBeforeUnmount(() => {
+  if (urlDebounceTimer.value) {
+    clearTimeout(urlDebounceTimer.value);
+  }
+});
 </script>
 
 <style scoped>
@@ -853,7 +892,7 @@ const activePane = ref("message"); //设置默认选中的标签页
   bottom: 0;
 }
 
-/* 侧边栏 */
+/* 左侧边栏 */
 .sidebar {
   width: 300px;
   background-color: #fff;
@@ -1122,106 +1161,91 @@ const activePane = ref("message"); //设置默认选中的标签页
   height: 100%;
 }
 
-/* 下拉框样式 */
-:deep(.el-select-dropdown) {
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-:deep(.el-select-group__title) {
-  padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #606266;
-  background-color: #f5f7fa;
-}
-
-:deep(.el-select-dropdown__item) {
-  padding: 8px 12px;
-  font-size: 13px;
-}
-
-/* 响应时间标签 */
-.header-info .el-tag {
-  padding: 0 8px;
-  height: 24px;
-  line-height: 22px;
-  border-radius: 4px;
-}
-
-/* 内容区域样式 */
-.tab-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.content-header {
-  padding: 12px 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #e4e7ed;
-}
-
-.content-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.editor-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Monaco 编辑器容器样式 */
-:deep(.monaco-editor-container) {
-  flex: 1;
-}
-
-/* 标签页容器样式 */
-:deep(.el-tabs) {
-  height: 100%;
-}
-
-:deep(.el-tabs__content) {
-  height: calc(100% - 40px);
-  padding: 0;
-}
-
-/* 工具栏布局调整 */
-.toolbar-section {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.url-section {
-  flex: 2;
-  min-width: 0;
-}
-
-.method-section {
-  flex: 3;
-  min-width: 0;
-}
-
-/* 移除 URL 输入框前缀 */
-:deep(.el-input-group__prepend) {
-  display: none;
-}
-
 /* 服务选择下拉框样式 */
 :deep(.el-select-dropdown) {
   min-width: 400px !important;
+  padding: 0;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* 调整下拉选项的宽度 */
+/* 服务组标题样式 */
+:deep(.el-select-group__title) {
+  padding: 0px 8px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  background: transparent;
+  border-bottom: 1px solid #eee;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* 添加服务图标 */
+:deep(.el-select-group__title)::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: #409eff;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7V17C4 19.21 7.58 21 12 21S20 19.21 20 17V7C20 4.79 16.42 3 12 3M18 17C18 17.5 15.87 19 12 19S6 17.5 6 17V14.77C7.61 15.55 9.72 16 12 16S16.39 15.55 18 14.77V17M18 12.45C16.7 13.4 14.42 14 12 14C9.58 14 7.3 13.4 6 12.45V9.64C7.47 10.47 9.61 11 12 11C14.39 11 16.53 10.47 18 9.64V12.45M12 9C8.13 9 6 7.5 6 7S8.13 5 12 5C15.87 5 18 6.5 18 7S15.87 9 12 9Z'/%3E%3C/svg%3E");
+  margin-right: 3px;
+  opacity: 0.7;
+}
+
+/* 方法选项样式 */
 :deep(.el-select-dropdown__item) {
+  height: 36px;
+  line-height: 36px;
+  padding: 0 16px 0 56px; /* 增加左内边距 */
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 8px; /* 添加间距 */
+}
+
+/* 方法图标和名称 */
+:deep(.el-select-dropdown__item)::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-color: #bbb;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M6 9H18V11H6M14 14H6V12H14M18 8H6V6H18'/%3E%3C/svg%3E");
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%); /* 垂直居中 */
+  opacity: 0.8;
+}
+
+/* 方法名称文本 */
+:deep(.el-select-dropdown__item) span {
+  margin-left: 12px; /* 文本和图标之间的间距 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* 选中状态的样式优化 */
+:deep(.el-select-dropdown__item.selected) {
+  color: #409eff;
+  font-weight: 500;
+  background-color: #f0f7ff;
+}
+
+:deep(.el-select-dropdown__item.selected)::before {
+  background-color: #409eff;
+  opacity: 1;
+}
+
+/* hover 状态优化 */
+:deep(.el-select-dropdown__item:hover)::before {
+  opacity: 1;
 }
 
 /* 请求内容区域 */

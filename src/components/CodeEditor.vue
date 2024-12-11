@@ -3,8 +3,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import * as monaco from 'monaco-editor';
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import * as monaco from "monaco-editor";
 
 const props = defineProps<{
   modelValue: string;
@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
+  (e: "update:modelValue", value: string): void;
 }>();
 
 const editorContainer = ref<HTMLElement>();
@@ -24,25 +24,25 @@ onMounted(() => {
     // 创建编辑器
     editor = monaco.editor.create(editorContainer.value, {
       value: props.modelValue,
-      language: props.language || 'json',
-      theme: 'vs',
+      language: props.language || "json",
+      theme: "vs",
       automaticLayout: true,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
       readOnly: props.readOnly,
       fontSize: 13,
-      lineNumbers: 'on',
-      renderLineHighlight: 'all',
+      lineNumbers: "on",
+      renderLineHighlight: "all",
       roundedSelection: false,
       tabSize: 2,
-      wordWrap: 'on',
+      wordWrap: "on",
       formatOnPaste: true,
       formatOnType: true,
     });
 
     // 监听内容变化
     editor.onDidChangeModelContent(() => {
-      emit('update:modelValue', editor?.getValue() || '');
+      emit("update:modelValue", editor?.getValue() || "");
     });
 
     // 配置 JSON 格式化
@@ -77,4 +77,4 @@ onBeforeUnmount(() => {
   height: 100%;
   border: 1px solid #dcdfe6;
 }
-</style> 
+</style>
