@@ -300,7 +300,7 @@
                       </el-tabs>
                     </div>
 
-                    <!-- 响应区�� -->
+                    <!-- 响应区 -->
                     <div class="response-section">
                       <div class="section-header">
                         <div class="header-title">Response</div>
@@ -356,13 +356,16 @@ import type { FavoriteRequest } from "../services/FavoriteService";
 import { Refresh, CaretRight } from "@element-plus/icons-vue";
 import CodeEditor from "./CodeEditor.vue";
 
+// 在文件顶部添加类型定义
+type RequestType = "rpc" | "http";
+
 // 基础状态
 const loading = ref(false);
 const responseTime = ref<number | null>(null);
 
-// 请求表单的基本构
+// 请求表单的基本构造
 const baseForm = {
-  type: "rpc",
+  type: "rpc" as RequestType,
   protocol: "http",
   url: "",
   method: "GET",
@@ -424,7 +427,7 @@ const selectedMethod = ref<string>("");
 const serviceMethodOptions = computed(() => {
   return rpcServices.value.map((service) => ({
     name: service.name,
-    methods: service.methods.map((method) => ({
+    methods: service.methods?.map((method) => ({
       name: method.name,
       inputType: method.inputType,
       outputType: method.outputType,
@@ -530,7 +533,12 @@ const sendRequest = async () => {
       });
 
       response.value = JSON.stringify(result.data, null, 2);
-      responseHeaders.value = result.headers;
+      responseHeaders.value = Object.fromEntries(
+        Object.entries(result.headers).map(([key, value]) => [
+          key,
+          String(value ?? ""),
+        ])
+      );
     } else {
       // RPC 请求
       const [serviceName, methodName] = selectedMethod.value.split("|");
@@ -608,7 +616,7 @@ const saveToFavorites = () => {
 };
 
 const loadFromFavorite = (favorite: FavoriteRequest) => {
-  requestForm.value.type = favorite.type;
+  requestForm.value.type = favorite.type as RequestType;
   requestForm.value.protocol = favorite.protocol;
   requestForm.value.url = favorite.url;
   requestForm.value.method = favorite.method;
@@ -695,7 +703,7 @@ const handleServiceChange = async (serviceName: string) => {
         inputType: method.inputType,
         outputType: method.outputType,
         inputExample: method.inputExample,
-        isMethod: true, // 标记这是一个方法节点
+        isMethod: true, // 标记这是一个方节点
       }));
     }
 
@@ -748,7 +756,7 @@ const removeTab = (targetName: string) => {
 const handleNodeClick = (data: any) => {
   console.log("Node clicked:", data);
   if (!data.methods) {
-    // 点击��是服务节点
+    // 点击是服务节点
     selectedService.value = data.name;
     handleServiceChange(data.name);
   } else {
@@ -784,7 +792,7 @@ const handleMethodSelect = (value: string) => {
   // 更新选中的方法
   requestForm.value.rpcMethod = methodName;
 
-  // 自动生成示例参数
+  // 自生成示例参数
   const service = rpcServices.value.find((s) => s.name === serviceName);
   const method = service?.methods?.find((m) => m.name === methodName);
 
