@@ -123,7 +123,7 @@ ipcMain.handle("get-rpc-methods", async (event, params) => {
 
       // 解析字段定义
       const fields = [];
-      // 修改正则表达式以更准确地匹配字段
+      // 正则表达式以更准确地匹配字段
       const messageRegex = /message\s+\w+\s*{([^}]+)}/;
       const fieldRegex = /\s*(\w+)\s+(\w+)\s*=\s*(\d+)/g;
 

@@ -304,10 +304,21 @@
                     <div class="response-section">
                       <div class="section-header">
                         <div class="header-title">Response</div>
-                        <div class="header-info" v-if="responseTime">
-                          <el-tag size="small" type="success"
-                            >{{ responseTime }}ms</el-tag
+                        <div class="header-actions">
+                          <div class="header-info" v-if="responseTime">
+                            <el-tag size="small" type="success"
+                              >{{ responseTime }}ms</el-tag
+                            >
+                          </div>
+                          <el-button
+                            size="small"
+                            type="primary"
+                            text
+                            @click="showRequestDetails = true"
                           >
+                            <el-icon><Document /></el-icon>
+                            请求详情
+                          </el-button>
                         </div>
                       </div>
                       <div class="section-content">
@@ -337,6 +348,171 @@
       </el-tabs>
     </div>
   </div>
+
+  <!-- 在 template 根元素结束前添加抽屉组件 -->
+  <el-drawer
+    v-model="showRequestDetails"
+    title="请求详情"
+    direction="rtl"
+    size="50%"
+  >
+    <div class="request-details">
+      <!-- 基本信息 -->
+      <div class="detail-section">
+        <h3 class="section-title">基本信息</h3>
+        <div class="detail-item">
+          <span class="item-label">请求类型:</span>
+          <el-tag size="small">{{ requestForm.type.toUpperCase() }}</el-tag>
+        </div>
+        <div class="detail-item">
+          <span class="item-label">请求地址:</span>
+          <span class="item-value">{{ requestForm.url }}</span>
+        </div>
+        <div class="detail-item" v-if="selectedMethod">
+          <span class="item-label">调用方法:</span>
+          <span class="item-value">{{ selectedMethod }}</span>
+        </div>
+        <div class="detail-item" v-if="responseTime">
+          <span class="item-label">响应时间:</span>
+          <span class="item-value">{{ responseTime }}ms</span>
+        </div>
+      </div>
+
+      <!-- 请求参数 -->
+      <div class="detail-section">
+        <h3 class="section-title">请求参数</h3>
+        <div class="editor-wrapper">
+          <CodeEditor
+            v-model="requestForm.params"
+            language="json"
+            :readOnly="true"
+            height="200px"
+          />
+        </div>
+      </div>
+
+      <!-- 请求头 -->
+      <div class="detail-section">
+        <h3 class="section-title">请求头</h3>
+        <el-table :data="requestHeaders" style="width: 100%">
+          <el-table-column prop="name" label="名称" />
+          <el-table-column prop="value" label="值" show-overflow-tooltip />
+        </el-table>
+      </div>
+
+      <!-- 请求报文 -->
+      <div class="detail-section">
+        <h3 class="section-title">请求报文</h3>
+        <el-collapse v-model="activeCollapseNames">
+          <!-- General 信息 -->
+          <el-collapse-item name="general">
+            <template #title>
+              <span class="collapse-title">General</span>
+            </template>
+            <div class="collapse-content">
+              <div class="info-item">
+                <span class="info-label">Request URL:</span>
+                <span class="info-value">{{ requestForm.url }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Request Method:</span>
+                <span class="info-value">{{
+                  requestForm.type === "rpc" ? "POST" : requestForm.method
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Status Code:</span>
+                <span class="info-value success">200 OK</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Remote Address:</span>
+                <span class="info-value">{{ getRemoteAddress }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Referrer Policy:</span>
+                <span class="info-value">strict-origin-when-cross-origin</span>
+              </div>
+            </div>
+          </el-collapse-item>
+
+          <!-- Request Headers -->
+          <el-collapse-item
+            name="request-headers"
+            v-if="Object.keys(allHeaders).length"
+          >
+            <template #title>
+              <span class="collapse-title">Request Headers</span>
+            </template>
+            <div class="collapse-content">
+              <div
+                v-for="[key, value] in Object.entries(allHeaders).sort(
+                  ([a], [b]) => a.localeCompare(b)
+                )"
+                :key="key"
+                class="info-item"
+              >
+                <span class="info-label">{{ key }}:</span>
+                <span class="info-value">{{ value }}</span>
+              </div>
+            </div>
+          </el-collapse-item>
+
+          <!-- Request Payload -->
+          <el-collapse-item
+            name="request-payload"
+            v-if="requestPayload && requestPayload.trim()"
+          >
+            <template #title>
+              <span class="collapse-title">Request Payload</span>
+            </template>
+            <div class="collapse-content">
+              <CodeEditor
+                v-model="requestPayload"
+                language="json"
+                :readOnly="true"
+                height="200px"
+              />
+            </div>
+          </el-collapse-item>
+
+          <!-- Response Headers -->
+          <el-collapse-item
+            name="response-headers"
+            v-if="Object.keys(responseHeaders).length > 0"
+          >
+            <template #title>
+              <span class="collapse-title">Response Headers</span>
+            </template>
+            <div class="collapse-content">
+              <div
+                v-for="[key, value] in Object.entries(responseHeaders).sort(
+                  ([a], [b]) => a.localeCompare(b)
+                )"
+                :key="key"
+                class="info-item"
+              >
+                <span class="info-label">{{ key }}:</span>
+                <span class="info-value">{{ value }}</span>
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </div>
+
+      <!-- 响应数据 -->
+      <div class="detail-section">
+        <h3 class="section-title">响应数据</h3>
+        <div class="editor-wrapper">
+          <CodeEditor
+            v-model="response"
+            language="json"
+            :readOnly="true"
+            height="200px"
+          />
+        </div>
+      </div>
+    </div>
+  </el-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -360,10 +536,10 @@ import FavoriteManager from "./FavoriteManager.vue";
 import ResponseHeaders from "./ResponseHeaders.vue";
 import FavoriteService from "../services/FavoriteService";
 import type { FavoriteRequest } from "../services/FavoriteService";
-import { Refresh, CaretRight } from "@element-plus/icons-vue";
+import { Refresh, CaretRight, Document } from "@element-plus/icons-vue";
 import CodeEditor from "./CodeEditor.vue";
 
-// 在文件顶部添加类型定义
+// 在文件添加类型定义
 type RequestType = "rpc" | "http";
 
 // 基础状态
@@ -499,39 +675,143 @@ const getAuthHeaders = () => {
   return headers;
 };
 
+const requestMessage = ref("");
+const formatRequestMessage = (
+  type: RequestType,
+  data: {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    params?: any;
+    response?: any;
+  }
+) => {
+  let message = "";
+
+  // 通用请求信息
+  message += `请求网址:\n${data.url}\n\n`;
+  message += `请求方法:\n${data.method}\n\n`;
+
+  // 远程地址
+  const urlObj = new URL(data.url);
+  message += `远程地址:\n${urlObj.host}\n\n`;
+
+  // 引荐来源网址政策
+  message += `引荐来源网址政策:\nstrict-origin-when-cross-origin\n\n`;
+
+  // 合并所有请求头
+  const allHeaders = {
+    // 基础请求头
+    accept: "application/grpc-web+proto",
+    "accept-encoding": "gzip, deflate, br",
+    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+    connection: "keep-alive",
+    origin: window.location.origin,
+    referer: window.location.href,
+    "sec-ch-ua": '"Google Chrome";v="119"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"macOS"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) rpc-postman/0.0.1 Chrome/120.0.6099.291 Electron/28.3.3 Safari/537.36",
+    // 自定义请求头
+    ...data.headers,
+  };
+
+  // 请求标头 (按字母顺序排序)
+  message += `请求标头:\n`;
+  Object.entries(allHeaders)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .forEach(([key, value]) => {
+      message += `${key}: ${value}\n`;
+    });
+
+  // 请求负载
+  if (data.params && Object.keys(data.params).length > 0) {
+    message += `\n请求负载:\n${JSON.stringify(data.params, null, 2)}`;
+  }
+
+  return message;
+};
+
+//sendRequest 函数中构建请求报文的部分
 const sendRequest = async () => {
   loading.value = true;
   const startTime = Date.now();
-  response.value = ""; // 清除之前的响应
+  response.value = "";
+  requestMessage.value = ""; // 清除之前的请求报文
 
   try {
-    // 验证必要
     if (!requestForm.value.url) {
       throw new Error("请输入请求地址");
     }
 
     if (requestForm.value.type === "rpc") {
-      console.log("Current RPC method:", requestForm.value.rpcMethod);
       if (!selectedMethod.value) {
         throw new Error("请选择服务和方法");
       }
-    }
 
-    let result;
-    const params = requestForm.value.params
-      ? JSON.parse(requestForm.value.params)
-      : {};
+      // 构建 RPC 请求报文
+      const [serviceName, methodName] = selectedMethod.value.split("|");
+      const params = requestForm.value.params
+        ? JSON.parse(requestForm.value.params)
+        : {};
 
-    // 合并请求头授权头
-    const headers = {
-      ...requestHeaders.value
-        .filter((h) => h.enabled)
-        .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {}),
-      ...getAuthHeaders(),
-    };
+      const headers = {
+        ...requestHeaders.value
+          .filter((h) => h.enabled)
+          .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {}),
+        ...getAuthHeaders(),
+        "content-type": "application/grpc-web+proto",
+        "x-grpc-web": "1",
+        "grpc-timeout": "10000m",
+      };
 
-    if (requestForm.value.type === "http") {
-      result = await axios({
+      // 使用新的格式化函数
+      const fullUrl = `${requestForm.value.protocol}://${requestForm.value.url}/${serviceName}/${methodName}`;
+      requestMessage.value = formatRequestMessage("rpc", {
+        url: fullUrl,
+        method: "POST",
+        headers,
+        params,
+      });
+
+      const result = await RpcClient.sendRequest(
+        requestForm.value.url,
+        serviceName,
+        methodName,
+        params
+      );
+
+      if (result && typeof result === "object") {
+        response.value = JSON.stringify(result, null, 2);
+      } else {
+        response.value = String(result);
+      }
+    } else {
+      // HTTP 请求
+      const params = requestForm.value.params
+        ? JSON.parse(requestForm.value.params)
+        : {};
+      const headers = {
+        ...requestHeaders.value
+          .filter((h) => h.enabled)
+          .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {}),
+        ...getAuthHeaders(),
+        "content-type": "application/json",
+      };
+
+      const fullUrl = `${requestForm.value.protocol}://${requestForm.value.url}`;
+      requestMessage.value = formatRequestMessage("http", {
+        url: fullUrl,
+        method: requestForm.value.method,
+        headers,
+        params: requestForm.value.method !== "GET" ? params : undefined,
+      });
+
+      const result = await axios({
         method: requestForm.value.method,
         url: `${requestForm.value.protocol}://${requestForm.value.url}`,
         data: requestForm.value.method !== "GET" ? params : undefined,
@@ -546,41 +826,11 @@ const sendRequest = async () => {
           String(value ?? ""),
         ])
       );
-    } else {
-      // RPC 请求
-      const [serviceName, methodName] = selectedMethod.value.split("|");
-      if (!serviceName || !methodName) {
-        throw new Error("请选择服务和方法");
-      }
-
-      console.log("Sending RPC request:", {
-        url: requestForm.value.url,
-        serviceName,
-        methodName,
-        params,
-      });
-
-      const rpcResult = await RpcClient.sendRequest(
-        requestForm.value.url,
-        serviceName,
-        methodName,
-        params
-      );
-
-      console.log("RPC response:", rpcResult);
-
-      // 确保响应数据正确设置
-      if (rpcResult && typeof rpcResult === "object") {
-        response.value = JSON.stringify(rpcResult, null, 2);
-      } else {
-        response.value = String(rpcResult);
-      }
-      responseHeaders.value = {};
     }
 
     responseTime.value = Date.now() - startTime;
 
-    // 添加历史记录
+    // 添加到历史记录
     requestHistory.value.unshift({
       type: requestForm.value.type,
       url: requestForm.value.url,
@@ -871,9 +1121,85 @@ const getSimpleServiceName = (fullName: string) => {
 
 const activePane = ref("message"); //设置默认选中的标签页
 
+const showRequestDetails = ref(false);
+
 onBeforeUnmount(() => {
   if (urlDebounceTimer.value) {
     clearTimeout(urlDebounceTimer.value);
+  }
+});
+const activeCollapseNames = ref(["general", "request-headers"]); // 默认展开 General 和 Request Headers
+const requestPayload = computed(() => {
+  if (!requestForm.value.params) return "";
+  try {
+    const params = JSON.parse(requestForm.value.params);
+    return JSON.stringify(params, null, 2);
+  } catch {
+    return requestForm.value.params;
+  }
+});
+
+interface Headers {
+  accept: string;
+  "accept-encoding": string;
+  "accept-language": string;
+  connection: string;
+  origin: string;
+  referer: string;
+  "sec-ch-ua": string;
+  "sec-ch-ua-mobile": string;
+  "sec-ch-ua-platform": string;
+  "sec-fetch-dest": string;
+  "sec-fetch-mode": string;
+  "sec-fetch-site": string;
+  "user-agent": string;
+  "content-type"?: string;
+  "x-grpc-web"?: string;
+  "grpc-timeout"?: string;
+  [key: string]: string | undefined; // 允许添加其他字符串类型的键
+}
+
+const allHeaders = computed(() => {
+  const headers: Headers = {
+    accept: "application/grpc-web+proto",
+    "accept-encoding": "gzip, deflate, br",
+    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+    connection: "keep-alive",
+    origin: window.location.origin,
+    referer: window.location.href,
+    "sec-ch-ua": '"Google Chrome";v="119"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"macOS"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) rpc-postman/0.0.1 Chrome/120.0.6099.291 Electron/28.3.3 Safari/537.36",
+  };
+
+  if (requestForm.value.type === "rpc") {
+    headers["content-type"] = "application/grpc-web+proto";
+    headers["x-grpc-web"] = "1";
+    headers["grpc-timeout"] = "10000m";
+  } else {
+    headers["content-type"] = "application/json";
+  }
+
+  return {
+    ...headers,
+    ...requestHeaders.value
+      .filter((h) => h.enabled)
+      .reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {}),
+    ...getAuthHeaders(),
+  };
+});
+
+const getRemoteAddress = computed(() => {
+  try {
+    return new URL(requestForm.value.protocol + "://" + requestForm.value.url)
+      .host;
+  } catch {
+    return requestForm.value.url.split("/")[0];
   }
 });
 </script>
@@ -1054,7 +1380,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
-/* 内容区域样式 */
+/* 内容区域式 */
 .tab-content {
   height: 100%;
   display: flex;
@@ -1223,7 +1549,7 @@ onBeforeUnmount(() => {
   opacity: 0.8;
 }
 
-/* 方法名称文本 */
+/* 方法名称本 */
 :deep(.el-select-dropdown__item) span {
   margin-left: 12px; /* 文本和图标之间的间距 */
   white-space: nowrap;
@@ -1255,5 +1581,126 @@ onBeforeUnmount(() => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.request-details {
+  padding: 5px;
+}
+
+.detail-section {
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.item-label {
+  width: 100px;
+  color: #666;
+  font-size: 14px;
+}
+
+.item-value {
+  flex: 1;
+  font-size: 14px;
+}
+
+/* section-header 样式 */
+.section-header {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #dcdfe6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.section-content :deep(.monaco-editor-container) {
+  height: 100%;
+}
+
+/* 请求报文的显示样式 */
+.request-details :deep(.monaco-editor) {
+  font-family: Menlo, Monaco, "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 添加新的样式 */
+.collapse-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.collapse-content {
+  padding: 8px 0;
+  font-size: 12px;
+  font-family: Menlo, Monaco, "Courier New", monospace;
+}
+
+.info-item {
+  display: flex;
+  padding: 4px 0;
+  line-height: 1.4;
+}
+
+.info-label {
+  color: rgb(68, 68, 68);
+  min-width: 150px;
+}
+
+.info-value {
+  color: rgb(68, 68, 68);
+  word-break: break-all;
+}
+
+.info-value.success {
+  color: rgb(0, 136, 0);
+}
+
+:deep(.el-collapse) {
+  border: none;
+}
+
+:deep(.el-collapse-item__header) {
+  font-size: 12px;
+  height: 35px;
+  line-height: 35px;
+  background-color: rgb(247, 247, 247);
+  border-bottom: 1px solid #ebeef5;
+  padding: 0 15px;
+}
+
+:deep(.el-collapse-item__content) {
+  padding: 10px 15px;
+  background-color: #fff;
+  color: #666;
+}
+
+:deep(.el-collapse-item__wrap) {
+  border-bottom: none;
 }
 </style>

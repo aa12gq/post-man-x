@@ -1,15 +1,16 @@
 <template>
-  <div class="monaco-editor-container" ref="editorContainer"></div>
+  <div class="monaco-editor-container" ref="editorContainer" :style="containerStyle"></div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch, computed } from "vue";
 import * as monaco from "monaco-editor";
 
 const props = defineProps<{
   modelValue: string;
   language?: string;
   readOnly?: boolean;
+  height?: string;
 }>();
 
 const emit = defineEmits<{
@@ -18,6 +19,11 @@ const emit = defineEmits<{
 
 const editorContainer = ref<HTMLElement>();
 let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+
+// 计算容器样式
+const containerStyle = computed(() => ({
+  height: props.height || '100%'
+}));
 
 onMounted(() => {
   if (editorContainer.value) {
@@ -74,7 +80,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .monaco-editor-container {
   width: 100%;
-  height: 100%;
   border: 1px solid #dcdfe6;
+  min-height: 100px;
 }
 </style>
