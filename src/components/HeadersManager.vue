@@ -90,4 +90,13 @@ const removeHeader = (index: number) => {
   margin-top: 10px;
   text-align: right;
 }
+
+:deep(.el-table) {
+  --el-table-bg-color: var(--bg-color);
+  --el-table-tr-bg-color: var(--bg-color);
+  --el-table-header-bg-color: var(--header-bg);
+  --el-table-border-color: var(--border-color);
+  --el-table-text-color: var(--text-color);
+  --el-table-header-text-color: var(--text-color);
+}
 </style> 

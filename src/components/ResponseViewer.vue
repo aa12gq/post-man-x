@@ -77,6 +77,7 @@ const copyResponse = async () => {
 <style scoped>
 .response-viewer {
   margin-top: 20px;
+  color: var(--text-color);
 }
 
 .response-header {
@@ -93,12 +94,12 @@ const copyResponse = async () => {
 }
 
 .response-time {
-  color: #666;
-  font-size: 14px;
+  color: var(--text-color);
 }
 
 .response-content {
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
   border-radius: 4px;
   padding: 10px;
   min-height: 200px;
@@ -114,7 +115,7 @@ const copyResponse = async () => {
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  color: #333;
+  color: var(--text-color);
   line-height: 1.5;
 }
 
@@ -122,5 +123,6 @@ pre {
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
+  color: var(--text-color);
 }
 </style> 

@@ -364,7 +364,7 @@
         <h3 class="section-title">基本信息</h3>
         <div class="detail-item">
           <span class="item-label">请求类型:</span>
-          <el-tag size="small">{{ requestForm.type.toUpperCase() }}</el-tag>
+          <el-tag size="small" class="request-type-tag">{{ requestForm.type.toUpperCase() }}</el-tag>
         </div>
         <div class="detail-item">
           <span class="item-label">请求地址:</span>
@@ -405,9 +405,9 @@
       <!-- 请求报文 -->
       <div class="detail-section">
         <h3 class="section-title">请求报文</h3>
-        <el-collapse v-model="activeCollapseNames">
+        <el-collapse v-model="activeCollapseNames" class="request-details">
           <!-- General 信息 -->
-          <el-collapse-item name="general">
+          <el-collapse-item name="general" class="request-details-item">
             <template #title>
               <span class="collapse-title">General</span>
             </template>
@@ -1213,20 +1213,16 @@ const getRemoteAddress = computed(() => {
   }
 });
 
-// 添加服务地址历史记录
 const urlHistory = ref<string[]>([]);
 
-// 在 onMounted 中加载历史记录
 onMounted(() => {
   urlHistory.value = ServiceUrlHistoryService.getHistory();
 });
 
-// 添加类型定义
 interface FetchSuggestionsCallback {
   (suggestions: Array<{ value: string }>): void;
 }
 
-// 修改自动完成的类型
 const handleFetchSuggestions = (
   query: string,
   cb: FetchSuggestionsCallback
@@ -1244,7 +1240,7 @@ const handleFetchSuggestions = (
   display: flex;
   height: 100vh;
   width: 100vw;
-  background-color: #f0f2f5;
+  background-color: var(--bg-color);
   position: fixed;
   top: 0;
   left: 0;
@@ -1255,9 +1251,9 @@ const handleFetchSuggestions = (
 /* 左侧边栏 */
 .sidebar {
   width: 300px;
-  background-color: #fff;
+  background-color: var(--bg-color);
   box-shadow: none;
-  border-right: 1px solid #e4e7ed;
+  border-right: 1px solid var(--border-color);
 }
 
 /* 右侧主内容区 */
@@ -1273,15 +1269,20 @@ const handleFetchSuggestions = (
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: var(--bg-color);
   overflow: hidden;
 }
 
 /* 请求类型切换 */
 .request-type-switch {
   padding: 16px;
-  background-color: #fff;
-  border-bottom: 1px solid #e4e7ed;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.request-type-tag {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
 }
 
 /* RPC 工作区 */
@@ -1296,8 +1297,8 @@ const handleFetchSuggestions = (
 /* 工具栏 */
 .rpc-toolbar {
   padding: 16px;
-  background-color: #fff;
-  border-bottom: 1px solid #e4e7ed;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .toolbar-section {
@@ -1338,11 +1339,11 @@ const handleFetchSuggestions = (
 
 /* 请求区域 */
 .request-section {
-  flex: 0 0 400px; /* 固定高度 */
+  flex: 0 0 400px;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border: 1px solid #dcdfe6;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
 }
 
@@ -1351,8 +1352,8 @@ const handleFetchSuggestions = (
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border: 1px solid #dcdfe6;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
   min-height: calc(100vh - 600px);
@@ -1362,11 +1363,12 @@ const handleFetchSuggestions = (
 .section-header {
   flex-shrink: 0;
   padding: 12px 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #dcdfe6;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-color);
 }
 
 .section-content {
@@ -1424,8 +1426,9 @@ const handleFetchSuggestions = (
 .content-header {
   flex-shrink: 0;
   padding: 12px 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #e4e7ed;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 .content-body {
@@ -1457,8 +1460,8 @@ const handleFetchSuggestions = (
   right: 0;
   height: 32px;
   padding: 4px 16px;
-  background-color: #f5f7fa;
-  border-top: 1px solid #e4e7ed;
+  background-color: var(--header-bg);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -1467,11 +1470,12 @@ const handleFetchSuggestions = (
 /* 响应区域标题栏 */
 .section-header {
   padding: 12px 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #dcdfe6;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-color);
 }
 
 .section-content {
@@ -1542,7 +1546,7 @@ const handleFetchSuggestions = (
   align-items: center;
 }
 
-/* 添加服务图标 */
+/* 服务图标 */
 :deep(.el-select-group__title)::before {
   content: "";
   display: inline-block;
@@ -1625,6 +1629,8 @@ const handleFetchSuggestions = (
 
 .request-details {
   padding: 5px;
+  color: var(--text-color);
+  background-color: var(--bg-color);
 }
 
 .detail-section {
@@ -1635,7 +1641,7 @@ const handleFetchSuggestions = (
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .detail-item {
@@ -1646,24 +1652,26 @@ const handleFetchSuggestions = (
 
 .item-label {
   width: 100px;
-  color: #666;
+  color: var(--text-color);
   font-size: 14px;
 }
 
 .item-value {
   flex: 1;
   font-size: 14px;
+  color: var(--text-color);
 }
 
 /* section-header 样式 */
 .section-header {
   flex-shrink: 0;
   padding: 12px 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #dcdfe6;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-color);
 }
 
 .editor-wrapper {
@@ -1682,11 +1690,10 @@ const handleFetchSuggestions = (
   line-height: 1.5;
 }
 
-/* 添加新的样式 */
 .collapse-title {
   font-size: 13px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-color);
 }
 
 .collapse-content {
@@ -1699,15 +1706,16 @@ const handleFetchSuggestions = (
   display: flex;
   padding: 4px 0;
   line-height: 1.4;
+  color: var(--text-color);
 }
 
 .info-label {
-  color: rgb(68, 68, 68);
+  color: var(--text-color);
   min-width: 150px;
 }
 
 .info-value {
-  color: rgb(68, 68, 68);
+  color: var(--text-color);
   word-break: break-all;
 }
 
@@ -1723,15 +1731,16 @@ const handleFetchSuggestions = (
   font-size: 12px;
   height: 35px;
   line-height: 35px;
-  background-color: rgb(247, 247, 247);
-  border-bottom: 1px solid #ebeef5;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
   padding: 0 15px;
+  color: var(--text-color);
 }
 
 :deep(.el-collapse-item__content) {
   padding: 10px 15px;
-  background-color: #fff;
-  color: #666;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 :deep(.el-collapse-item__wrap) {

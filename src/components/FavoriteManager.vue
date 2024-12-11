@@ -67,4 +67,13 @@ const deleteFavorite = async (id: string) => {
 .favorite-manager {
   margin: 10px 0;
 }
+
+:deep(.el-table) {
+  --el-table-bg-color: var(--bg-color);
+  --el-table-tr-bg-color: var(--bg-color);
+  --el-table-header-bg-color: var(--header-bg);
+  --el-table-border-color: var(--border-color);
+  --el-table-text-color: var(--text-color);
+  --el-table-header-text-color: var(--text-color);
+}
 </style> 

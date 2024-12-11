@@ -25,13 +25,33 @@ const containerStyle = computed(() => ({
   height: props.height || '100%'
 }));
 
+// 监听主题变化
+const updateEditorTheme = (isDark: boolean) => {
+  if (editor) {
+    monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+  }
+};
+
+// 监听 data-theme 属性变化
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.attributeName === 'data-theme') {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      updateEditorTheme(isDark);
+    }
+  });
+});
+
 onMounted(() => {
   if (editorContainer.value) {
-    // 创建编辑器
+    // 获取当前主题
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    
+    // 创建编辑器时设置初始主题
     editor = monaco.editor.create(editorContainer.value, {
       value: props.modelValue,
       language: props.language || "json",
-      theme: "vs",
+      theme: isDark ? 'vs-dark' : 'vs',
       automaticLayout: true,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
@@ -57,6 +77,12 @@ onMounted(() => {
       allowComments: true,
       schemas: [],
     });
+
+    // 开始观察 document.documentElement 的 data-theme 属性变化
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
   }
 });
 
@@ -71,6 +97,10 @@ watch(
 );
 
 onBeforeUnmount(() => {
+  // 清理观察器
+  observer.disconnect();
+  
+  // 销毁编辑器
   if (editor) {
     editor.dispose();
   }
@@ -80,7 +110,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .monaco-editor-container {
   width: 100%;
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--border-color);
   min-height: 100px;
+  background-color: var(--code-bg);
 }
 </style>
