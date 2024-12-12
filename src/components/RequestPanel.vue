@@ -170,7 +170,13 @@
                         <el-tab-pane label="Message" name="message">
                           <div class="tab-content">
                             <div class="content-header">
-                              <span class="header-title">Request Message</span>
+                              <div class="header-left">
+                                <span class="header-title">Request Message</span>
+                                <el-button size="small" @click="copyRequestMessage">
+                                  <el-icon><DocumentCopy /></el-icon>
+                                  复制
+                                </el-button>
+                              </div>
                             </div>
                             <div class="content-body">
                               <div class="editor-container">
@@ -314,19 +320,9 @@
                       <div class="section-header">
                         <div class="header-title">Response</div>
                         <div class="header-actions">
-                          <div class="header-info" v-if="responseTime">
-                            <el-tag size="small" type="success"
-                              >{{ responseTime }}ms</el-tag
-                            >
-                          </div>
-                          <el-button
-                            size="small"
-                            type="primary"
-                            text
-                            @click="showRequestDetails = true"
-                          >
-                            <el-icon><Document /></el-icon>
-                            请求详情
+                          <el-button size="small" @click="copyResponse">
+                            <el-icon><DocumentCopy /></el-icon>
+                            复制
                           </el-button>
                         </div>
                       </div>
@@ -552,6 +548,7 @@ import {
   CaretRight,
   Document,
   CaretLeft,
+  DocumentCopy,
 } from "@element-plus/icons-vue";
 import CodeEditor from "./CodeEditor.vue";
 import ServiceUrlHistoryService from "../services/ServiceUrlHistoryService";
@@ -1098,7 +1095,7 @@ const handleMethodSelect = (value: string) => {
   // 更新选中的方法
   requestForm.value.rpcMethod = methodName;
 
-  // 自生成示例参数
+  // 自动生成示例参数
   const service = rpcServices.value.find((s) => s.name === serviceName);
   const method = service?.methods?.find((m) => m.name === methodName);
 
@@ -1123,7 +1120,7 @@ const generateExample = () => {
     requestForm.value.params = JSON.stringify(method.inputExample, null, 2);
     ElMessage.success("已生成示例参数");
   } else {
-    ElMessage.warning("该方���没有示例参数");
+    ElMessage.warning("该方法没有示例参数");
   }
 };
 
@@ -1251,6 +1248,32 @@ const isSidebarCollapsed = ref(false);
 
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
+};
+
+// 复制请求消息
+const copyRequestMessage = () => {
+  if (requestForm.value.params) {
+    navigator.clipboard.writeText(requestForm.value.params)
+      .then(() => {
+        ElMessage.success('请求参数已复制到剪贴板');
+      })
+      .catch(() => {
+        ElMessage.error('复制失败');
+      });
+  }
+};
+
+// 复制响应内容
+const copyResponse = () => {
+  if (response.value) {
+    navigator.clipboard.writeText(typeof response.value === 'string' ? response.value : JSON.stringify(response.value, null, 2))
+      .then(() => {
+        ElMessage.success('响应内容已复制到剪贴板');
+      })
+      .catch(() => {
+        ElMessage.error('复制失败');
+      });
+  }
 };
 </script>
 
@@ -1518,6 +1541,9 @@ const toggleSidebar = () => {
   background-color: var(--header-bg);
   border-bottom: 1px solid var(--border-color);
   color: var(--text-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .content-body {
@@ -1858,5 +1884,24 @@ const toggleSidebar = () => {
   padding: 8px 12px;
   font-size: 13px;
   line-height: 1.4;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title {
+  font-weight: 500;
+  color: var(--el-text-color-primary);
 }
 </style>
