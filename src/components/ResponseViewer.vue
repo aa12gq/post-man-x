@@ -7,8 +7,8 @@
           响应时间: {{ responseTime }}ms
         </span>
         <el-radio-group v-model="viewMode" size="small">
-          <el-radio-button label="preview">预览</el-radio-button>
-          <el-radio-button label="raw">原始</el-radio-button>
+          <el-radio-button value="preview">预览</el-radio-button>
+          <el-radio-button value="raw">原始</el-radio-button>
         </el-radio-group>
         <el-button size="small" @click="copyResponse">复制</el-button>
       </div>

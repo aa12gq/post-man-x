@@ -1,0 +1,121 @@
+/* Element Plus 暗色主题覆盖 */
+[data-theme='dark'] {
+  --el-bg-color: var(--bg-color);
+  --el-text-color-primary: var(--text-color);
+  --el-border-color: var(--border-color);
+  --el-fill-color-blank: var(--bg-color);
+  --el-bg-color-overlay: var(--header-bg);
+  --el-text-color-regular: var(--text-color);
+  --el-fill-color: var(--hover-color);
+  --el-fill-color-light: var(--hover-color);
+  --el-border-color-light: var(--border-color);
+  --el-border-color-lighter: var(--border-color);
+  --el-mask-color: rgba(0, 0, 0, 0.8);
+
+  /* Select 下拉框 */
+  .el-select-dropdown {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+  }
+
+  .el-select-dropdown__item {
+    color: var(--text-color);
+    &.hover,
+    &:hover {
+      background-color: var(--hover-color);
+    }
+    &.selected {
+      background-color: var(--hover-color);
+      color: #409eff;
+    }
+  }
+
+  /* Input 输入框 */
+  .el-input__wrapper {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+  }
+
+  .el-input__inner {
+    color: var(--text-color);
+    &::placeholder {
+      color: #909399;
+    }
+  }
+
+  /* Button 按钮 */
+  .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(.el-button--danger) {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+    &:hover {
+      background-color: var(--hover-color);
+    }
+  }
+
+  /* Tabs 标签页 */
+  .el-tabs--border-card {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+  }
+
+  .el-tabs__header {
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .el-tabs__item {
+    color: var(--text-color);
+    &.is-active {
+      color: #409eff;
+    }
+  }
+
+  /* Dialog 对话框 */
+  .el-dialog {
+    background-color: var(--bg-color);
+    .el-dialog__header {
+      background-color: var(--header-bg);
+    }
+    .el-dialog__title {
+      color: var(--text-color);
+    }
+    .el-dialog__body {
+      color: var(--text-color);
+    }
+  }
+
+  /* Drawer 抽屉 */
+  .el-drawer {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+  }
+
+  .el-drawer__header {
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .el-drawer__body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: var(--bg-color);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(144, 147, 153, 0.3);
+    border-radius: 4px;
+    &:hover {
+      background-color: rgba(144, 147, 153, 0.5);
+    }
+  }
+} 

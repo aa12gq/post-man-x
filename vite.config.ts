@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
+import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [
@@ -21,11 +22,20 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': '/src',
-      '@element-plus/icons-vue': '@element-plus/icons-vue/dist/index.js'
-    }
+      '@': resolve(__dirname, 'src'),
+    },
   },
   optimizeDeps: {
-    include: ['monaco-editor']
+    exclude: ['electron'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          jsonWorker: ['monaco-editor/esm/vs/language/json/json.worker'],
+          editorWorker: ['monaco-editor/esm/vs/editor/editor.worker'],
+        }
+      }
+    }
   }
 }) 

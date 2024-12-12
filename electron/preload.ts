@@ -1,13 +1,17 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
-// 确保这些 API 在渲染进程中可用
-contextBridge.exposeInMainWorld('electronAPI', {
-  getRpcServices: (params: { url: string }) => 
-    ipcRenderer.invoke('get-rpc-services', params),
-    
-  getRpcMethods: (params: { url: string, serviceName: string }) => 
-    ipcRenderer.invoke('get-rpc-methods', params),
-    
-  rpcRequest: (params: { url: string, serviceName: string, methodName: string, params: any }) => 
-    ipcRenderer.invoke('rpc-request', params)
+// 暴露安全的 API 到渲染进程
+contextBridge.exposeInMainWorld('electron', {
+  invoke: (channel: string, data: any) => {
+    const validChannels = [
+      'get-rpc-services',
+      'get-rpc-methods',
+      'get-rpc-example',
+      'rpc-request'
+    ]
+    if (validChannels.includes(channel)) {
+      return ipcRenderer.invoke(channel, data)
+    }
+    throw new Error(`Invalid channel: ${channel}`)
+  }
 }) 
