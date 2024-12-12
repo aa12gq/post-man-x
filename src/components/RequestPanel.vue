@@ -1,42 +1,79 @@
 <template>
   <div class="main-layout">
-    <!-- 折叠按钮 -->
-    <div class="sidebar-toggle" @click="toggleSidebar">
-      <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
-        <CaretLeft />
-      </el-icon>
+    <!-- 活动栏 -->
+    <div class="activity-bar">
+      <div
+        class="activity-item"
+        :class="{ active: activeView === 'collections' }"
+        @click="toggleView('collections')"
+      >
+        <el-tooltip content="Collections" placement="right">
+          <el-icon><Collection /></el-icon>
+        </el-tooltip>
+      </div>
+      <div
+        class="activity-item"
+        :class="{ active: activeView === 'apis' }"
+        @click="toggleView('apis')"
+      >
+        <el-tooltip content="APIs" placement="right">
+          <el-icon><Connection /></el-icon>
+        </el-tooltip>
+      </div>
     </div>
 
-    <!-- 左侧边栏 -->
-    <div class="sidebar" :class="{ 'is-collapsed': isSidebarCollapsed }">
-      <el-tabs type="border-card">
-        <!-- 收藏夹 -->
-        <el-tab-pane label="收藏夹" name="favorites">
-          <div class="sidebar-content">
-            <FavoriteManager @load="loadFromFavorite" />
-          </div>
-        </el-tab-pane>
+    <!-- Collections 边栏 -->
+    <div
+      class="collections-sidebar"
+      :class="{
+        'is-collapsed': isSidebarCollapsed || activeView !== 'collections',
+        'is-hidden': activeView !== 'collections',
+      }"
+    >
+      <!-- 折叠按钮 -->
+      <div class="sidebar-toggle" @click="toggleSidebar">
+        <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
+          <CaretLeft />
+        </el-icon>
+      </div>
 
-        <!-- 历史记录 -->
-        <el-tab-pane label="历史记录" name="history">
-          <div class="sidebar-content">
-            <RequestHistory
-              :history-list="requestHistory"
-              @load-request="loadRequest"
-              @view-details="openRequestDetails"
-              @remove-item="removeHistoryItem"
-              @clear-history="clearHistory"
-            />
-          </div>
-        </el-tab-pane>
+      <div class="sidebar-header">
+        <span class="sidebar-title">Collections</span>
+        <el-button text size="small" @click="handleAddCollection">
+          <el-icon><Plus /></el-icon>
+        </el-button>
+      </div>
+      <div class="sidebar-content">
+        <el-tree
+          :data="collectionsData"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <el-icon><Folder /></el-icon>
+              <span>{{ node.label }}</span>
+            </span>
+          </template>
+        </el-tree>
+      </div>
+    </div>
 
-        <!-- 环境变量 -->
-        <el-tab-pane label="环境" name="environment">
-          <div class="sidebar-content">
-            <EnvironmentManager />
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+    <!-- APIs 边栏 -->
+    <div
+      class="collections-sidebar"
+      :class="{
+        'is-collapsed': isSidebarCollapsed || activeView !== 'apis',
+        'is-hidden': activeView !== 'apis',
+      }"
+    >
+      <!-- APIs 内容 -->
+      <div class="sidebar-header">
+        <span class="sidebar-title">APIs</span>
+      </div>
+      <div class="sidebar-content">
+        <!-- APIs 相关内容 -->
+      </div>
     </div>
 
     <!-- 右侧主内容区 -->
@@ -48,26 +85,26 @@
         @remove="removeTab"
       >
         <template v-for="tab in tabs" :key="tab.id" #[tab.id]>
-          <div class="request-form">
+          <div class="request-container">
             <!-- 请求类型切换 -->
             <div class="request-type-switch">
               <el-radio-group v-model="tab.form.type" size="small">
-                <el-radio-button :value="'http'">HTTP</el-radio-button>
-                <el-radio-button :value="'rpc'">RPC</el-radio-button>
+                <el-radio-button value="http">HTTP</el-radio-button>
+                <el-radio-button value="rpc">RPC</el-radio-button>
               </el-radio-group>
             </div>
 
-            <!-- 内容区域 -->
+            <!-- 请求区域 -->
             <div class="request-content">
               <!-- RPC 请求区域 -->
-              <template v-if="tab.form.type === 'rpc'">
+              <div v-if="tab.form.type === 'rpc'" class="request-form">
                 <RPCMethodSelector
                   :url="tab.form.url"
                   :loading="loading"
                   :loading-methods="loadingMethods"
                   :loading-services="loadingServices"
                   :services="rpcServices"
-                  @update:url="handleUrlUpdate"
+                  @update:url="updateUrl"
                   @method-change="handleMethodChange"
                   @send="sendRequest"
                   @load-methods="loadServiceMethods"
@@ -105,10 +142,10 @@
                     </el-tab-pane>
                   </el-tabs>
                 </div>
-              </template>
+              </div>
 
               <!-- HTTP 请求区域 -->
-              <template v-else>
+              <div v-else class="request-form">
                 <HTTPRequestForm
                   :initial-method="tab.form.method"
                   :initial-url="tab.form.url"
@@ -123,9 +160,15 @@
                   @update:body="updateBody"
                   @send="sendRequest"
                 />
-              </template>
+              </div>
+            </div>
 
-              <!-- 响应区域 -->
+            <!-- 响应区域容器 -->
+            <div class="response-container" :style="{ height: responseHeight }">
+              <!-- 分割线 -->
+              <div class="resizer" @mousedown="startResize"></div>
+
+              <!-- 响应查看 -->
               <ResponseViewer
                 v-if="currentTab"
                 :response="currentTab.response"
@@ -133,7 +176,9 @@
                 :headers="currentTab.responseHeaders"
                 :debug-logs="currentTab.debugLogs"
                 :debug-command="currentTab.debugCommand"
+                :status="currentTab.status"
                 @clear="clearResponse"
+                @collapse-change="handleResponseCollapse"
               />
             </div>
           </div>
@@ -151,7 +196,13 @@
 
 <script lang="ts" setup>
 import { ref, reactive, computed, onBeforeUnmount, watch } from "vue";
-import { CaretLeft } from "@element-plus/icons-vue";
+import {
+  CaretLeft,
+  Folder,
+  Collection,
+  Connection,
+  Plus,
+} from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
 import FavoriteManager from "./FavoriteManager.vue";
 import RequestHistory from "./history/RequestHistory.vue";
@@ -200,6 +251,7 @@ interface Tab {
   responseHeaders: Record<string, string>;
   debugLogs?: string;
   debugCommand?: string;
+  status?: number | string;
 }
 
 const tabs = ref<Tab[]>([
@@ -399,70 +451,80 @@ const sendRequest = async () => {
   const startTime = Date.now();
 
   try {
-    const client = new RpcClient(requestForm.value.url);
-    const methodParts = selectedMethod.value.split(".");
-    const serviceName = methodParts.slice(0, -1).join(".");
-    const methodName = methodParts[methodParts.length - 1];
+    if (requestForm.value.type === "rpc") {
+      const client = new RpcClient(requestForm.value.url);
+      const methodParts = selectedMethod.value.split(".");
+      const serviceName = methodParts.slice(0, -1).join(".");
+      const methodName = methodParts[methodParts.length - 1];
 
-    // 确保参数是可序列化的对象
-    let params;
-    try {
-      params =
-        typeof currentTab.value.form.params === "string"
-          ? JSON.parse(currentTab.value.form.params)
-          : JSON.parse(JSON.stringify(currentTab.value.form.params));
-    } catch (error) {
-      console.error("Failed to parse params:", error);
-      throw new Error("Invalid request parameters");
-    }
+      // 确保参数是可序列化的对象
+      let params;
+      try {
+        params =
+          typeof currentTab.value.form.params === "string"
+            ? JSON.parse(currentTab.value.form.params)
+            : JSON.parse(JSON.stringify(currentTab.value.form.params));
+      } catch (error) {
+        console.error("Failed to parse params:", error);
+        throw new Error("Invalid request parameters");
+      }
 
-    console.log("Sending request:", {
-      serviceName,
-      methodName,
-      params,
-    });
+      console.log("Sending request:", {
+        serviceName,
+        methodName,
+        params,
+      });
 
-    const response = await client.invoke(serviceName, methodName, params);
+      const response = await client.invoke(serviceName, methodName, params);
+      console.log("Full response:", response); // 添加日志以检查响应
 
-    // 更新响应
-    if (currentTab.value) {
-      // 确保响应数据是格式化的 JSON 字符串
-      const formattedResponse =
-        typeof response.data === "string"
-          ? response.data
-          : JSON.stringify(response.data, null, 2);
+      // 更新响应
+      if (currentTab.value) {
+        // 确保响应数据是格式化的 JSON 字符串
+        const formattedResponse =
+          typeof response.data === "string"
+            ? response.data
+            : JSON.stringify(response.data, null, 2);
 
-      currentTab.value.response = formattedResponse;
-      currentTab.value.responseTime = Date.now() - startTime;
-      currentTab.value.responseHeaders = response.headers || {};
-      currentTab.value.debugLogs = response.debug || '';
-      currentTab.value.debugCommand = response.command || '';
+        currentTab.value.response = formattedResponse;
+        currentTab.value.responseTime = Date.now() - startTime;
+        currentTab.value.responseHeaders = response.headers || {};
 
-      console.log("Response updated:", {
-        response: currentTab.value.response,
-        time: currentTab.value.responseTime,
-        headers: currentTab.value.responseHeaders,
+        // 确保调试信息被正确设置
+        currentTab.value.debugLogs = response.debug || "";
+        currentTab.value.debugCommand = response.command || "";
+        currentTab.value.status = response.status || 200;
+
+        console.log("Debug info:", {
+          logs: currentTab.value.debugLogs,
+          command: currentTab.value.debugCommand,
+        });
+      }
+
+      // 添加到历史记录
+      addToHistory({
+        type: "rpc",
+        url: requestForm.value.url,
+        serviceMethod: selectedMethod.value,
+        params: params,
+        response: response.data,
+        timestamp: new Date().toISOString(),
+        debugLogs: response.debug, // 保存调试信息到历史记录
+        debugCommand: response.command,
       });
     }
-
-    // 添加到历史记录
-    addToHistory({
-      type: "rpc",
-      url: requestForm.value.url,
-      serviceMethod: selectedMethod.value,
-      params: params,
-      response: response.data,
-      timestamp: new Date().toISOString(),
-    });
   } catch (error: any) {
     console.error("Request failed:", error);
     ElMessage.error(`Request failed: ${error.message}`);
 
-    // 清空响应
+    // 清空响应，但保留错误信息
     if (currentTab.value) {
       currentTab.value.response = "";
       currentTab.value.responseTime = null;
       currentTab.value.responseHeaders = {};
+      currentTab.value.debugLogs = error.debug || error.message || "";
+      currentTab.value.debugCommand = "";
+      currentTab.value.status = error.status || 500;
     }
   } finally {
     loading.value = false;
@@ -582,6 +644,127 @@ const loadServiceMethods = async (serviceName: string) => {
     loadingMethods.value = false;
   }
 };
+
+// 响应区域高度控制
+const responseHeight = ref("50%"); // 默认占据一半空间
+const minHeight = 40; // 最小高度
+let startY = 0;
+let startHeight = 0;
+
+const handleResize = (e: MouseEvent) => {
+  const container = document.querySelector(".request-container") as HTMLElement;
+  const containerRect = container.getBoundingClientRect();
+  const containerHeight = container.offsetHeight;
+
+  const deltaY = e.clientY - startY;
+  const newHeight = startHeight + deltaY;
+
+  // 限制最小和最大高度
+  const finalHeight = Math.min(
+    Math.max(newHeight, minHeight),
+    containerHeight - 100 // 保留上方区域的最小高度
+  );
+
+  responseHeight.value = `${finalHeight}px`;
+  e.preventDefault();
+};
+
+const startResize = (e: MouseEvent) => {
+  startY = e.clientY;
+  const responseContainer = document.querySelector(
+    ".response-container"
+  ) as HTMLElement;
+  startHeight = responseContainer.offsetHeight;
+
+  document.body.style.cursor = "row-resize";
+  document.body.style.userSelect = "none";
+
+  document.addEventListener("mousemove", handleResize);
+  document.addEventListener("mouseup", stopResize);
+};
+
+const stopResize = () => {
+  document.removeEventListener("mousemove", handleResize);
+  document.removeEventListener("mouseup", stopResize);
+
+  document.body.style.cursor = "";
+  document.body.style.userSelect = "";
+};
+
+const handleResponseCollapse = (collapsed: boolean) => {
+  responseHeight.value = collapsed ? `${minHeight}px` : "50%";
+};
+
+// 树形结构的配置
+const defaultProps = {
+  children: "children",
+  label: "name",
+};
+
+// Collections 数据
+const collectionsData = ref([
+  {
+    name: "My Collections",
+    children: [
+      { name: "Project A" },
+      { name: "Project B" },
+      {
+        name: "Project C",
+        children: [{ name: "API v1" }, { name: "API v2" }],
+      },
+    ],
+  },
+]);
+
+// History 文件夹
+const historyFolders = ref([
+  {
+    name: "Today",
+    children: [],
+  },
+  {
+    name: "Yesterday",
+    children: [],
+  },
+  {
+    name: "Last 7 Days",
+    children: [],
+  },
+]);
+
+// Environment 文件夹
+const environmentFolders = ref([
+  {
+    name: "Global",
+    children: [],
+  },
+  {
+    name: "Local",
+    children: [],
+  },
+]);
+
+// 处理节点点击
+const handleNodeClick = (data: any) => {
+  console.log(data);
+};
+
+const handleAddCollection = () => {
+  // 处理添加集合的逻辑
+  console.log("Add collection clicked");
+};
+
+// 活动视图状态
+const activeView = ref<"collections" | "apis" | null>(null);
+
+// 切换视图
+const toggleView = (view: "collections" | "apis") => {
+  if (activeView.value === view) {
+    activeView.value = null; // 如果点击当前活动的视图，则关闭它
+  } else {
+    activeView.value = view; // 否则切换到新的视图
+  }
+};
 </script>
 
 <style scoped>
@@ -593,24 +776,85 @@ const loadServiceMethods = async (serviceName: string) => {
   position: relative;
 }
 
-.sidebar {
+/* 活动栏样式 */
+.activity-bar {
+  width: 48px;
+  height: 100%;
+  background-color: var(--header-bg);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+
+.activity-item {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-color);
   position: relative;
+}
+
+.activity-item:hover {
+  color: var(--el-color-primary);
+}
+
+.activity-item.active {
+  color: var(--el-color-primary);
+}
+
+.activity-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  height: 50%;
+  width: 2px;
+  background-color: var(--el-color-primary);
+}
+
+.activity-item :deep(.el-icon) {
+  font-size: 20px;
+}
+
+/* Collections 边栏样式 */
+.collections-sidebar {
   width: 300px;
   background-color: var(--bg-color);
-  box-shadow: none;
   border-right: 1px solid var(--border-color);
   transition: all 0.3s ease;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
-.sidebar.is-collapsed {
+.collections-sidebar.is-collapsed {
   width: 0;
   padding: 0;
   margin: 0;
   border-right: none;
 }
 
+.collections-sidebar.is-hidden {
+  display: none;
+}
+
+.sidebar-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 调整折叠按钮位置 */
 .sidebar-toggle {
+  right: -24px; /* 将按钮移到右边界外 */
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -625,7 +869,6 @@ const loadServiceMethods = async (serviceName: string) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: left 0.3s ease;
   color: var(--text-color);
 }
 
@@ -637,12 +880,32 @@ const loadServiceMethods = async (serviceName: string) => {
   transition: margin-left 0.3s ease;
 }
 
-.request-form {
-  flex: 1;
+.request-container {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-color);
+  height: 100%;
+  position: relative;
+  min-height: 0;
   overflow: hidden;
+}
+
+.request-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  position: relative;
+}
+
+.request-form {
+  flex: 1;
+  overflow: auto;
+  background-color: var(--bg-color);
+}
+
+.request-form.expanded {
+  flex: 1;
 }
 
 .request-type-switch {
@@ -651,14 +914,6 @@ const loadServiceMethods = async (serviceName: string) => {
   justify-content: center;
   background-color: var(--bg-color);
   border-bottom: 1px solid var(--border-color);
-}
-
-.request-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  padding: 16px;
 }
 
 .request-response-panel {
@@ -672,7 +927,7 @@ const loadServiceMethods = async (serviceName: string) => {
 :deep(.el-tabs__content) {
   flex: 1;
   overflow: auto;
-  padding: 16px;
+  padding: 10px;
 }
 
 :deep(.el-tabs--border-card) {
@@ -698,10 +953,111 @@ const loadServiceMethods = async (serviceName: string) => {
   overflow: hidden;
 }
 
-/* 确保响应区域有足够的高度 */
-.response-viewer {
+/* 响应区域容器 */
+.response-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 40px;
+  background-color: var(--bg-color);
+  border-top: 1px solid var(--border-color);
+  transition: none;
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* 分割线样式 */
+.resizer {
+  height: 4px;
+  background-color: var(--border-color);
+  cursor: row-resize;
+  transition: background-color 0.2s;
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+  }
+}
+
+.resizer:hover {
+  background-color: var(--el-color-primary);
+}
+
+/* 响应查看器样式 */
+:deep(.response-viewer) {
   flex: 1;
-  min-height: 200px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.sidebar-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header-bg);
+}
+
+.sidebar-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.sidebar-content {
+  padding: 8px;
+  height: calc(100% - 41px); /* 41px is header height */
   overflow: auto;
+}
+
+.custom-tree-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+:deep(.el-tree-node__content) {
+  height: 32px;
+}
+
+:deep(.el-tree-node__content:hover) {
+  background-color: var(--hover-color);
+}
+
+:deep(.el-icon) {
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+:deep(.el-tabs--border-card) {
+  background-color: var(--bg-color);
+  border-color: var(--border-color);
+}
+
+:deep(.el-tabs--border-card > .el-tabs__header) {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
+  background-color: var(--bg-color);
+  border-right-color: var(--border-color);
+  border-left-color: var(--border-color);
+}
+
+:deep(.el-tree) {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 </style>

@@ -280,17 +280,16 @@ ipcMain.handle("rpc-request", async (event, params) => {
     // 构建完整的服务方法名
     const fullMethodName = `${params.serviceName}/${params.methodName}`;
 
-    // 添加 GRPC 调试环境变量
-    const env = {
-      ...process.env,
-      GRPC_GO_LOG_SEVERITY_LEVEL: 'info',
-      GRPC_GO_LOG_VERBOSITY_LEVEL: '99'
-    };
-
     // 执行带调试信息的请求
     const { stdout, stderr } = await execAsync(
       `grpcurl -plaintext -d @ ${cleanUrl} "${fullMethodName}" < ${tmpFile}`,
-      { env }
+      { 
+        env: {
+          ...process.env,
+          GRPC_GO_LOG_SEVERITY_LEVEL: 'info',
+          GRPC_GO_LOG_VERBOSITY_LEVEL: '99'
+        }
+      }
     );
 
     // 解析响应和调试信息
@@ -301,18 +300,20 @@ ipcMain.handle("rpc-request", async (event, params) => {
       response = stdout;
     }
 
+    // 确保返回所有必要的信息
     return {
       success: true,
       data: response,
-      debug: stderr, // 返回调试信息
-      command: `grpcurl -plaintext -d '${JSON.stringify(params.params)}' ${cleanUrl} ${fullMethodName}` // 返回执行的命令
+      debug: stderr || '', // 确保总是返回字符串
+      command: `grpcurl -plaintext -d '${JSON.stringify(params.params)}' ${cleanUrl} ${fullMethodName}`
     };
   } catch (error: any) {
     console.error("Failed to make RPC request:", error);
     return {
       success: false,
       error: error.message,
-      debug: error.stderr || '', // 返回错误的调试信息
+      debug: error.stderr || error.message || '',
+      command: ''
     };
   }
 });

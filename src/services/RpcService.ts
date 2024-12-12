@@ -14,7 +14,7 @@ export interface RpcResponse {
   headers: Record<string, string>;
 }
 
-class RpcClient {
+export default class RpcClient {
   private url: string;
 
   constructor(url: string) {
@@ -59,39 +59,28 @@ class RpcClient {
     }
   }
 
-  async invoke(
-    serviceName: string,
-    methodName: string,
-    params: any,
-    metadata?: any
-  ): Promise<RpcResponse> {
+  async invoke(serviceName: string, methodName: string, params: any) {
     try {
-      if (!window.electron) {
-        throw new Error("Electron API not available");
-      }
-
-      // 确保参数是可序列化的
-      const safeParams = JSON.parse(JSON.stringify(params));
-      const safeMetadata = metadata ? JSON.parse(JSON.stringify(metadata)) : undefined;
-
-      const response = await window.electron.invoke("rpc-request", {
+      const response = await window.electron.invoke('rpc-request', {
         url: this.url,
         serviceName,
         methodName,
-        params: safeParams,
-        metadata: safeMetadata,
+        params
       });
 
       if (!response.success) {
         throw new Error(response.error);
       }
 
+      // 返回完整的响应对象，包括调试信息
       return {
         data: response.data,
         headers: response.headers || {},
+        debug: response.debug || '',    // 调试日志
+        command: response.command || '' // 执行的命令
       };
-    } catch (error) {
-      console.error("Failed to invoke method:", error);
+    } catch (error: any) {
+      console.error('RPC request failed:', error);
       throw error;
     }
   }
@@ -116,5 +105,3 @@ class RpcClient {
     }
   }
 }
-
-export default RpcClient;

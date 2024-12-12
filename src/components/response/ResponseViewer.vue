@@ -1,13 +1,25 @@
 <template>
-  <div class="response-viewer">
+  <div class="response-viewer" :class="{ collapsed: isCollapsed }">
     <div class="response-header">
       <div class="header-left">
         <span class="header-title">Response</span>
+        <div
+          v-if="props.status"
+          class="response-status"
+          :class="{ success: isSuccess }"
+        >
+          {{ statusText }}
+        </div>
         <span v-if="responseTime !== null" class="response-time">
           {{ responseTime }}ms
         </span>
       </div>
       <div class="header-right">
+        <el-button size="small" text @click="toggleCollapse">
+          <el-icon :class="{ 'is-collapsed': isCollapsed }">
+            <ArrowUp />
+          </el-icon>
+        </el-button>
         <el-button size="small" @click="copyResponse">
           <el-icon><DocumentCopy /></el-icon>
           Copy
@@ -19,38 +31,43 @@
       </div>
     </div>
 
-    <div class="response-tabs">
+    <div class="response-content" v-show="!isCollapsed">
       <el-tabs v-model="activeTab" type="border-card">
         <!-- Response Body 选项卡 -->
         <el-tab-pane label="Response Body" name="body">
-          <div class="response-body">
+          <div class="tab-content">
             <CodeEditor
-              v-if="response"
+              style="height: 100%"
               :model-value="response"
               language="json"
               :read-only="true"
             />
-            <div v-else class="empty-response">No response data</div>
+            <!-- <div v-else class="empty-response">No response data</div> -->
           </div>
         </el-tab-pane>
 
         <!-- Debug Info 选项卡 -->
         <el-tab-pane label="Debug Info" name="debug">
-          <div class="debug-info">
-            <div class="command-section">
-              <h4>Command</h4>
-              <pre>{{ debugCommand }}</pre>
-            </div>
-            <div class="logs-section">
-              <h4>gRPC Logs</h4>
-              <pre>{{ debugLogs }}</pre>
+          <div class="tab-content">
+            <template v-if="debugCommand || debugLogs">
+              <div v-if="debugCommand" class="command-section">
+                <h4>Command</h4>
+                <pre>{{ debugCommand }}</pre>
+              </div>
+              <div v-if="debugLogs" class="logs-section">
+                <h4>gRPC Logs</h4>
+                <pre>{{ debugLogs }}</pre>
+              </div>
+            </template>
+            <div v-else class="empty-response">
+              No debug information available
             </div>
           </div>
         </el-tab-pane>
 
         <!-- Response Headers 选项卡 -->
         <el-tab-pane label="Response Headers" name="headers">
-          <div class="headers-list">
+          <div class="tab-content">
             <div v-for="(value, key) in headers" :key="key" class="header-item">
               <span class="header-name">{{ key }}:</span>
               <span class="header-value">{{ value }}</span>
@@ -69,8 +86,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { DocumentCopy, Delete } from "@element-plus/icons-vue";
+import { ref, computed } from "vue";
+import { DocumentCopy, Delete, ArrowUp } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import CodeEditor from "../CodeEditor.vue";
 
@@ -80,13 +97,17 @@ const props = defineProps<{
   headers: Record<string, string>;
   debugLogs?: string;
   debugCommand?: string;
+  status?: number | string;
 }>();
 
 const emit = defineEmits<{
   (e: "clear"): void;
+  (e: "collapse-change", value: boolean): void;
 }>();
 
-const activeTab = ref("body");
+const activeTab = ref(
+  props.response ? "body" : props.debugLogs ? "debug" : "body"
+);
 
 const copyResponse = async () => {
   try {
@@ -96,6 +117,36 @@ const copyResponse = async () => {
     ElMessage.error("Failed to copy response");
   }
 };
+
+const isSuccess = computed(() => {
+  if (!props.status) return false;
+  const statusCode = Number(props.status);
+  return statusCode >= 200 && statusCode < 300;
+});
+
+const statusText = computed(() => {
+  const statusCode = Number(props.status);
+  const statusMap: Record<number, string> = {
+    200: "OK",
+    201: "Created",
+    400: "Bad Request",
+    401: "Unauthorized",
+    403: "Forbidden",
+    404: "Not Found",
+    500: "Internal Server Error",
+    502: "Bad Gateway",
+    503: "Service Unavailable",
+    504: "Gateway Timeout",
+  };
+  return `${statusCode} ${statusMap[statusCode] || ""}`;
+});
+
+const isCollapsed = ref(false);
+
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value;
+  emit("collapse-change", isCollapsed.value);
+};
 </script>
 
 <style scoped>
@@ -104,16 +155,28 @@ const copyResponse = async () => {
   flex-direction: column;
   height: 100%;
   background-color: var(--bg-color);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 4px;
+  border: none;
+  border-radius: 0;
+}
+
+.response-viewer.collapsed {
+  height: 48px;
 }
 
 .response-header {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
   border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.response-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .header-left {
@@ -137,14 +200,33 @@ const copyResponse = async () => {
   gap: 8px;
 }
 
-.response-tabs {
+:deep(.el-tabs) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.el-tabs__header) {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+:deep(.el-tabs__content) {
   flex: 1;
+  overflow: hidden;
+  padding: 0;
+  height: 100%;
+}
+
+:deep(.el-tab-pane) {
+  height: 100%;
   overflow: hidden;
 }
 
-.response-body {
+.tab-content {
   height: 100%;
-  min-height: 200px;
+  overflow: hidden;
+  padding: 0;
 }
 
 .empty-response {
@@ -153,12 +235,6 @@ const copyResponse = async () => {
   justify-content: center;
   height: 100%;
   color: var(--el-text-color-secondary);
-}
-
-.headers-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .header-item {
@@ -177,18 +253,6 @@ const copyResponse = async () => {
   word-break: break-all;
 }
 
-:deep(.el-tabs__content) {
-  height: calc(100% - 40px);
-  padding: 16px;
-}
-
-.debug-info {
-  padding: 16px;
-  font-family: monospace;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
 .command-section,
 .logs-section {
   margin-bottom: 20px;
@@ -200,11 +264,58 @@ const copyResponse = async () => {
   color: var(--el-text-color-primary);
 }
 
-.debug-info pre {
+.logs-section {
+  max-height: calc(100vh - 300px);
+  overflow: auto;
+}
+
+.logs-section pre {
+  margin: 0;
+  overflow: auto;
+  max-height: 100%;
+}
+
+pre {
   background-color: var(--el-fill-color-light);
   padding: 12px;
   border-radius: 4px;
   margin: 0;
-  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--el-fill-color-light);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--el-border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--el-border-color-darker);
+}
+
+.response-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: var(--el-color-danger-light-9);
+  color: var(--el-color-danger);
+  border: 1px solid var(--el-color-danger-light-7);
+}
+
+.response-status.success {
+  background-color: var(--el-color-success-light-9);
+  color: var(--el-color-success);
+  border: 1px solid var(--el-color-success-light-7);
 }
 </style>

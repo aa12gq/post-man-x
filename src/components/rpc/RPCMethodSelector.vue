@@ -150,7 +150,7 @@ const handleFetchSuggestions = (query: string, cb: (data: any[]) => void) => {
 
 <style scoped>
 .rpc-toolbar {
-  padding: 8px;
+  padding: 12px;
   border-bottom: 1px solid var(--el-border-color-light);
 }
 
@@ -161,15 +161,19 @@ const handleFetchSuggestions = (query: string, cb: (data: any[]) => void) => {
 }
 
 .url-section {
-  flex: 1;
+  width: 300px;
 }
 
 .server-url {
   width: 100%;
 }
 
+.method-section {
+  flex: 1;
+}
+
 .method-select {
-  width: 300px;
+  width: 100%;
 }
 
 .method-option {
