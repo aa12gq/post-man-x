@@ -97,10 +97,7 @@
         <template v-if="currentTab">
           <div class="request-workspace">
             <!-- 上半部分：请求区域 -->
-            <div
-              class="request-section"
-              :style="{ height: `calc(100% - ${responseHeight})` }"
-            >
+            <div class="request-section">
               <div class="request-type-switch">
                 <el-radio-group v-model="currentTab.form.type" size="small">
                   <el-radio-button value="http">HTTP</el-radio-button>
@@ -186,7 +183,10 @@
             </div>
 
             <!-- 下半部分：响应区域 -->
-            <div class="response-section" :style="{ height: responseHeight }">
+            <div 
+              class="response-section" 
+              :style="{ height: responseHeight }"
+            >
               <ResponseViewer
                 :response="currentTab.response"
                 :response-time="currentTab.responseTime"
@@ -996,22 +996,25 @@ const headersToRecord = (
 }
 
 .request-section {
-  flex: none;
   display: flex;
   flex-direction: column;
+  height: calc(100% - v-bind(responseHeight));
   min-height: 200px;
-  overflow: hidden;
-  transition: height 0.05s ease;
+  overflow: auto;
 }
 
 .request-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow: auto;
   padding: 16px;
 }
 
 .request-form {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow: auto;
   background-color: var(--bg-color);
 }
@@ -1032,14 +1035,36 @@ const headersToRecord = (
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   margin-top: 16px;
+  overflow: hidden;
+}
+
+:deep(.el-tabs) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 :deep(.el-tabs__content) {
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
   padding: 10px;
+  height: 100%;
+}
+
+:deep(.el-tab-pane) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保 tab-content 也能正确扩展 */
+.tab-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 :deep(.el-tabs--border-card) {
@@ -1254,7 +1279,7 @@ const headersToRecord = (
   opacity: 1;
 }
 
-/* TabManager 组件样式调整 */
+/* TabManager 组样式调整 */
 :deep(.el-tabs--card) {
   margin: 0;
 }

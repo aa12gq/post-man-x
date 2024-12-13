@@ -34,7 +34,9 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 // 获取当前主题
 const getCurrentTheme = () => {
-  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs';
+  return document.documentElement.getAttribute("data-theme") === "dark"
+    ? "vs-dark"
+    : "vs";
 };
 
 onMounted(async () => {
@@ -54,16 +56,13 @@ onMounted(async () => {
     formatOnPaste: true,
     formatOnType: true,
     padding: { top: 0, bottom: 0 },
-    lineNumbers: 'on',
+    lineNumbers: "on",
     folding: false,
-    wordWrap: 'on',
+    wordWrap: "on",
     lineDecorationsWidth: 0,
     lineNumbersMinChars: 3,
     glyphMargin: false,
     fixedOverflowWidgets: true,
-    'editor.defaultFormatter': 'JSON',
-    'editor.formatOnSave': true,
-    'editor.wordWrapColumn': 80,
   });
 
   // 配置 JSON 格式化
@@ -83,7 +82,7 @@ onMounted(async () => {
   // 监听主题变化
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.attributeName === 'data-theme') {
+      if (mutation.attributeName === "data-theme") {
         editor?.updateOptions({ theme: getCurrentTheme() });
       }
     });
@@ -91,7 +90,7 @@ onMounted(async () => {
 
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-theme']
+    attributeFilter: ["data-theme"],
   });
 
   // 组件销毁时停止观察

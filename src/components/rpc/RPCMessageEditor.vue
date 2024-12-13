@@ -1,5 +1,14 @@
 <template>
   <div class="message-editor">
+    <div class="editor-toolbar">
+      <el-button
+        size="small"
+        @click="$emit('generate-example')"
+        :disabled="!hasMethod"
+      >
+        Generate Example
+      </el-button>
+    </div>
     <div class="editor-container">
       <CodeEditor
         v-model="localMessage"
@@ -7,15 +16,6 @@
         :read-only="false"
         @change="handleChange"
       />
-      <div class="editor-toolbar">
-        <el-button
-          size="small"
-          @click="$emit('generate-example')"
-          :disabled="!hasMethod"
-        >
-          Generate Example
-        </el-button>
-      </div>
     </div>
   </div>
 </template>
@@ -64,18 +64,25 @@ const handleChange = (value: string) => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 .editor-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  overflow: hidden;
 }
 
 .editor-toolbar {
   display: flex;
   justify-content: flex-end;
   padding: 8px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+:deep(.monaco-editor) {
+  flex: 1;
 }
 </style>
