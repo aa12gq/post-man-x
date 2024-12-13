@@ -196,6 +196,7 @@
                 :status="currentTab.status"
                 @clear="clearResponse"
                 @collapse-change="handleResponseCollapse"
+                @resize="startResize"
               />
             </div>
           </div>
@@ -982,6 +983,8 @@ const headersToRecord = (
   flex: 1;
   overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .request-workspace {
@@ -993,6 +996,7 @@ const headersToRecord = (
 }
 
 .request-section {
+  flex: none;
   display: flex;
   flex-direction: column;
   min-height: 200px;
@@ -1199,6 +1203,8 @@ const headersToRecord = (
   align-items: center;
   justify-content: center;
   transform: translateY(-3px);
+  bottom: 0;
+  margin-bottom: 0;
 }
 
 .resize-handle:hover .resize-handle-line {

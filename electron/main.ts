@@ -145,7 +145,7 @@ ipcMain.handle("get-rpc-services", async (event, params) => {
       })
     );
 
-    // 过滤掉 null 值，只保留有效��服务
+    // 过滤掉 null 值，只保留有效服务
     const validServices = servicesWithMethods.filter(Boolean);
 
     return { success: true, data: validServices };

@@ -1,6 +1,13 @@
 <template>
   <div class="response-viewer" :class="{ collapsed: isCollapsed }">
     <div class="response-header">
+      <div class="resize-handle" @mousedown="handleResize">
+        <div class="resize-handle-line"></div>
+        <div class="resize-handle-icon">
+          <el-icon><ArrowUp /></el-icon>
+        </div>
+      </div>
+
       <div class="header-left">
         <span class="header-title">Response</span>
         <div
@@ -103,6 +110,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "clear"): void;
   (e: "collapse-change", value: boolean): void;
+  (e: "resize", event: MouseEvent): void;
 }>();
 
 const activeTab = ref(
@@ -147,6 +155,11 @@ const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value;
   emit("collapse-change", isCollapsed.value);
 };
+
+const handleResize = (e: MouseEvent) => {
+  e.preventDefault()
+  emit('resize', e)
+}
 </script>
 
 <style scoped>
@@ -164,6 +177,7 @@ const toggleCollapse = () => {
 }
 
 .response-header {
+  position: relative;
   flex-shrink: 0;
   display: flex;
   justify-content: space-between;
@@ -317,5 +331,35 @@ pre {
   background-color: var(--el-color-success-light-9);
   color: var(--el-color-success);
   border: 1px solid var(--el-color-success-light-7);
+}
+
+.resize-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  cursor: row-resize;
+  z-index: 1;
+}
+
+.resize-handle-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background-color: var(--border-color);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.resize-handle:hover .resize-handle-line {
+  opacity: 1;
+  background-color: var(--el-color-primary);
+}
+
+.resize-handle-icon {
+  display: none;
 }
 </style>
