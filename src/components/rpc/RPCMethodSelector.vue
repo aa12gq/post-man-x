@@ -90,23 +90,21 @@
           </template>
 
           <template #footer>
-            <div class="select-footer">
-              <el-button
-                class="refresh-button"
-                :loading="loadingServices"
-                @click.stop="loadServices"
-                size="small"
-                text
-              >
-                Use server reflection
-                <el-icon
-                  class="refresh-icon"
-                  :class="{ 'is-loading': loadingServices }"
-                >
-                  <Refresh />
-                </el-icon>
-              </el-button>
-            </div>
+            <button
+              @click.stop="loadServices"
+              :loading="loadingServices"
+              class="el-button el-button--text el-button--small refresh-button"
+            >
+              <span>Use server reflection</span>
+              <i class="el-icon refresh-icon">
+                <svg class="icon" viewBox="0 0 1024 1024">
+                  <path
+                    fill="currentColor"
+                    d="M784.512 230.272v-50.56a32 32 0 1 1 64 0v149.056a32 32 0 0 1-32 32H667.52a32 32 0 1 1 0-64h92.992a384 384 0 1 0 116.224 297.728 32 32 0 1 1 64 0 448 448 0 1 1-156.224-364.224z"
+                  />
+                </svg>
+              </i>
+            </button>
           </template>
         </el-select>
       </div>
@@ -120,6 +118,7 @@
           :loading="loadingMethods"
           filterable
           @change="handleCascaderChange"
+          popper-class="custom-cascader-dropdown"
         >
           <template #default="{ node, data }">
             <span class="cascader-label">
@@ -141,6 +140,16 @@
               </el-button>
             </span>
           </template>
+
+          <template #empty>
+            <div class="select-empty">
+              <p v-if="!props.url">
+                Enter a server URL to load available methods
+              </p>
+              <p v-else-if="loadingServices">Loading services...</p>
+              <p v-else>No methods found. Try using server reflection.</p>
+            </div>
+          </template>
         </el-cascader>
       </div>
       <el-button
@@ -156,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   CaretRight,
   Refresh,
@@ -250,6 +259,49 @@ const handleFetchSuggestions = (query: string, cb: (data: any[]) => void) => {
   const suggestions = !query ? [] : [{ value: query }];
   cb(suggestions);
 };
+
+onMounted(() => {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length) {
+        mutation.addedNodes.forEach((node) => {
+          if (
+            node instanceof HTMLElement &&
+            node.classList.contains("custom-cascader-dropdown")
+          ) {
+            const footer = document.createElement("div");
+            footer.className = "el-cascader__dropdown-footer";
+            footer.innerHTML = `
+              <button class="el-button el-button--text el-button--small refresh-button">
+                <span>Use server reflection</span>
+                <i class="el-icon refresh-icon">
+                  <svg class="icon" viewBox="0 0 1024 1024">
+                    <!-- Refresh icon path -->
+                  </svg>
+                </i>
+              </button>
+            `;
+
+            footer
+              .querySelector(".refresh-button")
+              ?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                loadServices();
+              });
+
+            node.appendChild(footer);
+          }
+        });
+      }
+    });
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  onUnmounted(() => {
+    observer.disconnect();
+  });
+});
 </script>
 
 <style scoped>
@@ -274,6 +326,8 @@ const handleFetchSuggestions = (query: string, cb: (data: any[]) => void) => {
 
 .method-section {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .method-select {
@@ -337,8 +391,10 @@ const handleFetchSuggestions = (query: string, cb: (data: any[]) => void) => {
 
 .select-footer {
   padding: 8px;
-  border-top: 1px solid var(--el-border-color-light);
+  border: 1px solid var(--el-border-color-light);
+  border-top: none;
   text-align: center;
+  background-color: var(--bg-color);
 }
 
 .refresh-icon.is-loading {
@@ -442,5 +498,87 @@ const handleFetchSuggestions = (query: string, cb: (data: any[]) => void) => {
 
 :deep(.el-select-dropdown__item) {
   padding: 0 12px 0 24px;
+}
+
+.refresh-button {
+  width: 100%;
+  justify-content: center;
+}
+
+:deep(.el-cascader__dropdown) {
+  .select-empty {
+    padding: 8px;
+    text-align: center;
+    color: var(--el-text-color-secondary);
+  }
+
+  .select-footer {
+    padding: 8px;
+    border-top: 1px solid var(--el-border-color-light);
+    text-align: center;
+    background-color: var(--bg-color);
+  }
+
+  .refresh-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .refresh-icon.is-loading {
+    animation: rotating 2s linear infinite;
+  }
+}
+
+:deep(.custom-cascader-dropdown) {
+  .el-cascader-panel {
+    &::after {
+      content: "";
+      position: relative;
+      display: block;
+      height: 40px;
+      border-top: 1px solid var(--el-border-color-light);
+    }
+  }
+
+  .el-cascader__dropdown-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    background-color: var(--bg-color);
+    border-top: 1px solid var(--el-border-color-light);
+    text-align: center;
+  }
+
+  .refresh-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+:global(.custom-cascader-dropdown) {
+  .el-cascader-panel::after {
+    content: "";
+    display: block;
+    height: 40px;
+  }
+
+  .el-cascader__dropdown-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    background-color: var(--bg-color);
+    border-top: 1px solid var(--el-border-color-light);
+    text-align: center;
+    z-index: 1;
+  }
+
+  .el-button.refresh-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
