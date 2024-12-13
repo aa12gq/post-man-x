@@ -122,16 +122,23 @@
               </el-empty>
             </div>
           </template>
-          <template v-else-if="currentTab">
+          <template v-else-if="currentTab && currentTab.type === 'rpc'">
             <div class="request-workspace">
               <keep-alive>
-                <RequestRegion 
-                  :key="currentTab.id" 
+                <RpcRequestRegion
+                  :key="currentTab.id"
                   :tab-id="currentTab.id"
                   :request-type="currentTab.type"
                 />
               </keep-alive>
             </div>
+          </template>
+          <template v-else-if="currentTab && currentTab.type === 'http'">
+            <HttpRequestRegion
+              :key="currentTab.id"
+              :tab-id="currentTab.id"
+              :request-type="currentTab.type"
+            />
           </template>
         </div>
       </div>
@@ -177,13 +184,11 @@ import {
   Document,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
-import { useRequestHistory } from "../composables/useRequestHistory";
-import RpcClient from "../services/RpcService";
 import type { RpcService } from "../services/RpcService";
 import type { Header } from "./HeadersManager.vue";
-import type { FavoriteRequest } from "../services/FavoriteService";
-import { ElMessage, ElMessageBox } from "element-plus";
-import RequestRegion from "../components/rpc/RequestRegion.vue";
+import { ElMessageBox } from "element-plus";
+import RpcRequestRegion from "../components/rpc/RequestRegion.vue";
+import HttpRequestRegion from "../components/http/RequestRegion.vue";
 
 // 基础状态
 const isSidebarCollapsed = ref(
@@ -195,7 +200,7 @@ interface Tab {
   id: string;
   name: string;
   title: string;
-  type: 'http' | 'rpc';  // 添加类型字段
+  type: "http" | "rpc"; // 添加类型字段
 }
 
 const tabs = ref<Tab[]>([]); // 移除默认标签页
@@ -232,7 +237,7 @@ const addTab = () => {
     id: newId,
     name: "New Request",
     title: "New Request",
-    type: 'http'
+    type: "http",
   });
   activeTab.value = newId;
 };
@@ -506,12 +511,12 @@ const showNewRequestDialog = () => {
 };
 
 const createNewRequest = (type: "http" | "rpc") => {
-  const newId = String(Date.now());  // 使用时间戳作为唯一ID
+  const newId = String(Date.now()); // 使用时间戳作为唯一ID
   tabs.value.push({
     id: newId,
     name: `New ${type.toUpperCase()} Request`,
     title: `New ${type.toUpperCase()} Request`,
-    type: type
+    type: type,
   });
   activeTab.value = newId;
   showRequestTypeDialog.value = false;
