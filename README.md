@@ -1,5 +1,5 @@
 <div align="center">
-<h1>RPC Postman</h1>
+<h1>RPC Master</h1>
 
 [![Version](https://img.shields.io/badge/version-0.0.1-blue)](https://github.com/vtyug/rpc-postman)
 [![Author](https://img.shields.io/badge/Author-vtyug-ff69b4)](https://github.com/vtyug)
@@ -143,8 +143,8 @@
 1. 克隆仓库
 
    ```bash
-   git clone https://github.com/vtyug/rpc-postman.git
-   cd rpc-postman
+   git clone https://github.com/vtyug/rpc-master.git
+   cd rpc-master
    ```
 
 2. 安装依赖
