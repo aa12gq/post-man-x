@@ -1,7 +1,7 @@
 <template>
-  <div class="response-viewer" :class="{ collapsed: isCollapsed }">
+  <div class="response-viewer">
     <div class="response-header">
-      <div class="resize-handle" @mousedown="handleResize">
+      <div class="resize-handle" >
         <div class="resize-handle-line"></div>
         <div class="resize-handle-icon">
           <el-icon><ArrowUp /></el-icon>
@@ -22,8 +22,8 @@
         </span>
       </div>
       <div class="header-right">
-        <el-button size="small" text @click="toggleCollapse">
-          <el-icon :class="{ 'is-collapsed': isCollapsed }">
+        <el-button size="small" text >
+          <el-icon>
             <ArrowUp />
           </el-icon>
         </el-button>
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="response-content" v-show="!isCollapsed">
+    <div class="response-content">
       <el-tabs v-model="activeTab" type="border-card">
         <!-- Response Body 选项卡 -->
         <el-tab-pane label="Response Body" name="body">
@@ -107,12 +107,6 @@ const props = defineProps<{
   status?: number | string;
 }>();
 
-const emit = defineEmits<{
-  (e: "clear"): void;
-  (e: "collapse-change", value: boolean): void;
-  (e: "resize", event: MouseEvent): void;
-}>();
-
 const activeTab = ref(
   props.response ? "body" : props.debugLogs ? "debug" : "body"
 );
@@ -148,18 +142,6 @@ const statusText = computed(() => {
   };
   return `${statusCode} ${statusMap[statusCode] || ""}`;
 });
-
-const isCollapsed = ref(false);
-
-const toggleCollapse = () => {
-  isCollapsed.value = !isCollapsed.value;
-  emit("collapse-change", isCollapsed.value);
-};
-
-const handleResize = (e: MouseEvent) => {
-  e.preventDefault()
-  emit('resize', e)
-}
 </script>
 
 <style scoped>
