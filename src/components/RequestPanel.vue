@@ -82,99 +82,112 @@
 
     <!-- 右侧主内容区 -->
     <div class="main-content">
-      <TabManager
-        v-model="activeTab"
-        :tabs="tabs"
-        @add="addTab"
-        @remove="removeTab"
-      >
-        <template v-for="tab in tabs" :key="tab.id" #[tab.id]>
-          <div class="request-container">
-            <!-- 请求类型切换 -->
-            <div class="request-type-switch">
-              <el-radio-group v-model="tab.form.type" size="small">
-                <el-radio-button value="http">HTTP</el-radio-button>
-                <el-radio-button value="rpc">RPC</el-radio-button>
-              </el-radio-group>
-            </div>
+      <!-- 标签页-->
+      <div class="tabs-container">
+        <TabManager
+          v-model="activeTab"
+          :tabs="tabs"
+          @add="addTab"
+          @remove="removeTab"
+        />
+      </div>
 
-            <!-- 请求区域 -->
-            <div class="request-content">
-              <!-- RPC 请求区域 -->
-              <div v-if="tab.form.type === 'rpc'" class="request-form">
-                <RPCMethodSelector
-                  :url="tab.form.url"
-                  :loading="loading"
-                  :loading-methods="loadingMethods"
-                  :loading-services="loadingServices"
-                  :services="rpcServices"
-                  @update:url="updateUrl"
-                  @method-change="handleMethodChange"
-                  @send="sendRequest"
-                  @load-methods="loadServiceMethods"
-                  @load-services="loadServices"
-                />
+      <!-- 请求和响应区域包装器 -->
+      <div class="request-response-wrapper">
+        <template v-if="currentTab">
+          <div class="request-workspace">
+            <!-- 上半部分：请求区域 -->
+            <div
+              class="request-section"
+              :style="{ height: `calc(100% - ${responseHeight})` }"
+            >
+              <div class="request-type-switch">
+                <el-radio-group v-model="currentTab.form.type" size="small">
+                  <el-radio-button value="http">HTTP</el-radio-button>
+                  <el-radio-button value="rpc">RPC</el-radio-button>
+                </el-radio-group>
+              </div>
 
-                <div class="request-response-panel">
-                  <el-tabs v-model="activePane" type="border-card">
-                    <!-- Message 选项卡 -->
-                    <el-tab-pane label="Message" name="message">
-                      <RPCMessageEditor
-                        :message="tab.form.params"
-                        :has-method="!!selectedMethod"
-                        @update:message="updateMessage"
-                        @generate-example="generateExample"
-                      />
-                    </el-tab-pane>
+              <div class="request-content">
+                <!-- RPC 请求区域 -->
+                <div v-if="currentTab.form.type === 'rpc'" class="request-form">
+                  <RPCMethodSelector
+                    :url="currentTab.form.url"
+                    :loading="loading"
+                    :loading-methods="loadingMethods"
+                    :loading-services="loadingServices"
+                    :services="rpcServices"
+                    @update:url="updateUrl"
+                    @method-change="handleMethodChange"
+                    @send="sendRequest"
+                    @load-methods="loadServiceMethods"
+                    @load-services="loadServices"
+                  />
 
-                    <!-- Authorization 选项卡 -->
-                    <el-tab-pane label="Authorization" name="auth">
-                      <AuthorizationManager
-                        :initial-auth-type="authType"
-                        :initial-basic-auth="auth.basic"
-                        :initial-bearer-token="auth.bearer.token"
-                        @auth-change="handleAuthChange"
-                      />
-                    </el-tab-pane>
+                  <div class="request-response-panel">
+                    <el-tabs v-model="activePane" type="border-card">
+                      <!-- Message 选项卡 -->
+                      <el-tab-pane label="Message" name="message">
+                        <RPCMessageEditor
+                          :message="currentTab.form.params"
+                          :has-method="true"
+                          @update:message="updateMessage"
+                          @generate-example="generateExample"
+                        />
+                      </el-tab-pane>
 
-                    <!-- Metadata 选项卡 -->
-                    <el-tab-pane label="Metadata" name="metadata">
-                      <MetadataEditor
-                        :initial-metadata="headersToRecord(requestHeaders)"
-                        @update:metadata="updateMetadata"
-                      />
-                    </el-tab-pane>
-                  </el-tabs>
+                      <!-- Authorization 选项卡 -->
+                      <el-tab-pane label="Authorization" name="auth">
+                        <AuthorizationManager
+                          :initial-auth-type="authType"
+                          :initial-basic-auth="auth.basic"
+                          :initial-bearer-token="auth.bearer.token"
+                          @auth-change="handleAuthChange"
+                        />
+                      </el-tab-pane>
+
+                      <!-- Metadata 选项卡 -->
+                      <el-tab-pane label="Metadata" name="metadata">
+                        <MetadataEditor
+                          :initial-metadata="headersToRecord(requestHeaders)"
+                          @update:metadata="updateMetadata"
+                        />
+                      </el-tab-pane>
+                    </el-tabs>
+                  </div>
+                </div>
+
+                <!-- HTTP 请求区域 -->
+                <div v-else class="request-form">
+                  <HTTPRequestForm
+                    :initial-method="currentTab.form.method"
+                    :initial-url="currentTab.form.url"
+                    :initial-headers="headersToRecord(requestHeaders)"
+                    :initial-params="queryParams"
+                    :initial-body="currentTab.form.params"
+                    :loading="loading"
+                    @update:method="updateMethod"
+                    @update:url="updateUrl"
+                    @update:headers="updateHeaders"
+                    @update:params="updateParams"
+                    @update:body="updateBody"
+                    @send="sendRequest"
+                  />
                 </div>
               </div>
+            </div>
 
-              <!-- HTTP 请求区域 -->
-              <div v-else class="request-form">
-                <HTTPRequestForm
-                  :initial-method="tab.form.method"
-                  :initial-url="tab.form.url"
-                  :initial-headers="headersToRecord(requestHeaders)"
-                  :initial-params="queryParams"
-                  :initial-body="tab.form.params"
-                  :loading="loading"
-                  @update:method="updateMethod"
-                  @update:url="updateUrl"
-                  @update:headers="updateHeaders"
-                  @update:params="updateParams"
-                  @update:body="updateBody"
-                  @send="sendRequest"
-                />
+            <!-- 分割线 -->
+            <div class="resize-handle" @mousedown="startResize">
+              <div class="resize-handle-line"></div>
+              <div class="resize-handle-icon">
+                <el-icon><ArrowUp /></el-icon>
               </div>
             </div>
 
-            <!-- 响应区域容器 -->
-            <div class="response-container" :style="{ height: responseHeight }">
-              <!-- 分割线 -->
-              <div class="resizer" @mousedown="startResize"></div>
-
-              <!-- 响应查看 -->
+            <!-- 下半部分：响应区域 -->
+            <div class="response-section" :style="{ height: responseHeight }">
               <ResponseViewer
-                v-if="currentTab"
                 :response="currentTab.response"
                 :response-time="currentTab.responseTime"
                 :headers="currentTab.responseHeaders"
@@ -187,7 +200,7 @@
             </div>
           </div>
         </template>
-      </TabManager>
+      </div>
     </div>
 
     <!-- 请求详情抽屉 -->
@@ -199,13 +212,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, onBeforeUnmount, watch } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  onBeforeUnmount,
+  watch,
+  onMounted,
+} from "vue";
 import {
   CaretLeft,
   Folder,
   Collection,
   Connection,
   Plus,
+  ArrowDown,
+  ArrowUp,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
 import RPCMethodSelector from "./rpc/RPCMethodSelector.vue";
@@ -637,54 +659,66 @@ const loadServiceMethods = async (serviceName: string) => {
 };
 
 // 响应区域高度控制
-const responseHeight = ref("50%"); // 默认占据一半空间
-const minHeight = 40; // 最小高度
-let startY = 0;
-let startHeight = 0;
-
-const handleResize = (e: MouseEvent) => {
-  const container = document.querySelector(".request-container") as HTMLElement;
-  const containerRect = container.getBoundingClientRect();
-  const containerHeight = container.offsetHeight;
-
-  const deltaY = e.clientY - startY;
-  const newHeight = startHeight + deltaY;
-
-  // 限制最小和最大高度
-  const finalHeight = Math.min(
-    Math.max(newHeight, minHeight),
-    containerHeight - 100 // 保留上方区域的最小高度
-  );
-
-  responseHeight.value = `${finalHeight}px`;
-  e.preventDefault();
-};
+const responseHeight = ref("50%");
+const isResizing = ref(false);
+const minResponseHeight = 40;
+const maxResponseHeight = 800;
 
 const startResize = (e: MouseEvent) => {
-  startY = e.clientY;
-  const responseContainer = document.querySelector(
-    ".response-container"
+  isResizing.value = true;
+  const workspace = (e.target as HTMLElement).closest(
+    ".request-workspace"
   ) as HTMLElement;
-  startHeight = responseContainer.offsetHeight;
+  const workspaceRect = workspace.getBoundingClientRect();
+  const startY = e.clientY;
+  const startHeight = parseInt(responseHeight.value);
 
-  document.body.style.cursor = "row-resize";
-  document.body.style.userSelect = "none";
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isResizing.value) return;
 
-  document.addEventListener("mousemove", handleResize);
-  document.addEventListener("mouseup", stopResize);
-};
+    const deltaY = startY - e.clientY;
+    const newHeight = Math.min(
+      Math.max(startHeight + deltaY, minResponseHeight),
+      workspaceRect.height - 200
+    );
 
-const stopResize = () => {
-  document.removeEventListener("mousemove", handleResize);
-  document.removeEventListener("mouseup", stopResize);
+    responseHeight.value = `${newHeight}px`;
+    document.body.classList.add("is-resizing");
+  };
 
-  document.body.style.cursor = "";
-  document.body.style.userSelect = "";
+  const handleMouseUp = () => {
+    isResizing.value = false;
+    document.body.classList.remove("is-resizing");
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  };
+
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", handleMouseUp);
 };
 
 const handleResponseCollapse = (collapsed: boolean) => {
-  responseHeight.value = collapsed ? `${minHeight}px` : "50%";
+  responseHeight.value = collapsed ? `${minResponseHeight}px` : "50%";
 };
+
+// 添加全局样式
+onMounted(() => {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    body.is-resizing {
+      cursor: row-resize !important;
+      user-select: none !important;
+    }
+  `;
+  document.head.appendChild(style);
+});
+
+onBeforeUnmount(() => {
+  const style = document.querySelector("style");
+  if (style && style.innerHTML.includes("is-resizing")) {
+    style.remove();
+  }
+});
 
 // 树形结构的配置
 const defaultProps = {
@@ -938,22 +972,38 @@ const headersToRecord = (
   transition: none;
 }
 
-.request-container {
+.tabs-container {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+.request-response-wrapper {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.request-workspace {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
   position: relative;
-  min-height: 0;
+  background-color: var(--bg-color);
+}
+
+.request-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
   overflow: hidden;
+  transition: height 0.05s ease;
 }
 
 .request-content {
   flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
   overflow: auto;
-  position: relative;
+  padding: 16px;
 }
 
 .request-form {
@@ -1134,5 +1184,94 @@ const headersToRecord = (
 .sidebar-resizer:hover,
 .sidebar-resizer:active {
   background-color: var(--el-color-primary);
+}
+
+.resize-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: transparent;
+  cursor: row-resize;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-3px);
+}
+
+.resize-handle:hover .resize-handle-line {
+  background-color: var(--el-color-primary);
+}
+
+.resize-handle-line {
+  width: 100%;
+  height: 2px;
+  background-color: var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.resize-handle-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--bg-color);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.resize-handle:hover .resize-handle-icon {
+  opacity: 1;
+}
+
+/* 拖动时的样式 */
+.is-resizing {
+  user-select: none;
+  cursor: row-resize;
+}
+
+.is-resizing .resize-handle-line {
+  background-color: var(--el-color-primary);
+}
+
+.is-resizing .resize-handle-icon {
+  opacity: 1;
+}
+
+/* TabManager 组件样式调整 */
+:deep(.el-tabs--card) {
+  margin: 0;
+}
+
+:deep(.el-tabs--card > .el-tabs__header) {
+  margin: 0;
+  border-bottom: none;
+}
+
+:deep(.el-tabs--card > .el-tabs__header .el-tabs__nav) {
+  border: none;
+}
+
+:deep(.el-tabs--card > .el-tabs__header .el-tabs__item) {
+  border: none;
+  border-right: 1px solid var(--border-color);
+  height: 40px;
+  line-height: 40px;
+  font-size: 13px;
+}
+
+:deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
+  background-color: var(--bg-color);
+  border-bottom: 2px solid var(--el-color-primary);
 }
 </style>

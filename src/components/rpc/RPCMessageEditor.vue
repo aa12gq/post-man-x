@@ -1,6 +1,6 @@
 <template>
   <div class="message-editor">
-    <div v-if="hasMethod" class="editor-container">
+    <div class="editor-container">
       <CodeEditor
         v-model="localMessage"
         language="json"
@@ -16,9 +16,6 @@
           Generate Example
         </el-button>
       </div>
-    </div>
-    <div v-else class="empty-state">
-      <p>Select a method to edit message</p>
     </div>
   </div>
 </template>
@@ -74,14 +71,6 @@ const handleChange = (value: string) => {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.empty-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--el-text-color-secondary);
 }
 
 .editor-toolbar {

@@ -12,19 +12,18 @@
         :key="tab.id"
         :label="tab.title"
         :name="tab.id"
-      >
-        <slot :name="tab.id"></slot>
-      </el-tab-pane>
+      />
 
-      <!-- 添加新标签页的按钮 -->
-      <el-button
-        class="add-tab-button"
-        size="small"
-        circle
-        @click="handleAddTab"
-      >
-        <el-icon><Plus /></el-icon>
-      </el-button>
+      <!-- 将按钮放回 el-tabs 内部 -->
+      <template #suffix>
+        <el-button
+          class="add-tab-button"
+          size="small"
+          @click="handleAddTab"
+        >
+          <el-icon><Plus /></el-icon>
+        </el-button>
+      </template>
     </el-tabs>
   </div>
 </template>
@@ -67,24 +66,46 @@ const handleAddTab = () => {
 
 <style scoped>
 .tab-manager {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  height: 40px;
+  background-color: var(--header-bg);
 }
 
-:deep(.el-tabs) {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+:deep(.el-tabs__header) {
+  margin: 0;
 }
 
-:deep(.el-tabs__content) {
-  flex: 1;
-  overflow: hidden;
-  padding: 16px;
+:deep(.el-tabs__nav-wrap) {
+  padding: 0 8px;
+}
+
+:deep(.el-tabs__item) {
+  padding: 0 16px !important;
+  height: 40px;
+  line-height: 40px;
+}
+
+/* 添加按钮样式 */
+:deep(.el-tabs__nav-wrap::after) {
+  display: none;
+}
+
+:deep(.el-tabs__extra-content) {
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .add-tab-button {
-  margin: 4px 8px;
+  margin: 0 8px;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.add-tab-button:hover {
+  color: var(--el-color-primary);
 }
 </style>
