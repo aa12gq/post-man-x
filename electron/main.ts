@@ -18,6 +18,10 @@ interface RpcRequest {
 }
 
 function createWindow() {
+  // 禁用 CoreText 警告
+  process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
+  app.commandLine.appendSwitch("no-sandbox");
+
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -141,7 +145,7 @@ ipcMain.handle("get-rpc-services", async (event, params) => {
       })
     );
 
-    // 过滤掉 null 值，只保留有效的服务
+    // 过滤掉 null 值，只保留有效��服务
     const validServices = servicesWithMethods.filter(Boolean);
 
     return { success: true, data: validServices };
@@ -207,56 +211,168 @@ ipcMain.handle("get-rpc-methods", async (event, params) => {
   }
 });
 
-// 生成示例数据
-function generateFieldValue(type: string): any {
+// 添加一些辅助函数来生成更真实的示例数据
+function generateRandomString(prefix: string = ""): string {
+  const adjectives = [
+    "happy",
+    "clever",
+    "bright",
+    "swift",
+    "calm",
+    "gentle",
+    "bold",
+  ];
+  const nouns = [
+    "user",
+    "customer",
+    "product",
+    "service",
+    "item",
+    "account",
+    "profile",
+  ];
+  const randomAdjective =
+    adjectives[Math.floor(Math.random() * adjectives.length)];
+  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+  return `${prefix}${randomAdjective}_${randomNoun}`;
+}
+
+function generateRandomEmail(): string {
+  const domains = ["example.com", "test.org", "demo.net", "sample.io"];
+  const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+  return `${generateRandomString()}@${randomDomain}`;
+}
+
+function generateRandomDate(): string {
+  const start = new Date(2020, 0, 1);
+  const end = new Date();
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  ).toISOString();
+}
+
+function generateRandomPhoneNumber(): string {
+  return `+1${Math.floor(Math.random() * 1000000000)
+    .toString()
+    .padStart(9, "0")}`;
+}
+
+function generateRandomUrl(): string {
+  const protocols = ["http", "https"];
+  const domains = ["api", "service", "app", "dev", "test"];
+  const tlds = ["com", "org", "io", "net"];
+
+  const protocol = protocols[Math.floor(Math.random() * protocols.length)];
+  const domain = domains[Math.floor(Math.random() * domains.length)];
+  const tld = tlds[Math.floor(Math.random() * tlds.length)];
+
+  return `${protocol}://${domain}.${tld}`;
+}
+
+function generateRandomId(): string {
+  return Math.random().toString(36).substring(2, 15);
+}
+
+//  generateFieldValue
+function generateFieldValue(type: string, fieldName: string = ""): any {
   // 移除包名前缀和修饰符
   const cleanType = type.replace(/^repeated\s+/, "").replace(/^map<.+>/, "");
   const isRepeated = type.startsWith("repeated");
   const isMap = type.startsWith("map<");
 
-  let value = null;
-  switch (cleanType.toLowerCase()) {
-    case "string":
-      value = "example string";
-      break;
-    case "int32":
-    case "int64":
-    case "sint32":
-    case "sint64":
-    case "uint32":
-    case "uint64":
-    case "fixed32":
-    case "fixed64":
-      value = 123;
-      break;
-    case "double":
-    case "float":
-      value = 3.14;
-      break;
-    case "bool":
-      value = true;
-      break;
-    case "bytes":
-      value = "base64_encoded_data";
-      break;
-    case "timestamp":
-      value = new Date().toISOString();
-      break;
-    case "duration":
-      value = "1h30m";
-      break;
-    default:
-      if (cleanType.toLowerCase().endsWith("type") || type.includes("enum")) {
-        value = 1; // 枚举类型默认值
-      } else {
-        value = {}; // 其他消息类型
-      }
+  // 根据字段名推测类型
+  const nameLower = fieldName.toLowerCase();
+
+  let value: any;
+
+  // 首先根据字段名判断
+  if (nameLower.includes("email")) {
+    value = generateRandomEmail();
+  } else if (nameLower.includes("phone")) {
+    value = generateRandomPhoneNumber();
+  } else if (nameLower.includes("url") || nameLower.includes("link")) {
+    value = generateRandomUrl();
+  } else if (nameLower.includes("id")) {
+    value = generateRandomId();
+  } else if (nameLower.includes("date") || nameLower.includes("time")) {
+    value = generateRandomDate();
+  } else if (nameLower.includes("name")) {
+    value = generateRandomString("name_");
+  } else {
+    // 如果字段名没有特殊含义，则根据类型生成
+    switch (cleanType.toLowerCase()) {
+      case "string":
+        if (nameLower.includes("description")) {
+          value = `This is a sample description for ${generateRandomString()}`;
+        } else if (nameLower.includes("title")) {
+          value = `Sample Title: ${generateRandomString()}`;
+        } else {
+          value = generateRandomString();
+        }
+        break;
+      case "int32":
+      case "int64":
+      case "sint32":
+      case "sint64":
+      case "uint32":
+      case "uint64":
+      case "fixed32":
+      case "fixed64":
+        if (nameLower.includes("age")) {
+          value = Math.floor(Math.random() * 80) + 18;
+        } else if (nameLower.includes("year")) {
+          value = Math.floor(Math.random() * 23) + 2000;
+        } else if (
+          nameLower.includes("count") ||
+          nameLower.includes("number")
+        ) {
+          value = Math.floor(Math.random() * 1000);
+        } else {
+          value = Math.floor(Math.random() * 10000);
+        }
+        break;
+      case "double":
+      case "float":
+        if (nameLower.includes("price") || nameLower.includes("amount")) {
+          value = +(Math.random() * 1000).toFixed(2);
+        } else if (nameLower.includes("rate") || nameLower.includes("ratio")) {
+          value = +Math.random().toFixed(4);
+        } else {
+          value = +Math.random().toFixed(2);
+        }
+        break;
+      case "bool":
+        value = Math.random() > 0.5;
+        break;
+      case "bytes":
+        value = "base64_encoded_data_" + generateRandomId();
+        break;
+      case "timestamp":
+        value = generateRandomDate();
+        break;
+      case "duration":
+        const hours = Math.floor(Math.random() * 24);
+        const minutes = Math.floor(Math.random() * 60);
+        value = `${hours}h${minutes}m`;
+        break;
+      default:
+        if (cleanType.toLowerCase().endsWith("type") || type.includes("enum")) {
+          value = Math.floor(Math.random() * 5); // 枚举类型随机值
+        } else {
+          value = {}; // 其他消息类型
+        }
+    }
   }
 
   if (isMap) {
-    return { key1: value, key2: value };
+    const result = {};
+    for (let i = 1; i <= 2; i++) {
+      result[`key${i}`] = value;
+    }
+    return result;
   }
-  return isRepeated ? [value] : value;
+
+  return isRepeated ? [value, value] : value;
 }
 
 // 处理 RPC 请求
@@ -283,12 +399,12 @@ ipcMain.handle("rpc-request", async (event, params) => {
     // 执行带调试信息的请求
     const { stdout, stderr } = await execAsync(
       `grpcurl -plaintext -d @ ${cleanUrl} "${fullMethodName}" < ${tmpFile}`,
-      { 
+      {
         env: {
           ...process.env,
-          GRPC_GO_LOG_SEVERITY_LEVEL: 'info',
-          GRPC_GO_LOG_VERBOSITY_LEVEL: '99'
-        }
+          GRPC_GO_LOG_SEVERITY_LEVEL: "info",
+          GRPC_GO_LOG_VERBOSITY_LEVEL: "99",
+        },
       }
     );
 
@@ -300,20 +416,22 @@ ipcMain.handle("rpc-request", async (event, params) => {
       response = stdout;
     }
 
-    // 确保返回所有必要的信息
+    // 确保回所有必要的信息
     return {
       success: true,
       data: response,
-      debug: stderr || '', // 确保总是返回字符串
-      command: `grpcurl -plaintext -d '${JSON.stringify(params.params)}' ${cleanUrl} ${fullMethodName}`
+      debug: stderr || "", // 确保总是返回字符串
+      command: `grpcurl -plaintext -d '${JSON.stringify(
+        params.params
+      )}' ${cleanUrl} ${fullMethodName}`,
     };
   } catch (error: any) {
     console.error("Failed to make RPC request:", error);
     return {
       success: false,
       error: error.message,
-      debug: error.stderr || error.message || '',
-      command: ''
+      debug: error.stderr || error.message || "",
+      command: "",
     };
   }
 });
