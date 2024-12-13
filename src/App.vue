@@ -4,7 +4,7 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <span class="app-title">RPC Postman</span>
-        
+
         <!-- 工作空间切换 -->
         <el-dropdown trigger="click" @command="handleWorkspaceChange">
           <div class="workspace-selector">
@@ -13,8 +13,8 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item 
-                v-for="workspace in workspaces" 
+              <el-dropdown-item
+                v-for="workspace in workspaces"
                 :key="workspace.id"
                 :command="workspace.id"
               >
@@ -40,13 +40,13 @@
               <el-icon><Star /></el-icon>
             </el-button>
           </el-tooltip>
-          
+
           <el-tooltip content="历史记录" placement="bottom">
             <el-button text @click="showHistoryDialog = true">
               <el-icon><Clock /></el-icon>
             </el-button>
           </el-tooltip>
-          
+
           <el-tooltip content="环境" placement="bottom">
             <el-button text @click="showEnvironmentDialog = true">
               <el-icon><Setting /></el-icon>
@@ -94,11 +94,7 @@
         <!-- 用户头像 -->
         <el-dropdown trigger="click" @command="handleUserCommand">
           <div class="user-avatar">
-            <el-avatar 
-              :size="32" 
-              :src="userAvatar"
-              @error="handleAvatarError"
-            >
+            <el-avatar :size="32" :src="userAvatar" @error="handleAvatarError">
               <el-icon><User /></el-icon>
             </el-avatar>
           </div>
@@ -175,7 +171,10 @@
     >
       <el-form :model="newWorkspace" label-width="100px">
         <el-form-item label="Name">
-          <el-input v-model="newWorkspace.name" placeholder="Enter workspace name" />
+          <el-input
+            v-model="newWorkspace.name"
+            placeholder="Enter workspace name"
+          />
         </el-form-item>
         <el-form-item label="Description">
           <el-input
@@ -194,12 +193,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { 
-  Moon, 
-  Sunny, 
-  Star, 
-  Clock, 
+import { ref, onMounted } from "vue";
+import {
+  Moon,
+  Sunny,
+  Star,
+  Clock,
   Setting,
   User,
   UserFilled,
@@ -212,141 +211,152 @@ import {
   ArrowDown,
   FolderOpened,
   Plus,
-  Management
-} from '@element-plus/icons-vue'
-import RequestPanel from './components/RequestPanel.vue'
-import FavoriteManager from './components/FavoriteManager.vue'
-import RequestHistory from './components/history/RequestHistory.vue'
-import EnvironmentManager from './components/EnvironmentManager.vue'
-import { useRequestHistory } from './composables/useRequestHistory'
+  Management,
+} from "@element-plus/icons-vue";
+import RequestPanel from "./components/RequestPanel.vue";
+import FavoriteManager from "./components/FavoriteManager.vue";
+import RequestHistory from "./components/history/RequestHistory.vue";
+import EnvironmentManager from "./components/EnvironmentManager.vue";
+import { useRequestHistory } from "./composables/useRequestHistory";
 
-const isDarkMode = ref(document.documentElement.getAttribute('data-theme') === 'dark')
-const showFavoritesDialog = ref(false)
-const showHistoryDialog = ref(false)
-const showEnvironmentDialog = ref(false)
+const isDarkMode = ref(localStorage.getItem("theme") === "dark");
+const showFavoritesDialog = ref(false);
+const showHistoryDialog = ref(false);
+const showEnvironmentDialog = ref(false);
 
-const { historyItems: requestHistory, removeHistoryItem, clearHistory } = useRequestHistory()
+const {
+  historyItems: requestHistory,
+  removeHistoryItem,
+  clearHistory,
+} = useRequestHistory();
 
 // 用户相关状态
-const isLoggedIn = ref(false)
-const userAvatar = ref('')
+const isLoggedIn = ref(false);
+const userAvatar = ref("");
 
 const toggleTheme = (value: boolean) => {
-  document.documentElement.setAttribute('data-theme', value ? 'dark' : 'light')
-}
+  const theme = value ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+};
+onMounted(() => {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  isDarkMode.value = savedTheme === "dark";
+  document.documentElement.setAttribute("data-theme", savedTheme);
+});
 
 // 处理收藏夹加载
 const handleFavoriteLoad = (favorite: any) => {
   // 处理加载收藏项的逻辑
-  showFavoritesDialog.value = false
-}
+  showFavoritesDialog.value = false;
+};
 
 // 处理历史记录加载
 const handleHistoryLoad = (item: any) => {
   // 处理加载历史记录的逻辑
-  showHistoryDialog.value = false
-}
+  showHistoryDialog.value = false;
+};
 
 const handleViewDetails = (item: any) => {
   // 处理查看详情的逻辑
-}
+};
 
 const handleRemoveHistoryItem = (item: any) => {
-  removeHistoryItem(item)
-}
+  removeHistoryItem(item);
+};
 
 const handleClearHistory = () => {
-  clearHistory()
-}
+  clearHistory();
+};
 
 // 处理头像加载错误
 const handleAvatarError = () => {
   // 使用默认头像或显示用户图标
-}
+};
 
 // 处理用户菜单命令
 const handleUserCommand = (command: string) => {
   switch (command) {
-    case 'profile':
+    case "profile":
       // 处理查看个人信息
-      break
-    case 'settings':
+      break;
+    case "settings":
       // 处理设置
-      break
-    case 'login':
+      break;
+    case "login":
       // 处理登录
-      break
-    case 'logout':
+      break;
+    case "logout":
       // 处理退出登录
-      break
+      break;
   }
-}
+};
 
 // 处理设置菜单命令
 const handleSettingCommand = (command: string) => {
   switch (command) {
-    case 'preferences':
+    case "preferences":
       // 处理偏好设置
-      break
-    case 'keyboard':
+      break;
+    case "keyboard":
       // 处理快捷键设置
-      break
-    case 'appearance':
+      break;
+    case "appearance":
       // 处理外观设置
-      break
-    case 'about':
+      break;
+    case "about":
       // 处理关于信息
-      break
+      break;
   }
-}
+};
 
 // 工作空间相关状态
 interface Workspace {
-  id: string
-  name: string
-  description?: string
+  id: string;
+  name: string;
+  description?: string;
 }
 
 const workspaces = ref<Workspace[]>([
-  { id: 'default', name: 'Default Workspace' },
-  { id: 'team', name: 'Team Workspace' }
-])
-const currentWorkspace = ref('Default Workspace')
-const showCreateWorkspaceDialog = ref(false)
+  { id: "default", name: "Default Workspace" },
+  { id: "team", name: "Team Workspace" },
+]);
+const currentWorkspace = ref("Default Workspace");
+const showCreateWorkspaceDialog = ref(false);
 const newWorkspace = ref({
-  name: '',
-  description: ''
-})
+  name: "",
+  description: "",
+});
 
 // 处理工作空间切换
 const handleWorkspaceChange = (command: string) => {
-  if (command === 'create') {
-    showCreateWorkspaceDialog.value = true
-  } else if (command === 'manage') {
+  if (command === "create") {
+    showCreateWorkspaceDialog.value = true;
+  } else if (command === "manage") {
     // 处理管理工作空间
   } else {
     // 切换工作空间
-    const workspace = workspaces.value.find(w => w.id === command)
+    const workspace = workspaces.value.find((w) => w.id === command);
     if (workspace) {
-      currentWorkspace.value = workspace.name
+      currentWorkspace.value = workspace.name;
     }
   }
-}
+};
 
 // 创建工作空间
 const createWorkspace = () => {
-  if (!newWorkspace.value.name) return
+  if (!newWorkspace.value.name) return;
 
   const workspace: Workspace = {
     id: Date.now().toString(),
     name: newWorkspace.value.name,
-    description: newWorkspace.value.description
-  }
-  
-  workspaces.value.push(workspace)
-  showCreateWorkspaceDialog.value = false
-  newWorkspace.value = { name: '', description: '' }
-}
+    description: newWorkspace.value.description,
+  };
+
+  workspaces.value.push(workspace);
+  showCreateWorkspaceDialog.value = false;
+  newWorkspace.value = { name: "", description: "" };
+};
 </script>
 
 <style>
@@ -358,7 +368,8 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-color);
