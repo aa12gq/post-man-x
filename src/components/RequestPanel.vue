@@ -1022,7 +1022,6 @@ const createNewRequest = (type: "http" | "rpc") => {
   hasUnsavedChanges.set(newId, false);
 };
 </script>
-
 <style scoped>
 .main-layout {
   display: flex;
