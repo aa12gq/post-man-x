@@ -29,7 +29,11 @@
         'is-collapsed': isSidebarCollapsed || activeView !== 'collections',
         'is-hidden': activeView !== 'collections',
       }"
+      :style="{ width: `${sidebarWidth}px` }"
     >
+      <!-- 拖动条 -->
+      <div class="sidebar-resizer" @mousedown="startSidebarResize"></div>
+
       <!-- 折叠按钮 -->
       <div class="sidebar-toggle" @click="toggleSidebar">
         <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
@@ -136,7 +140,7 @@
                     <!-- Metadata 选项卡 -->
                     <el-tab-pane label="Metadata" name="metadata">
                       <MetadataEditor
-                        :initial-metadata="requestHeaders"
+                        :initial-metadata="headersToRecord(requestHeaders)"
                         @update:metadata="updateMetadata"
                       />
                     </el-tab-pane>
@@ -149,7 +153,7 @@
                 <HTTPRequestForm
                   :initial-method="tab.form.method"
                   :initial-url="tab.form.url"
-                  :initial-headers="requestHeaders"
+                  :initial-headers="headersToRecord(requestHeaders)"
                   :initial-params="queryParams"
                   :initial-body="tab.form.params"
                   :loading="loading"
@@ -220,7 +224,10 @@ import { ElMessage } from "element-plus";
 
 // 基础状态
 const loading = ref(false);
-const isSidebarCollapsed = ref(false);
+const isSidebarCollapsed = ref(
+  localStorage.getItem("sidebarCollapsed") === "true"
+);
+const sidebarWidth = ref(Number(localStorage.getItem("sidebarWidth")) || 300); // 如果没有存储值则使用默认值300
 
 // 请求表单的基本构造
 const baseForm = {
@@ -238,6 +245,7 @@ const baseForm = {
 interface Tab {
   id: string;
   name: string;
+  title: string;
   form: typeof baseForm;
   response: string;
   responseTime: number | null;
@@ -251,6 +259,7 @@ const tabs = ref<Tab[]>([
   {
     id: "1",
     name: "New Request",
+    title: "New Request",
     form: reactive({ ...baseForm }),
     response: "",
     responseTime: null,
@@ -303,6 +312,8 @@ const { historyItems: requestHistory, addHistoryItem: addToHistory } =
 // 方法定义
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
+  // 保存状态到 localStorage
+  localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
 
 const addTab = () => {
@@ -310,6 +321,7 @@ const addTab = () => {
   tabs.value.push({
     id: newId,
     name: "New Request",
+    title: "New Request",
     form: reactive({ ...baseForm }),
     response: "",
     responseTime: null,
@@ -480,7 +492,7 @@ const sendRequest = async () => {
         // 确保调试信息被正确设置
         currentTab.value.debugLogs = response.debug || "";
         currentTab.value.debugCommand = response.command || "";
-        currentTab.value.status = response.status || 200;
+        currentTab.value.status = 200;
 
         console.log("Debug info:", {
           logs: currentTab.value.debugLogs,
@@ -490,14 +502,16 @@ const sendRequest = async () => {
 
       // 添加到历史记录
       addToHistory({
+        id: String(Date.now()),
         type: "rpc",
         url: requestForm.value.url,
         serviceMethod: selectedMethod.value,
         params: params,
         response: response.data,
-        timestamp: new Date().toISOString(),
-        debugLogs: response.debug, // 保存调试信息到历史记录
+        timestamp: Date.now(),
+        debugInfo: response.debug,
         debugCommand: response.command,
+        requestMessage: JSON.stringify(params),
       });
     }
   } catch (error: any) {
@@ -511,7 +525,7 @@ const sendRequest = async () => {
       currentTab.value.responseHeaders = {};
       currentTab.value.debugLogs = error.debug || error.message || "";
       currentTab.value.debugCommand = "";
-      currentTab.value.status = error.status || 500;
+      currentTab.value.status = 500;
     }
   } finally {
     loading.value = false;
@@ -590,7 +604,7 @@ const openRequestDetails = (item: any) => {
   showRequestDetailsDrawer.value = true;
 };
 
-// 监听请求类型变化
+// 监听求类型变化
 watch(
   () => requestForm.value.type,
   (newType) => {
@@ -727,20 +741,87 @@ const handleNodeClick = (data: any) => {
 };
 
 const handleAddCollection = () => {
-  // 处理添加集合的逻辑
+  // 处理添加合的逻辑
   console.log("Add collection clicked");
 };
 
 // 活动视图状态
-const activeView = ref<"collections" | "apis" | null>(null);
+const activeView = ref<"collections" | "apis" | null>(
+  (localStorage.getItem("activeView") as "collections" | "apis" | null) || null
+);
 
 // 切换视图
 const toggleView = (view: "collections" | "apis") => {
   if (activeView.value === view) {
-    activeView.value = null; // 如果点击当前活动的视图，则关闭它
+    activeView.value = null;
   } else {
-    activeView.value = view; // 否则切换到新的视图
+    activeView.value = view;
   }
+  // 保存当前视图状态
+  localStorage.setItem("activeView", activeView.value || "");
+};
+
+const minWidth = 200; // 最小宽度
+const maxWidth = 600; // 最大宽度
+let startX = 0;
+let startWidth = 0;
+
+const COLLAPSE_THRESHOLD = 100; // 收起阈值
+
+const handleSidebarResize = (e: MouseEvent) => {
+  const deltaX = e.clientX - startX;
+  const newWidth = startWidth + deltaX;
+
+  // 更新宽度值
+  sidebarWidth.value = Math.min(Math.max(newWidth, minWidth), maxWidth);
+
+  // 如果宽度小于阈值,立即收起边栏
+  if (newWidth < COLLAPSE_THRESHOLD) {
+    isSidebarCollapsed.value = true;
+  } else if (isSidebarCollapsed.value) {
+    // 如果宽度大于阈值且当前是收起状态，则展开
+    isSidebarCollapsed.value = false;
+  }
+};
+
+const startSidebarResize = (e: MouseEvent) => {
+  startX = e.clientX;
+  startWidth = sidebarWidth.value;
+
+  document.body.style.cursor = "col-resize";
+  document.body.style.userSelect = "none";
+
+  document.addEventListener("mousemove", handleSidebarResize);
+  document.addEventListener("mouseup", stopSidebarResize);
+};
+
+const stopSidebarResize = () => {
+  document.removeEventListener("mousemove", handleSidebarResize);
+  document.removeEventListener("mouseup", stopSidebarResize);
+
+  document.body.style.cursor = "";
+  document.body.style.userSelect = "";
+
+  // 如果宽度小于阈值,直接收起边栏
+  if (sidebarWidth.value < COLLAPSE_THRESHOLD) {
+    isSidebarCollapsed.value = true;
+  }
+
+  // 保存宽度到 localStorage
+  localStorage.setItem("sidebarWidth", sidebarWidth.value.toString());
+  localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
+};
+
+// 将 headers 数组转换为 Record<string, string>
+const headersToRecord = (
+  headers: { enabled: boolean; name: string; value: string }[]
+): Record<string, string> => {
+  return headers.reduce((acc, header) => {
+    if (header.enabled) {
+      acc[header.name] = header.value;
+    }
+    return acc;
+  }, {} as Record<string, string>);
 };
 </script>
 
@@ -801,10 +882,10 @@ const toggleView = (view: "collections" | "apis") => {
 
 /* Collections 边栏样式 */
 .collections-sidebar {
-  width: 300px;
+  position: relative;
   background-color: var(--bg-color);
   border-right: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: none;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -831,7 +912,7 @@ const toggleView = (view: "collections" | "apis") => {
 
 /* 调整折叠按钮位置 */
 .sidebar-toggle {
-  right: -24px; /* 将按钮移到右边界外 */
+  right: -24px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -854,7 +935,7 @@ const toggleView = (view: "collections" | "apis") => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: margin-left 0.3s ease;
+  transition: none;
 }
 
 .request-container {
@@ -1036,5 +1117,22 @@ const toggleView = (view: "collections" | "apis") => {
 :deep(.el-tree) {
   background-color: var(--bg-color);
   color: var(--text-color);
+}
+
+.sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 100;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer:active {
+  background-color: var(--el-color-primary);
 }
 </style>
