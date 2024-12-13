@@ -204,9 +204,6 @@ import {
   Plus,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
-import FavoriteManager from "./FavoriteManager.vue";
-import RequestHistory from "./history/RequestHistory.vue";
-import EnvironmentManager from "./EnvironmentManager.vue";
 import RPCMethodSelector from "./rpc/RPCMethodSelector.vue";
 import RPCMessageEditor from "./rpc/RPCMessageEditor.vue";
 import AuthorizationManager from "./auth/AuthorizationManager.vue";
@@ -221,12 +218,8 @@ import type { Header } from "./HeadersManager.vue";
 import type { FavoriteRequest } from "../services/FavoriteService";
 import { ElMessage } from "element-plus";
 
-// 请求类型定义
-type RequestType = "rpc" | "http";
-
 // 基础状态
 const loading = ref(false);
-const responseTime = ref<number | null>(null);
 const isSidebarCollapsed = ref(false);
 
 // 请求表单的基本构造
@@ -277,8 +270,6 @@ const currentTab = computed(() => {
 const requestForm = computed(() => currentTab.value?.form || baseForm);
 
 // 响应相关状态
-const response = ref("");
-const responseHeaders = ref<Record<string, string>>({});
 const requestHeaders = ref<Header[]>([]);
 const showRequestDetailsDrawer = ref(false);
 
@@ -306,12 +297,8 @@ const auth = reactive({
 });
 
 // 历史记录相关
-const {
-  historyItems: requestHistory,
-  addHistoryItem: addToHistory,
-  removeHistoryItem,
-  clearHistory,
-} = useRequestHistory();
+const { historyItems: requestHistory, addHistoryItem: addToHistory } =
+  useRequestHistory();
 
 // 方法定义
 const toggleSidebar = () => {
@@ -602,16 +589,6 @@ const openRequestDetails = (item: any) => {
   };
   showRequestDetailsDrawer.value = true;
 };
-
-// 监听 URL 变化
-watch(
-  () => requestForm.value.url,
-  (newUrl) => {
-    if (newUrl && requestForm.value.type === "rpc") {
-      loadServices();
-    }
-  }
-);
 
 // 监听请求类型变化
 watch(

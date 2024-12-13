@@ -149,7 +149,6 @@
         :loading="loading"
         :disabled="!canSend"
       >
-        <el-icon><CaretRight /></el-icon>
         Invoke
       </el-button>
     </div>
@@ -158,15 +157,15 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { 
-  CaretRight, 
-  Refresh, 
-  List, 
-  Operation, 
-  Cpu, 
+import {
+  CaretRight,
+  Refresh,
+  List,
+  Operation,
+  Cpu,
   Connection,
   Link,
-  Loading 
+  Loading,
 } from "@element-plus/icons-vue";
 import type { RpcService } from "../../services/RpcService";
 
@@ -186,33 +185,36 @@ const emit = defineEmits<{
   "load-services": [];
 }>();
 
-const viewMode = ref<'dropdown' | 'cascade'>('dropdown');
+const viewMode = ref<"dropdown" | "cascade">("dropdown");
 const selectedMethod = ref("");
 const selectedMethodPath = ref<string[]>([]);
 
 const serviceOptions = computed(() => {
-  return props.services.map(service => ({
+  return props.services.map((service) => ({
     value: service.name,
     label: service.name,
     name: service.name,
     methods: service.methods,
-    children: service.methods?.map(method => ({
-      value: method.name,
-      label: method.name,
-      name: method.name
-    })) || []
+    children:
+      service.methods?.map((method) => ({
+        value: method.name,
+        label: method.name,
+        name: method.name,
+      })) || [],
   }));
 });
 
 const cascaderProps = {
-  expandTrigger: 'hover' as const,
+  expandTrigger: "hover" as const,
   checkStrictly: false,
   multiple: false,
-  emitPath: true
+  emitPath: true,
 };
 
 const canSend = computed(() => {
-  return props.url && (selectedMethod.value || selectedMethodPath.value.length === 2);
+  return (
+    props.url && (selectedMethod.value || selectedMethodPath.value.length === 2)
+  );
 });
 
 const handleUrlClear = () => {
