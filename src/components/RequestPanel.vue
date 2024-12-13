@@ -1,214 +1,256 @@
 <template>
   <div class="main-layout">
-    <!-- 活动栏 -->
-    <div class="activity-bar">
+    <!-- 主要内容区域 -->
+    <div class="content-layout">
+      <!-- 左侧区域 -->
       <div
-        class="activity-item"
-        :class="{ active: activeView === 'collections' }"
-        @click="toggleView('collections')"
+        class="left-section"
+        :class="{ 'is-collapsed': isSidebarCollapsed }"
+        :style="{ width: isSidebarCollapsed ? '48px' : `${sidebarWidth}px` }"
       >
-        <el-tooltip content="Collections" placement="right">
-          <el-icon><Collection /></el-icon>
-        </el-tooltip>
-      </div>
-      <div
-        class="activity-item"
-        :class="{ active: activeView === 'apis' }"
-        @click="toggleView('apis')"
-      >
-        <el-tooltip content="APIs" placement="right">
-          <el-icon><Connection /></el-icon>
-        </el-tooltip>
-      </div>
-    </div>
+        <!-- New 按钮区域 -->
+        <div class="new-area">
+          <div class="new-button" @click="showNewRequestDialog">
+            <el-icon><Plus /></el-icon>
+            <span>New</span>
+          </div>
+        </div>
 
-    <!-- Collections 边栏 -->
-    <div
-      class="collections-sidebar"
-      :class="{
-        'is-collapsed': isSidebarCollapsed || activeView !== 'collections',
-        'is-hidden': activeView !== 'collections',
-      }"
-      :style="{ width: `${sidebarWidth}px` }"
-    >
-      <!-- 拖动条 -->
-      <div class="sidebar-resizer" @mousedown="startSidebarResize"></div>
+        <!-- 活动栏和边栏容器 -->
+        <div class="sidebar-container">
+          <!-- 活动栏 -->
+          <div class="activity-bar">
+            <div
+              class="activity-item"
+              :class="{ active: activeView === 'collections' }"
+              @click="toggleView('collections')"
+            >
+              <el-tooltip content="Collections" placement="right">
+                <el-icon><Collection /></el-icon>
+              </el-tooltip>
+            </div>
+            <div
+              class="activity-item"
+              :class="{ active: activeView === 'apis' }"
+              @click="toggleView('apis')"
+            >
+              <el-tooltip content="APIs" placement="right">
+                <el-icon><Connection /></el-icon>
+              </el-tooltip>
+            </div>
+          </div>
 
-      <!-- 折叠按钮 -->
-      <div class="sidebar-toggle" @click="toggleSidebar">
-        <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
-          <CaretLeft />
-        </el-icon>
+          <!-- Collections 边栏 -->
+          <div
+            class="collections-sidebar"
+            :class="{
+              'is-collapsed':
+                isSidebarCollapsed || activeView !== 'collections',
+              'is-hidden': activeView !== 'collections',
+            }"
+          >
+            <!-- 拖动条 -->
+            <div class="sidebar-resizer" @mousedown="startSidebarResize"></div>
+
+            <!-- 折叠按钮 -->
+            <div class="sidebar-toggle" @click="toggleSidebar">
+              <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
+                <CaretLeft />
+              </el-icon>
+            </div>
+
+            <div class="sidebar-header">
+              <span class="sidebar-title">Collections</span>
+              <el-button text size="small" @click="handleAddCollection">
+                <el-icon><Plus /></el-icon>
+              </el-button>
+            </div>
+            <div class="sidebar-content">
+              <el-tree
+                :data="collectionsData"
+                :props="defaultProps"
+                @node-click="handleNodeClick"
+              >
+                <template #default="{ node, data }">
+                  <span class="custom-tree-node">
+                    <el-icon><Folder /></el-icon>
+                    <span>{{ node.label }}</span>
+                  </span>
+                </template>
+              </el-tree>
+            </div>
+          </div>
+
+          <!-- APIs 边栏 -->
+          <div
+            class="collections-sidebar"
+            :class="{
+              'is-collapsed': isSidebarCollapsed || activeView !== 'apis',
+              'is-hidden': activeView !== 'apis',
+            }"
+          >
+            <!-- APIs 内容 -->
+            <div class="sidebar-header">
+              <span class="sidebar-title">APIs</span>
+            </div>
+            <div class="sidebar-content">
+              <!-- APIs 相关内容 -->
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="sidebar-header">
-        <span class="sidebar-title">Collections</span>
-        <el-button text size="small" @click="handleAddCollection">
-          <el-icon><Plus /></el-icon>
-        </el-button>
-      </div>
-      <div class="sidebar-content">
-        <el-tree
-          :data="collectionsData"
-          :props="defaultProps"
-          @node-click="handleNodeClick"
-        >
-          <template #default="{ node, data }">
-            <span class="custom-tree-node">
-              <el-icon><Folder /></el-icon>
-              <span>{{ node.label }}</span>
-            </span>
-          </template>
-        </el-tree>
-      </div>
-    </div>
-
-    <!-- APIs 边栏 -->
-    <div
-      class="collections-sidebar"
-      :class="{
-        'is-collapsed': isSidebarCollapsed || activeView !== 'apis',
-        'is-hidden': activeView !== 'apis',
-      }"
-    >
-      <!-- APIs 内容 -->
-      <div class="sidebar-header">
-        <span class="sidebar-title">APIs</span>
-      </div>
-      <div class="sidebar-content">
-        <!-- APIs 相关内容 -->
-      </div>
-    </div>
-
-    <!-- 右侧主内容区 -->
-    <div class="main-content">
-      <!-- 标签页-->
-      <div class="tabs-container">
+      <!-- 右侧主内容区 -->
+      <div class="main-content">
+        <!-- 标签页管理器 -->
         <TabManager
           v-model="activeTab"
           :tabs="tabs"
           @add="addTab"
           @remove="removeTab"
         />
-      </div>
 
-      <!-- 请求和响应区域包装器 -->
-      <div class="request-response-wrapper">
-        <template v-if="currentTab">
-          <div class="request-workspace">
-            <!-- 上半部分：请求区域 -->
-            <div class="request-section">
-              <div class="request-type-switch">
-                <el-radio-group v-model="currentTab.form.type" size="small">
-                  <el-radio-button value="http">HTTP</el-radio-button>
-                  <el-radio-button value="rpc">RPC</el-radio-button>
-                </el-radio-group>
-              </div>
+        <!-- 请求和响应区域包装器 -->
+        <div class="request-response-wrapper">
+          <template v-if="tabs.length === 0">
+            <!-- 空状态提示 -->
+            <div class="empty-state">
+              <el-empty description="No request yet">
+                <el-button type="primary" @click="showNewRequestDialog">
+                  Create New Request
+                </el-button>
+              </el-empty>
+            </div>
+          </template>
+          <template v-else-if="currentTab">
+            <div class="request-workspace">
+              <!-- 上半部分：请求区域 -->
+              <div class="request-section">
+                <div class="request-content">
+                  <!-- RPC 请求区域 -->
+                  <div
+                    v-if="currentTab.form.type === 'rpc'"
+                    class="request-form"
+                  >
+                    <RPCMethodSelector
+                      :url="currentTab.form.url"
+                      :loading="loading"
+                      :loading-methods="loadingMethods"
+                      :loading-services="loadingServices"
+                      :services="rpcServices"
+                      @update:url="updateUrl"
+                      @method-change="handleMethodChange"
+                      @send="sendRequest"
+                      @load-methods="loadServiceMethods"
+                      @load-services="loadServices"
+                    />
 
-              <div class="request-content">
-                <!-- RPC 请求区域 -->
-                <div v-if="currentTab.form.type === 'rpc'" class="request-form">
-                  <RPCMethodSelector
-                    :url="currentTab.form.url"
-                    :loading="loading"
-                    :loading-methods="loadingMethods"
-                    :loading-services="loadingServices"
-                    :services="rpcServices"
-                    @update:url="updateUrl"
-                    @method-change="handleMethodChange"
-                    @send="sendRequest"
-                    @load-methods="loadServiceMethods"
-                    @load-services="loadServices"
-                  />
+                    <div class="request-response-panel">
+                      <el-tabs v-model="activePane" type="border-card">
+                        <!-- Message 选项卡 -->
+                        <el-tab-pane label="Message" name="message">
+                          <RPCMessageEditor
+                            :message="currentTab.form.params"
+                            :has-method="true"
+                            @update:message="updateMessage"
+                            @generate-example="generateExample"
+                          />
+                        </el-tab-pane>
 
-                  <div class="request-response-panel">
-                    <el-tabs v-model="activePane" type="border-card">
-                      <!-- Message 选项卡 -->
-                      <el-tab-pane label="Message" name="message">
-                        <RPCMessageEditor
-                          :message="currentTab.form.params"
-                          :has-method="true"
-                          @update:message="updateMessage"
-                          @generate-example="generateExample"
-                        />
-                      </el-tab-pane>
+                        <!-- Authorization 选项卡 -->
+                        <el-tab-pane label="Authorization" name="auth">
+                          <AuthorizationManager
+                            :initial-auth-type="authType"
+                            :initial-basic-auth="auth.basic"
+                            :initial-bearer-token="auth.bearer.token"
+                            @auth-change="handleAuthChange"
+                          />
+                        </el-tab-pane>
 
-                      <!-- Authorization 选项卡 -->
-                      <el-tab-pane label="Authorization" name="auth">
-                        <AuthorizationManager
-                          :initial-auth-type="authType"
-                          :initial-basic-auth="auth.basic"
-                          :initial-bearer-token="auth.bearer.token"
-                          @auth-change="handleAuthChange"
-                        />
-                      </el-tab-pane>
+                        <!-- Metadata 选项卡 -->
+                        <el-tab-pane label="Metadata" name="metadata">
+                          <MetadataEditor
+                            :initial-metadata="headersToRecord(requestHeaders)"
+                            @update:metadata="updateMetadata"
+                          />
+                        </el-tab-pane>
+                      </el-tabs>
+                    </div>
+                  </div>
 
-                      <!-- Metadata 选项卡 -->
-                      <el-tab-pane label="Metadata" name="metadata">
-                        <MetadataEditor
-                          :initial-metadata="headersToRecord(requestHeaders)"
-                          @update:metadata="updateMetadata"
-                        />
-                      </el-tab-pane>
-                    </el-tabs>
+                  <!-- HTTP 请求区域 -->
+                  <div v-else class="request-form">
+                    <HTTPRequestForm
+                      :initial-method="currentTab.form.method"
+                      :initial-url="currentTab.form.url"
+                      :initial-headers="headersToRecord(requestHeaders)"
+                      :initial-params="queryParams"
+                      :initial-body="currentTab.form.params"
+                      :loading="loading"
+                      @update:method="updateMethod"
+                      @update:url="updateUrl"
+                      @update:headers="updateHeaders"
+                      @update:params="updateParams"
+                      @update:body="updateBody"
+                      @send="sendRequest"
+                    />
                   </div>
                 </div>
+              </div>
 
-                <!-- HTTP 请求区域 -->
-                <div v-else class="request-form">
-                  <HTTPRequestForm
-                    :initial-method="currentTab.form.method"
-                    :initial-url="currentTab.form.url"
-                    :initial-headers="headersToRecord(requestHeaders)"
-                    :initial-params="queryParams"
-                    :initial-body="currentTab.form.params"
-                    :loading="loading"
-                    @update:method="updateMethod"
-                    @update:url="updateUrl"
-                    @update:headers="updateHeaders"
-                    @update:params="updateParams"
-                    @update:body="updateBody"
-                    @send="sendRequest"
-                  />
+              <!-- 分割线 -->
+              <div class="resize-handle" @mousedown="startResize">
+                <div class="resize-handle-line"></div>
+                <div class="resize-handle-icon">
+                  <el-icon><ArrowUp /></el-icon>
                 </div>
               </div>
-            </div>
 
-            <!-- 分割线 -->
-            <div class="resize-handle" @mousedown="startResize">
-              <div class="resize-handle-line"></div>
-              <div class="resize-handle-icon">
-                <el-icon><ArrowUp /></el-icon>
+              <!-- 下半部分：响应区域 -->
+              <div class="response-section" :style="{ height: responseHeight }">
+                <ResponseViewer
+                  :response="currentTab.response"
+                  :response-time="currentTab.responseTime"
+                  :headers="currentTab.responseHeaders"
+                  :debug-logs="currentTab.debugLogs"
+                  :debug-command="currentTab.debugCommand"
+                  :status="currentTab.status"
+                  @clear="clearResponse"
+                  @collapse-change="handleResponseCollapse"
+                  @resize="startResize"
+                />
               </div>
             </div>
-
-            <!-- 下半部分：响应区域 -->
-            <div 
-              class="response-section" 
-              :style="{ height: responseHeight }"
-            >
-              <ResponseViewer
-                :response="currentTab.response"
-                :response-time="currentTab.responseTime"
-                :headers="currentTab.responseHeaders"
-                :debug-logs="currentTab.debugLogs"
-                :debug-command="currentTab.debugCommand"
-                :status="currentTab.status"
-                @clear="clearResponse"
-                @collapse-change="handleResponseCollapse"
-                @resize="startResize"
-              />
-            </div>
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
-    </div>
 
-    <!-- 请求详情抽屉 -->
-    <RequestDetailsDrawer
-      v-model="showRequestDetailsDrawer"
-      :details="currentRequestDetails"
-    />
+      <!-- 请求详情抽屉 -->
+      <RequestDetailsDrawer
+        v-model="showRequestDetailsDrawer"
+        :details="currentRequestDetails"
+      />
+
+      <!-- 新增请求类型选择对话框 -->
+      <el-dialog
+        v-model="showRequestTypeDialog"
+        title="New Request"
+        width="300px"
+        :show-close="false"
+        custom-class="request-type-dialog"
+      >
+        <div class="request-type-options">
+          <div class="request-type-option" @click="createNewRequest('http')">
+            <el-icon><Document /></el-icon>
+            <span>HTTP Request</span>
+          </div>
+          <div class="request-type-option" @click="createNewRequest('rpc')">
+            <el-icon><Connection /></el-icon>
+            <span>gRPC Request</span>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -229,6 +271,7 @@ import {
   Plus,
   ArrowDown,
   ArrowUp,
+  Document,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
 import RPCMethodSelector from "./rpc/RPCMethodSelector.vue";
@@ -243,14 +286,14 @@ import RpcClient from "../services/RpcService";
 import type { RpcService } from "../services/RpcService";
 import type { Header } from "./HeadersManager.vue";
 import type { FavoriteRequest } from "../services/FavoriteService";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 // 基础状态
 const loading = ref(false);
 const isSidebarCollapsed = ref(
   localStorage.getItem("sidebarCollapsed") === "true"
 );
-const sidebarWidth = ref(Number(localStorage.getItem("sidebarWidth")) || 300); // 如果没有存储值则使用默认值300
+const sidebarWidth = ref(Number(localStorage.getItem("sidebarWidth")) || 300); // 如果没有存储值则使用默认的300
 
 // 请求表单的基本构造
 const baseForm = {
@@ -278,19 +321,8 @@ interface Tab {
   status?: number | string;
 }
 
-const tabs = ref<Tab[]>([
-  {
-    id: "1",
-    name: "New Request",
-    title: "New Request",
-    form: reactive({ ...baseForm }),
-    response: "",
-    responseTime: null,
-    responseHeaders: {},
-  },
-]);
-
-const activeTab = ref("1");
+const tabs = ref<Tab[]>([]); // 移除默认标签页
+const activeTab = ref("");
 const activePane = ref("message");
 
 // 获取当前活动的标签页
@@ -335,7 +367,10 @@ const { historyItems: requestHistory, addHistoryItem: addToHistory } =
 // 方法定义
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
-  // 保存状态到 localStorage
+  if (!isSidebarCollapsed.value) {
+    // 开时恢复之前的宽度或默认宽度
+    sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 348;
+  }
   localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
 
@@ -353,16 +388,74 @@ const addTab = () => {
   activeTab.value = newId;
 };
 
-const removeTab = (tabId: string) => {
-  const index = tabs.value.findIndex((tab) => tab.id === tabId);
-  if (index > -1) {
-    tabs.value.splice(index, 1);
-    if (tabs.value.length === 0) {
-      addTab();
-    } else if (activeTab.value === tabId) {
-      activeTab.value = tabs.value[Math.min(index, tabs.value.length - 1)].id;
+// 用于跟踪标签页是否有未保存的更改
+const hasUnsavedChanges = new Map<string, boolean>();
+
+// 监听表单变化
+watch(
+  () => currentTab.value?.form,
+  (newVal, oldVal) => {
+    if (currentTab.value) {
+      // 检查是否有实际的改动
+      const hasChanges = JSON.stringify(newVal) !== JSON.stringify(baseForm);
+      hasUnsavedChanges.set(currentTab.value.id, hasChanges);
+    }
+  },
+  { deep: true }
+);
+
+const removeTab = async (targetId: string) => {
+  const tab = tabs.value.find((tab) => tab.id === targetId);
+  if (!tab) return;
+
+  // 检查是否有未保存的更改
+  if (hasUnsavedChanges.get(targetId)) {
+    try {
+      await ElMessageBox.confirm(
+        "You have unsaved changes. Do you want to save before closing?",
+        "Unsaved Changes",
+        {
+          confirmButtonText: "Save & Close",
+          cancelButtonText: "Discard & Close",
+          type: "warning",
+          distinguishCancelAndClose: true,
+          showClose: true,
+        }
+      );
+      // 用户选择保存
+      // TODO: 实现保存逻辑
+      console.log("Save changes");
+    } catch (action) {
+      if (action === "close") {
+        // 用户点击 X 按钮,不关闭标签页
+        return;
+      }
+      // 用户选择放弃更改,继续关闭
     }
   }
+
+  // 移除标签页
+  const targetIndex = tabs.value.findIndex((tab) => tab.id === targetId);
+  if (targetIndex === -1) return;
+
+  // 如果关闭的是当前标签页,需要激活其他标签页
+  if (activeTab.value === targetId) {
+    if (tabs.value.length === 1) {
+      // 如果只有一个标签页,清空激活标签页
+      activeTab.value = "";
+    } else if (targetIndex === tabs.value.length - 1) {
+      // 如果关闭的是最后一个标签页,激活前一个标签页
+      activeTab.value = tabs.value[targetIndex - 1].id;
+    } else {
+      // 否则激活下一个标签页
+      activeTab.value = tabs.value[targetIndex + 1].id;
+    }
+  }
+
+  // 移除标签页
+  tabs.value.splice(targetIndex, 1);
+  // 清理未保存状态
+  hasUnsavedChanges.delete(targetId);
 };
 
 const loadFromFavorite = (favorite: FavoriteRequest) => {
@@ -786,14 +879,20 @@ const activeView = ref<"collections" | "apis" | null>(
 );
 
 // 切换视图
-const toggleView = (view: "collections" | "apis") => {
+const toggleView = (view: string) => {
   if (activeView.value === view) {
-    activeView.value = null;
+    // 如果点击当前活动的视图，切换边栏的展开/收起状态
+    isSidebarCollapsed.value = !isSidebarCollapsed.value;
   } else {
-    activeView.value = view;
+    // 如果切换到新的视图，确保边栏展开
+    if (isSidebarCollapsed.value) {
+      isSidebarCollapsed.value = false;
+      // 恢复之前保存的宽度或默认宽度
+      sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 348;
+    }
+    activeView.value = view as "collections" | "apis" | null;
   }
-  // 保存当前视图状态
-  localStorage.setItem("activeView", activeView.value || "");
+  localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
 
 const minWidth = 200; // 最小宽度
@@ -801,7 +900,8 @@ const maxWidth = 600; // 最大宽度
 let startX = 0;
 let startWidth = 0;
 
-const COLLAPSE_THRESHOLD = 100; // 收起阈值
+const COLLAPSE_THRESHOLD = 200; // 收起阈值
+let collapseTimer: number | null = null; // 用于跟踪持续拖拽时间
 
 const handleSidebarResize = (e: MouseEvent) => {
   const deltaX = e.clientX - startX;
@@ -810,41 +910,76 @@ const handleSidebarResize = (e: MouseEvent) => {
   // 更新宽度值
   sidebarWidth.value = Math.min(Math.max(newWidth, minWidth), maxWidth);
 
-  // 如果宽度小于阈值,立即收起边栏
+  // 如果宽度小于阈值，启动计时器
   if (newWidth < COLLAPSE_THRESHOLD) {
-    isSidebarCollapsed.value = true;
-  } else if (isSidebarCollapsed.value) {
-    // 如果宽度大于阈值且当前是收起状态，则展开
-    isSidebarCollapsed.value = false;
+    if (!collapseTimer) {
+      collapseTimer = window.setTimeout(() => {
+        // 持续在阈值以下超过500ms才收起
+        isSidebarCollapsed.value = true;
+        document.removeEventListener("mousemove", handleSidebarResize);
+        document.removeEventListener("mouseup", stopSidebarResize);
+        document.body.style.cursor = "";
+      }, 500);
+    }
+  } else {
+    // 如果宽度大于阈值，清除计时器
+    if (collapseTimer) {
+      clearTimeout(collapseTimer);
+      collapseTimer = null;
+    }
+    if (isSidebarCollapsed.value) {
+      // 如果宽度大于阈值且当前是收起状态，则展开
+      isSidebarCollapsed.value = false;
+    }
   }
 };
 
 const startSidebarResize = (e: MouseEvent) => {
-  startX = e.clientX;
-  startWidth = sidebarWidth.value;
+  e.preventDefault();
+  const startX = e.clientX;
+  const startWidth = sidebarWidth.value;
 
+  const handleMouseMove = (e: MouseEvent) => {
+    const deltaX = e.clientX - startX;
+    const newWidth = startWidth + deltaX;
+
+    // 如果宽度小于阈值，自动收起边栏
+    if (newWidth < COLLAPSE_THRESHOLD) {
+      isSidebarCollapsed.value = true;
+      localStorage.setItem("sidebarCollapsed", "true");
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      return;
+    }
+
+    // 限制最小和最大宽度
+    sidebarWidth.value = Math.max(348, Math.min(800, newWidth));
+    localStorage.setItem("sidebarWidth", String(sidebarWidth.value));
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+    document.body.style.cursor = "";
+  };
+
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", handleMouseUp);
   document.body.style.cursor = "col-resize";
-  document.body.style.userSelect = "none";
-
-  document.addEventListener("mousemove", handleSidebarResize);
-  document.addEventListener("mouseup", stopSidebarResize);
 };
 
 const stopSidebarResize = () => {
   document.removeEventListener("mousemove", handleSidebarResize);
   document.removeEventListener("mouseup", stopSidebarResize);
-
   document.body.style.cursor = "";
   document.body.style.userSelect = "";
 
-  // 如果宽度小于阈值,直接收起边栏
-  if (sidebarWidth.value < COLLAPSE_THRESHOLD) {
-    isSidebarCollapsed.value = true;
+  // 清除计时器
+  if (collapseTimer) {
+    clearTimeout(collapseTimer);
+    collapseTimer = null;
   }
-
-  // 保存宽度到 localStorage
-  localStorage.setItem("sidebarWidth", sidebarWidth.value.toString());
-  localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
 
 // 将 headers 数组转换为 Record<string, string>
@@ -858,14 +993,114 @@ const headersToRecord = (
     return acc;
   }, {} as Record<string, string>);
 };
+
+// 添加新的响应式变量
+const showRequestTypeDialog = ref(false);
+
+// 添加新的方法
+const showNewRequestDialog = () => {
+  showRequestTypeDialog.value = true;
+};
+
+const createNewRequest = (type: "http" | "rpc") => {
+  const newId = String(tabs.value.length + 1);
+  tabs.value.push({
+    id: newId,
+    name: `New ${type.toUpperCase()} Request`,
+    title: `New ${type.toUpperCase()} Request`,
+    form: reactive({
+      ...baseForm,
+      type,
+    }),
+    response: "",
+    responseTime: null,
+    responseHeaders: {},
+  });
+  activeTab.value = newId;
+  showRequestTypeDialog.value = false;
+  // 初始化未保存状态
+  hasUnsavedChanges.set(newId, false);
+};
 </script>
 
 <style scoped>
 .main-layout {
   display: flex;
+  flex-direction: column;
   height: 100%;
-  width: 100%;
   background-color: var(--bg-color);
+}
+
+/* 主要内容区域布局 */
+.content-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 左侧区域样式 */
+.left-section {
+  display: flex;
+  flex-direction: column;
+  min-width: 48px; /* 最小宽度改为活动栏宽度 */
+  border-right: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  flex-shrink: 0;
+  transition: width 0.3s;
+}
+
+.left-section.is-collapsed {
+  width: 48px !important;
+
+  /* 当折叠时隐藏 New 按钮区域和边栏 */
+  .new-area,
+  .collections-sidebar {
+    display: none;
+  }
+
+  .activity-bar {
+    border-right: none;
+  }
+}
+
+/* New 按钮区域样式 */
+.new-area {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.new-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-color);
+  font-size: 13px;
+
+  &:hover {
+    background-color: var(--hover-color);
+  }
+
+  .el-icon {
+    font-size: 16px;
+  }
+}
+
+/* 活动栏和边栏容器 */
+.sidebar-container {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
   position: relative;
 }
 
@@ -880,6 +1115,8 @@ const headersToRecord = (
   align-items: center;
   padding-top: 8px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .activity-item {
@@ -923,8 +1160,10 @@ const headersToRecord = (
   transition: none;
   overflow: hidden;
   flex-shrink: 0;
+  flex: 1;
 }
 
+/* 当边栏折叠时的样式 */
 .collections-sidebar.is-collapsed {
   width: 0;
   padding: 0;
@@ -965,12 +1204,12 @@ const headersToRecord = (
   color: var(--text-color);
 }
 
+/* 右侧内容区域 */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: none;
 }
 
 .tabs-container {
@@ -1008,7 +1247,6 @@ const headersToRecord = (
   display: flex;
   flex-direction: column;
   overflow: auto;
-  padding: 16px;
 }
 
 .request-form {
@@ -1021,14 +1259,6 @@ const headersToRecord = (
 
 .request-form.expanded {
   flex: 1;
-}
-
-.request-type-switch {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  background-color: var(--bg-color);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .request-response-panel {
@@ -1090,7 +1320,7 @@ const headersToRecord = (
   overflow: hidden;
 }
 
-/* 响应区域容器 */
+/* 响应域容器 */
 .response-container {
   display: flex;
   flex-direction: column;
@@ -1265,7 +1495,7 @@ const headersToRecord = (
   opacity: 1;
 }
 
-/* 拖动时的样式 */
+/* 动时的样式 */
 .is-resizing {
   user-select: none;
   cursor: row-resize;
@@ -1304,5 +1534,70 @@ const headersToRecord = (
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
   background-color: var(--bg-color);
   border-bottom: 2px solid var(--el-color-primary);
+}
+
+/* 添加新的样式 */
+.new-request {
+  margin-bottom: 8px;
+  color: var(--el-color-primary);
+}
+
+.activity-divider {
+  height: 1px;
+  margin: 8px 0;
+  background-color: var(--border-color);
+}
+
+.request-type-dialog {
+  :deep(.el-dialog__body) {
+    padding: 20px;
+  }
+}
+
+.request-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.request-type-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    background-color: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary);
+    color: var(--el-color-primary);
+  }
+
+  .el-icon {
+    font-size: 20px;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+/* 添加空状态样式 */
+.empty-state {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color);
+  padding: 20px;
+}
+
+:deep(.el-empty) {
+  padding: 40px;
 }
 </style>

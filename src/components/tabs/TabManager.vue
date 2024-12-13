@@ -12,18 +12,13 @@
         :key="tab.id"
         :label="tab.title"
         :name="tab.id"
-      />
+      >
+        <slot :tab="tab"></slot>
+      </el-tab-pane>
 
-      <!-- 将按钮放回 el-tabs 内部 -->
-      <template #suffix>
-        <el-button
-          class="add-tab-button"
-          size="small"
-          @click="handleAddTab"
-        >
-          <el-icon><Plus /></el-icon>
-        </el-button>
-      </template>
+      <div class="add-tab-button" @click="$emit('add')">
+        <el-icon><Plus /></el-icon>
+      </div>
     </el-tabs>
   </div>
 </template>
@@ -66,12 +61,31 @@ const handleAddTab = () => {
 
 <style scoped>
 .tab-manager {
-  height: 40px;
-  background-color: var(--header-bg);
+  width: 100%;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+:deep(.el-tabs) {
+  display: flex;
+  flex-direction: column;
 }
 
 :deep(.el-tabs__header) {
   margin: 0;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+:deep(.el-tabs__content) {
+  padding: 0;
+  display: none;
+}
+
+:deep(.el-tab-pane) {
+  display: flex;
+  flex-direction: column;
 }
 
 :deep(.el-tabs__nav-wrap) {
@@ -79,30 +93,25 @@ const handleAddTab = () => {
 }
 
 :deep(.el-tabs__item) {
-  padding: 0 16px !important;
   height: 40px;
   line-height: 40px;
+  border-bottom: none;
+  background-color: var(--header-bg);
+  transition: all 0.3s;
 }
 
-/* 添加按钮样式 */
-:deep(.el-tabs__nav-wrap::after) {
-  display: none;
-}
-
-:deep(.el-tabs__extra-content) {
-  height: 40px;
-  display: flex;
-  align-items: center;
+:deep(.el-tabs__item.is-active) {
+  background-color: var(--bg-color);
+  border-bottom: 2px solid var(--el-color-primary);
 }
 
 .add-tab-button {
-  margin: 0 8px;
-  padding: 8px;
-  border: none;
-  background: transparent;
-  height: 32px;
   display: flex;
   align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  color: var(--text-color);
+  height: 40px;
 }
 
 .add-tab-button:hover {
