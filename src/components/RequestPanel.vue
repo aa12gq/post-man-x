@@ -17,7 +17,7 @@
         </div>
 
         <!-- 活动栏和边栏容器 -->
-        <div class="sidebar-container">
+        <div class="sidebar-container"> 
           <!-- 活动栏 -->
           <div class="activity-bar">
             <div
