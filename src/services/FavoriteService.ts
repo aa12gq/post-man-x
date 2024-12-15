@@ -1,3 +1,5 @@
+import { Header } from "../types"
+
 export interface FavoriteRequest {
   id: string
   name: string

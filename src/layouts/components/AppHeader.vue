@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar">
     <div class="toolbar-left">
-      <div class="logo-container">
+      <div class="logo-container" @click="goHome">
         <LogoIcon class="logo" />
         <span class="app-title">RPC Master</span>
       </div>
@@ -34,6 +34,16 @@ import ThemeSwitch from "./ThemeSwitch.vue";
 import UserAvatar from "./UserAvatar.vue";
 import ImportIcon from "../../components/icons/ImportIcon.vue";
 import ExportIcon from "../../components/icons/ExportIcon.vue";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
+
+const goHome = () => {
+  if (route.path !== "/") {
+    router.push("/");
+  }
+};
 
 const handleImport = () => {
   const input = document.createElement("input");
@@ -129,6 +139,14 @@ const handleExport = () => {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.logo-container:hover {
+  background-color: var(--hover-color);
 }
 
 .logo {

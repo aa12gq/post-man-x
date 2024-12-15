@@ -25,14 +25,19 @@ export interface HistoryItem {
   id: string;
   type: "http" | "rpc";
   url: string;
-  method?: string;
-  serviceMethod?: string;
-  params?: any;
+  method: string;
+  name: string;
   timestamp: number;
-  response: ResponseData;
+  response: {
+    status: number;
+    data: any;
+    headers: Record<string, string[]>;
+  };
   requestMessage: string;
   debugInfo: string;
   debugCommand: string;
+  folderId?: string;
+  params?: any;
 }
 
 export interface Method {
@@ -101,4 +106,41 @@ export interface Settings {
   fontSize: number;
   autoSave: boolean;
   maxHistoryItems: number;
+}
+
+export interface Folder {
+  id: string
+  name: string
+  parentId?: string
+}
+
+export interface CustomDragEvent {
+  dataTransfer?: DataTransfer;
+  target: EventTarget | null;
+  preventDefault(): void;
+  currentTarget: EventTarget | null;
+}
+
+export interface FavoriteItem {
+  id: string;
+  name: string;
+  type: "http" | "rpc";
+  protocol: string;
+  url: string;
+  method: string;
+  rpcMethod?: string;
+  params: any;
+  headers: Header[];
+}
+
+export interface Environment {
+  id: string;
+  name: string;
+  variables: Record<string, string>;
+}
+
+export interface Tab {
+  id: string;
+  title: string;
+  name: string;
 }

@@ -18,7 +18,7 @@
       destroy-on-close
     >
       <RequestHistory
-        :history-list="requestHistory"
+        :history-list="historyList"
         @load-request="handleHistoryLoad"
         @view-details="handleViewDetails"
         @remove-item="handleRemoveHistoryItem"
@@ -66,53 +66,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import FavoriteManager from '../../components/FavoriteManager.vue'
-import RequestHistory from '../../components/history/RequestHistory.vue'
-import EnvironmentManager from '../../components/EnvironmentManager.vue'
-import { useRequestHistory } from '../../composables/useRequestHistory'
+import { ref, computed } from "vue";
+import FavoriteManager from "../../components/FavoriteManager.vue";
+import RequestHistory from "../../components/history/RequestHistory.vue";
+import EnvironmentManager from "../../components/EnvironmentManager.vue";
+import { useRequestHistory } from "../../composables/useRequestHistory";
 
-const showFavoritesDialog = ref(false)
-const showHistoryDialog = ref(false)
-const showEnvironmentDialog = ref(false)
-const showCreateWorkspaceDialog = ref(false)
+const showFavoritesDialog = ref(false);
+const showHistoryDialog = ref(false);
+const showEnvironmentDialog = ref(false);
+const showCreateWorkspaceDialog = ref(false);
 
 const {
-  historyItems: requestHistory,
+  history: requestHistory,
   removeHistoryItem,
   clearHistory,
-} = useRequestHistory()
+} = useRequestHistory();
+
+const historyList = computed(() => {
+  return requestHistory.value.map(item => ({
+    ...item,
+    response: {
+      ...item.response,
+      headers: Object.entries(item.response.headers).reduce((acc, [key, val]) => {
+        acc[key] = Array.isArray(val) ? val[0] : val;
+        return acc;
+      }, {} as Record<string, string>)
+    }
+  }))
+});
 
 const newWorkspace = ref({
-  name: '',
-  description: '',
-})
+  name: "",
+  description: "",
+});
 
 // 处理方法...
-const handleFavoriteLoad = (favorite: any) => {
-  showFavoritesDialog.value = false
-}
+const handleFavoriteLoad = () => {
+  showFavoritesDialog.value = false;
+};
 
-const handleHistoryLoad = (item: any) => {
-  showHistoryDialog.value = false
-}
+const handleHistoryLoad = () => {
+  showHistoryDialog.value = false;
+};
 
-const handleViewDetails = (item: any) => {
+const handleViewDetails = () => {
   // 处理查看详情
-}
+};
 
 const handleRemoveHistoryItem = (item: any) => {
-  removeHistoryItem(item)
-}
+  removeHistoryItem(item);
+};
 
 const handleClearHistory = () => {
-  clearHistory()
-}
+  clearHistory();
+};
 
 const createWorkspace = () => {
-  if (!newWorkspace.value.name) return
+  if (!newWorkspace.value.name) return;
   // 创建工作空间的逻辑
-  showCreateWorkspaceDialog.value = false
-  newWorkspace.value = { name: '', description: '' }
-}
-</script> 
+  showCreateWorkspaceDialog.value = false;
+  newWorkspace.value = { name: "", description: "" };
+};
+</script>
