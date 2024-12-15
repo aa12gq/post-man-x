@@ -546,7 +546,7 @@ const GrpcIcon = {
   },
 };
 
-// 修改获取请求图标的方法
+// 获取请求图标的方法
 function getRequestIcon(type: string) {
   switch (type) {
     case "http":

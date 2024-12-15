@@ -43,7 +43,7 @@
       <el-table-column label="操作" width="150" fixed="right">
         <template #default="{ row }">
           <div class="operation-buttons">
-            <el-button @click="$emit('load', row)" size="small" type="primary" text>
+            <el-button @click="$emit('load', row)" size="small" type="primary" link>
               加载
             </el-button>
             <el-button @click="$emit('view-details', row)" size="small" type="info" text>

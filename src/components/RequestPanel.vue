@@ -63,7 +63,7 @@
               <span class="sidebar-title">Collections</span>
               <div class="header-actions">
                 <el-tooltip content="New Folder" placement="top">
-                  <el-button text size="small" @click="handleAddFolder">
+                  <el-button link size="small" @click="handleAddFolder">
                     <el-icon><Plus /></el-icon>
                   </el-button>
                 </el-tooltip>
@@ -139,11 +139,6 @@
             </div>
           </template>
           <template v-else-if="currentTab && currentTab.type === 'http'">
-            <HttpRequestRegion
-              :key="currentTab.id"
-              :tab-id="currentTab.id"
-              :request-type="currentTab.type"
-            />
           </template>
         </div>
       </div>
@@ -190,6 +185,7 @@ import {
 import TabManager from "./tabs/TabManager.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import RpcRequestRegion from "../components/rpc/RequestRegion.vue";
+import HttpRequestRegion from "../components/http/HttpRequestRegion.vue";
 import FolderManager from "./FolderManager.vue";
 import { useRequestHistory } from "../composables/useRequestHistory";
 import { storage } from "../services/storage";
@@ -238,14 +234,14 @@ const addTab = () => {
 };
 
 // 用于跟踪标签页是否有未保存的更改
-const hasUnsavedChanges = new Map<string, boolean>();
+const hasUnsavedChanges = ref(new Map<string, boolean>());
 
 const removeTab = async (targetId: string) => {
   const tab = tabs.value.find((tab) => tab.id === targetId);
   if (!tab) return;
 
-  // 检查是否有未保存的更改
-  if (hasUnsavedChanges.get(targetId)) {
+  // ���查是否有未保存的更改
+  if (hasUnsavedChanges.value.get(targetId)) {
     try {
       await ElMessageBox.confirm(
         "You have unsaved changes. Do you want to save before closing?",
@@ -291,11 +287,11 @@ const removeTab = async (targetId: string) => {
   // 移除标签页
   tabs.value.splice(targetIndex, 1);
   // 清理未保存状态
-  hasUnsavedChanges.delete(targetId);
+  hasUnsavedChanges.value.delete(targetId);
 
   // 除标签页后，清理相关状态
   localStorage.removeItem(`request-state-${targetId}`);
-  hasUnsavedChanges.delete(targetId);
+  hasUnsavedChanges.value.delete(targetId);
 };
 
 // 添加全局样式
@@ -323,7 +319,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeyDown);
 });
 
-// 活动视图状态
+// 活动视图态
 const activeView = ref<"collections" | "apis" | null>(
   (localStorage.getItem("activeView") as "collections" | "apis" | null) || null
 );
@@ -360,7 +356,7 @@ const handleSidebarResize = (e: MouseEvent) => {
   // 更新宽度值
   sidebarWidth.value = Math.min(Math.max(newWidth, minWidth), maxWidth);
 
-  // 如果宽度小于阈值，启动计时器
+  // 如果宽���小于阈值，启动计时器
   if (newWidth < COLLAPSE_THRESHOLD) {
     if (!collapseTimer) {
       collapseTimer = window.setTimeout(() => {
@@ -460,7 +456,7 @@ const createNewRequest = (type: "http" | "rpc") => {
     folderId: selectedFolderId.value || undefined,
   };
 
-  // ��果有选中文件夹，设置请求的文件夹ID
+  // 果有选中文件夹，设置请求的文件夹ID
   if (selectedFolderId.value) {
     storage.saveRequestFolder(newId, selectedFolderId.value);
     selectedFolderId.value = null;
@@ -479,7 +475,7 @@ const createNewRequest = (type: "http" | "rpc") => {
 
   activeTab.value = newId;
   showRequestTypeDialog.value = false;
-  hasUnsavedChanges.set(newId, false);
+  hasUnsavedChanges.value.set(newId, false);
 
   // 自动触发刷新
   nextTick(async () => {
@@ -492,12 +488,7 @@ const createNewRequest = (type: "http" | "rpc") => {
   });
 };
 
-const {
-  history,
-  addFolder,
-  addHistoryItem,
-  loadHistory,
-} = useRequestHistory();
+const { history, addFolder, addHistoryItem, loadHistory } = useRequestHistory();
 
 // 监听历史记录变化，更新标签页名称
 watch(
@@ -505,7 +496,7 @@ watch(
   (newHistory) => {
     // 遍历所有标签页
     tabs.value.forEach((tab) => {
-      // 在历史记录中查找对应的请求
+      // 在历��记录中查找对应的请求
       const historyItem = newHistory.find((item) => item.id === tab.id);
       // 如果找到且名称不同，则更新标签页名称
       if (historyItem && historyItem.name !== tab.name) {
@@ -582,21 +573,21 @@ const handleOpenRequest = (request: any) => {
 // 将 Map 转换为 Set 以便于模板使用
 const unsavedTabsSet = ref(new Set<string>());
 
-// 修改标记未保存的方法
+// 标记未保存的方法
 const markTabAsUnsaved = (tabId: string) => {
   console.log("Marking tab as unsaved:", tabId);
-  hasUnsavedChanges.set(tabId, true);
+  hasUnsavedChanges.value.set(tabId, true);
   unsavedTabsSet.value.add(tabId);
   console.log(
     "Current unsaved changes map:",
-    Array.from(hasUnsavedChanges.entries())
+    Array.from(hasUnsavedChanges.value.entries())
   );
 };
 
-// 修改标记已保存的方法
+// 标记已保存的方法
 const markTabAsSaved = (tabId: string) => {
   console.log("Marking tab as saved:", tabId);
-  hasUnsavedChanges.set(tabId, false);
+  hasUnsavedChanges.value.set(tabId, false);
   unsavedTabsSet.value.delete(tabId);
 };
 
@@ -606,7 +597,7 @@ watch(
   () => {
     // 更新 unsavedTabsSet
     unsavedTabsSet.value.clear();
-    hasUnsavedChanges.forEach((value, key) => {
+    hasUnsavedChanges.value.forEach((value, key) => {
       if (value) {
         unsavedTabsSet.value.add(key);
       }

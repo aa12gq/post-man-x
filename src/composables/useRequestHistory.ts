@@ -198,7 +198,7 @@ export function useRequestHistory() {
     return path;
   }
 
-  // 修改 getFolderRequests 方法
+  // getFolderRequests 方法
   function getFolderRequests(folderId: string) {
     console.log("Getting requests for folder:", folderId);
     // 强制创建新数组以触发响应式更新

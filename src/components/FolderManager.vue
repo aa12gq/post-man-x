@@ -57,7 +57,7 @@
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand($event, folder)">
-          <el-button type="text" class="folder-more">
+          <el-button link class="folder-more">
             <el-icon><More /></el-icon>
           </el-button>
           <template #dropdown>
@@ -146,7 +146,7 @@
               trigger="click"
               @command="handleCommand($event, subFolder)"
             >
-              <el-button type="text" class="folder-more">
+              <el-button link class="folder-more">
                 <el-icon><More /></el-icon>
               </el-button>
               <template #dropdown>
@@ -221,7 +221,7 @@
                 @command="(command: string) => handleRequestCommand(command, request)"
                 @click.stop
               >
-                <el-button type="text" class="request-more" @click.stop>
+                <el-button link class="request-more" @click.stop>
                   <el-icon><More /></el-icon>
                 </el-button>
                 <template #dropdown>
@@ -292,7 +292,7 @@
             @command="(command: string) => handleRequestCommand(command, request)"
             @click.stop
           >
-            <el-button type="text" class="request-more" @click.stop>
+            <el-button link class="request-more" @click.stop>
               <el-icon><More /></el-icon>
             </el-button>
             <template #dropdown>
@@ -615,6 +615,7 @@ const isRefreshing = ref(false);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 13px;
 }
 
 .folder-content {
@@ -701,6 +702,7 @@ const isRefreshing = ref(false);
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  font-size: 13px;
 }
 
 .request-item:hover {
@@ -742,7 +744,7 @@ const isRefreshing = ref(false);
 }
 
 :deep(.el-dropdown-menu__item) {
-  font-size: 13px;
+  font-size: 12px;
   padding: 5px 16px;
 }
 

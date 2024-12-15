@@ -166,13 +166,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import {
-  List,
-  Operation,
-  Cpu,
-  Link,
-  Loading,
-} from "@element-plus/icons-vue";
+import { List, Operation, Cpu, Link, Loading } from "@element-plus/icons-vue";
 import type { RpcService } from "../../services/RpcService";
 
 const props = defineProps<{
@@ -577,5 +571,8 @@ onMounted(() => {
     width: 100%;
     justify-content: center;
   }
+}
+:deep(.el-input) {
+  width: 100% !important;
 }
 </style>
