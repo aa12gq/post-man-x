@@ -22,10 +22,12 @@
     "monaco-editor": "^0.45.0",
     "nanoid": "^5.0.9",
     "uuid": "^11.0.3",
-    "vue": "^3.4.15"
+    "vue": "^3.4.15",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
+    "@types/vue-router": "^2.0.0",
     "@vitejs/plugin-vue": "^5.0.3",
     "electron": "^28.2.3",
     "electron-builder": "^24.9.1",

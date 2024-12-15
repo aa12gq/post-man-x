@@ -1,36 +1,25 @@
 <template>
-  <div class="app-container">
+  <div class="main-layout">
     <AppHeader />
-    <div class="content-wrapper">
-      <RequestPanel :current-workspace="currentWorkspace" />
-    </div>
-    <AppDialogs />
+    <router-view v-if="$route.path === '/'" class="content"></router-view>
+    <RequestPanel v-else></RequestPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import AppHeader from './components/AppHeader.vue'
-import AppDialogs from './components/AppDialogs.vue'
-import RequestPanel from '../components/RequestPanel.vue'
-
-const currentWorkspace = ref('Default Workspace')
+import AppHeader from "./components/AppHeader.vue";
+import RequestPanel from "../components/RequestPanel.vue";
 </script>
 
 <style scoped>
-.app-container {
-  width: 100vw;
+.main-layout {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-color);
 }
 
-.content-wrapper {
+.content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: calc(100vh - 48px);
+  overflow: auto;
 }
 </style> 

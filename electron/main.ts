@@ -46,7 +46,7 @@ function createWindow() {
     },
   });
 
-  // 设置更�����格的 CSP
+  // 设置更严格的 CSP
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -215,7 +215,7 @@ ipcMain.handle("get-rpc-methods", async (event, params) => {
   }
 });
 
-// 添加一些辅助函数来生成更真实��示��数据
+// 添加一些辅助函数来生成更真实数据
 function generateRandomString(prefix: string = ""): string {
   const adjectives = [
     "happy",

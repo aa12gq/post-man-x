@@ -38,6 +38,52 @@
                 <el-icon><Connection /></el-icon>
               </el-tooltip>
             </div>
+
+            <!-- 历史记录视图 -->
+            <div
+              class="activity-item"
+              :class="{ active: activeView === 'history' }"
+              @click="toggleView('history')"
+            >
+              <el-tooltip content="History" placement="right">
+                <el-icon><Timer /></el-icon>
+              </el-tooltip>
+            </div>
+
+            <!-- 环境变量管理 -->
+            <div
+              class="activity-item"
+              :class="{ active: activeView === 'environments' }"
+              @click="toggleView('environments')"
+            >
+              <el-tooltip content="Environments" placement="right">
+                <el-icon><Monitor /></el-icon>
+              </el-tooltip>
+            </div>
+
+            <div class="activity-divider"></div>
+
+            <!-- 导入导出功能 -->
+            <div
+              class="activity-item"
+              :class="{ active: activeView === 'import-export' }"
+              @click="toggleView('import-export')"
+            >
+              <el-tooltip content="Import/Export" placement="right">
+                <el-icon><Upload /></el-icon>
+              </el-tooltip>
+            </div>
+
+            <!-- 全局设置 -->
+            <div
+              class="activity-item"
+              :class="{ active: activeView === 'settings' }"
+              @click="toggleView('settings')"
+            >
+              <el-tooltip content="Settings" placement="right">
+                <el-icon><Tools /></el-icon>
+              </el-tooltip>
+            </div>
           </div>
 
           <!-- Collections 边栏 -->
@@ -143,7 +189,7 @@
         </div>
       </div>
 
-      <!-- 新增请求类型选择话框 -->
+      <!-- 请求类型选择话框 -->
       <el-dialog
         v-model="showRequestTypeDialog"
         title="New Request"
@@ -181,11 +227,14 @@ import {
   Connection,
   Plus,
   Document,
+  Timer,
+  Monitor,
+  Upload,
+  Tools,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import RpcRequestRegion from "../components/rpc/RequestRegion.vue";
-import HttpRequestRegion from "../components/http/HttpRequestRegion.vue";
 import FolderManager from "./FolderManager.vue";
 import { useRequestHistory } from "../composables/useRequestHistory";
 import { storage } from "../services/storage";
@@ -217,7 +266,7 @@ const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
   if (!isSidebarCollapsed.value) {
     // 开时恢复之前的宽度或默认宽度
-    sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 348;
+    sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 248;
   }
   localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
@@ -240,7 +289,7 @@ const removeTab = async (targetId: string) => {
   const tab = tabs.value.find((tab) => tab.id === targetId);
   if (!tab) return;
 
-  // ���查是否有未保存的更改
+  // 检查是否有未保存的更改
   if (hasUnsavedChanges.value.get(targetId)) {
     try {
       await ElMessageBox.confirm(
@@ -259,7 +308,7 @@ const removeTab = async (targetId: string) => {
       console.log("Save changes");
     } catch (action) {
       if (action === "close") {
-        // 用户点击 X 按钮,不关闭标签页
+        // 用户点 X 按钮,不关闭标签页
         return;
       }
       // 用户选择放弃更改,继续关闭
@@ -276,7 +325,7 @@ const removeTab = async (targetId: string) => {
       // 如果只有个标签页,清空激活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
-      // 如果关闭的是最后一个标签页,激活前一个标签页
+      // 如果闭的是最后一个标签页,激活前一个标签页
       activeTab.value = tabs.value[targetIndex - 1].id;
     } else {
       // 否则激活下一个标签页
@@ -320,9 +369,15 @@ onBeforeUnmount(() => {
 });
 
 // 活动视图态
-const activeView = ref<"collections" | "apis" | null>(
-  (localStorage.getItem("activeView") as "collections" | "apis" | null) || null
-);
+const activeView = ref<
+  | "collections"
+  | "apis"
+  | "history"
+  | "environments"
+  | "import-export"
+  | "settings"
+  | null
+>((localStorage.getItem("activeView") as any) || null);
 
 // 切换视图
 const toggleView = (view: string) => {
@@ -336,7 +391,14 @@ const toggleView = (view: string) => {
       // 恢复之前保存的宽度或默认宽度
       sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 348;
     }
-    activeView.value = view as "collections" | "apis" | null;
+    activeView.value = view as
+      | "collections"
+      | "apis"
+      | "history"
+      | "environments"
+      | "import-export"
+      | "settings"
+      | null;
   }
   localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
@@ -346,8 +408,8 @@ const maxWidth = 600; // 最大宽度
 let startX = 0;
 let startWidth = 0;
 
-const COLLAPSE_THRESHOLD = 200; // 收起阈值
-let collapseTimer: number | null = null; // 用于跟踪持续拖拽时间
+const COLLAPSE_THRESHOLD = 100; // 将收起阈值改为 100px
+let collapseTimer: number | null = null; // 跟踪持续拖拽时间
 
 const handleSidebarResize = (e: MouseEvent) => {
   const deltaX = e.clientX - startX;
@@ -356,7 +418,7 @@ const handleSidebarResize = (e: MouseEvent) => {
   // 更新宽度值
   sidebarWidth.value = Math.min(Math.max(newWidth, minWidth), maxWidth);
 
-  // 如果宽���小于阈值，启动计时器
+  // 如果宽度小于阈值，启动计时器
   if (newWidth < COLLAPSE_THRESHOLD) {
     if (!collapseTimer) {
       collapseTimer = window.setTimeout(() => {
@@ -368,7 +430,7 @@ const handleSidebarResize = (e: MouseEvent) => {
       }, 500);
     }
   } else {
-    // 如宽度大于阈值，清除计时器
+    // 如宽度度于阈值，清除计时器
     if (collapseTimer) {
       clearTimeout(collapseTimer);
       collapseTimer = null;
@@ -389,8 +451,17 @@ const startSidebarResize = (e: MouseEvent) => {
     const deltaX = e.clientX - startX;
     const newWidth = startWidth + deltaX;
 
-    // 如果宽度小于阈值自动收起边栏
-    if (newWidth < COLLAPSE_THRESHOLD) {
+    // 当宽度接近收起阈值时添加视觉提示
+    const leftSection = document.querySelector(".left-section") as HTMLElement;
+    if (newWidth < 150) {
+      leftSection?.classList.add("near-collapse");
+    } else {
+      leftSection?.classList.remove("near-collapse");
+    }
+
+    // 如果宽度小于 100px 自动收起边栏
+    if (newWidth < 100) {
+      leftSection?.classList.remove("near-collapse");
       isSidebarCollapsed.value = true;
       localStorage.setItem("sidebarCollapsed", "true");
       document.removeEventListener("mousemove", handleMouseMove);
@@ -399,12 +470,14 @@ const startSidebarResize = (e: MouseEvent) => {
       return;
     }
 
-    // 限制最小和最大宽度
-    sidebarWidth.value = Math.max(348, Math.min(800, newWidth));
+    // 只限制最大宽度，移除最小宽度限制
+    sidebarWidth.value = Math.min(800, newWidth);
     localStorage.setItem("sidebarWidth", String(sidebarWidth.value));
   };
 
   const handleMouseUp = () => {
+    const leftSection = document.querySelector(".left-section");
+    leftSection?.classList.remove("near-collapse");
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
     document.body.style.cursor = "";
@@ -496,7 +569,7 @@ watch(
   (newHistory) => {
     // 遍历所有标签页
     tabs.value.forEach((tab) => {
-      // 在历��记录中查找对应的请求
+      // 在历史记录中查找对应的请求
       const historyItem = newHistory.find((item) => item.id === tab.id);
       // 如果找到且名称不同，则更新标签页名称
       if (historyItem && historyItem.name !== tab.name) {
@@ -542,7 +615,7 @@ const handleAddFolder = async () => {
 // 处理在文件夹中创建新请求
 const handleCreateRequest = (folderId: string) => {
   showRequestTypeDialog.value = true;
-  // 存储当前选中的文件夹ID，用于创建请求时设置所文件夹
+  // 存储当前选中的文件夹ID，用于新建请求时设置所文件夹
   selectedFolderId.value = folderId;
 };
 
@@ -591,7 +664,7 @@ const markTabAsSaved = (tabId: string) => {
   unsavedTabsSet.value.delete(tabId);
 };
 
-// 监听 hasUnsavedChanges 的变化
+// 监听 hasUnsavedChanges 变化
 watch(
   hasUnsavedChanges,
   () => {
@@ -627,7 +700,7 @@ const saveRequest = () => {
 
 // 添加键盘快捷键监听
 const handleKeyDown = (e: KeyboardEvent) => {
-  // 检查是否按下 Ctrl/Command + S
+  // 检查否按下 Ctrl/Command + S
   if ((e.ctrlKey || e.metaKey) && e.key === "s") {
     e.preventDefault(); // 阻止浏览器默认保存行为
     saveRequest();
@@ -681,11 +754,12 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .left-section {
   display: flex;
   flex-direction: column;
-  min-width: 48px; /* 最小宽度改为活动栏宽度 */
+  min-width: 48px; /* 最小宽度改为活栏宽度 */
   border-right: 1px solid var(--border-color);
   background-color: var(--bg-color);
   flex-shrink: 0;
   transition: width 0.3s;
+  transition: background-color 0.2s;
 }
 
 .left-section.is-collapsed {
@@ -700,6 +774,10 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   .activity-bar {
     border-right: none;
   }
+}
+
+.left-section.near-collapse {
+  background-color: var(--el-color-danger-light-9);
 }
 
 /* New 按钮区域样式 */
@@ -1245,5 +1323,50 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .sidebar-content {
   flex: 1;
   overflow: auto;
+}
+
+.sidebar-resizer {
+  transition: background-color 0.2s;
+}
+
+.near-collapse .sidebar-resizer {
+  background-color: var(--el-color-danger);
+}
+
+.activity-divider {
+  width: 32px;
+  height: 1px;
+  margin: 8px auto;
+  background-color: var(--border-color);
+}
+
+/* 底部图靠下对齐 */
+.activity-bar {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-bar > :last-child {
+  margin-top: auto;
+  margin-bottom: 16px;
+}
+
+/* 调整活动栏样式，确保 Home 图标位置正确 */
+.activity-bar {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0; /* 移除顶部padding */
+}
+
+.activity-item:first-child {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--header-bg);
+}
+
+.activity-item:first-child:hover {
+  background-color: var(--hover-color);
 }
 </style>

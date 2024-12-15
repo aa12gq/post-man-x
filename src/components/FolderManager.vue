@@ -327,7 +327,7 @@ import {
 import { useRequestHistory } from "../composables/useRequestHistory";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { focus } from "../directives/focus";
-import type { HistoryItem, Folder as FolderType } from '../types'
+import type { HistoryItem, Folder as FolderType } from "../types";
 
 const {
   folders,
