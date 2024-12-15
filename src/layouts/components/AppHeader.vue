@@ -11,11 +11,11 @@
     <div class="toolbar-right">
       <button class="toolbar-btn" @click="handleImport">
         <ImportIcon class="btn-icon" />
-        <span>导入</span>
+        <span class="btn-text">导入</span>
       </button>
       <button class="toolbar-btn" @click="handleExport">
         <ExportIcon class="btn-icon" />
-        <span>导出</span>
+        <span class="btn-text">导出</span>
       </button>
       <div class="divider"></div>
       <SettingsDropdown />
@@ -100,36 +100,42 @@ const handleExport = () => {
 .toolbar {
   height: 48px;
   min-height: 48px;
-  padding: 0 16px;
+  padding: 0 8px;
   background-color: var(--bg-color);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .logo {
   width: 24px;
   height: 24px;
   color: var(--primary-color);
+  flex-shrink: 0;
 }
 
 .app-title {
@@ -142,13 +148,14 @@ const handleExport = () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: 4px;
   border: none;
   background: transparent;
   color: var(--text-color);
   cursor: pointer;
   transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
 .toolbar-btn:hover {
@@ -158,12 +165,44 @@ const handleExport = () => {
 .btn-icon {
   width: 16px;
   height: 16px;
+  flex-shrink: 0;
 }
 
 .divider {
   width: 1px;
   height: 24px;
   background-color: var(--border-color);
-  margin: 0 8px;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .app-title {
+    display: none;
+  }
+
+  .toolbar {
+    padding: 0 4px;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    gap: 4px;
+  }
+
+  .btn-text {
+    display: none;
+  }
+
+  .toolbar-btn {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .divider {
+    display: none;
+  }
 }
 </style>

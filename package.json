@@ -37,7 +37,7 @@
   },
   "build": {
     "appId": "com.rpc.postman",
-    "productName": "RPC Postman",
+    "productName": "RPC Master",
     "directories": {
       "output": "release"
     },
