@@ -167,12 +167,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
-  CaretRight,
-  Refresh,
   List,
   Operation,
   Cpu,
-  Connection,
   Link,
   Loading,
 } from "@element-plus/icons-vue";

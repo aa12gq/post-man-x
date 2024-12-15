@@ -1,5 +1,38 @@
 <template>
   <div class="request-workspace">
+    <!-- 添加面包屑导航 -->
+    <div class="breadcrumb-container">
+      <el-breadcrumb separator="/">
+        <template v-if="folderPath.length">
+          <el-breadcrumb-item>
+            <el-icon><Folder /></el-icon>
+            {{ folderPath[folderPath.length - 1].name }}
+          </el-breadcrumb-item>
+        </template>
+        <el-breadcrumb-item>
+          <el-icon>
+            <component
+              :is="getRequestIcon(requestForm.type).component"
+              :style="{ color: getRequestIcon(requestForm.type).color }"
+            />
+          </el-icon>
+          <span v-if="!isEditing" @dblclick="startEditing" class="request-name">
+            {{ currentRequest?.name || "New Request" }}
+          </span>
+          <div v-else class="editing-container">
+            <el-input
+              v-model="editingName"
+              size="small"
+              ref="editInput"
+              @keyup.enter="finishEditing"
+              @keyup.esc="cancelEditing"
+              @blur="finishEditing"
+            />
+          </div>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+
     <!-- RPC 请求区域 -->
     <div class="request-section">
       <div class="request-content">
@@ -52,7 +85,7 @@
       </div>
     </div>
 
-    <!-- 分割线 -->
+    <!-- 分线 -->
     <div class="resize-handle" @mousedown="startResize">
       <div class="resize-handle-line"></div>
       <div class="resize-handle-icon">
@@ -78,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed, h, nextTick } from "vue";
 import type { RpcService } from "../../services/RpcService";
 import type { Header } from "../HeadersManager.vue";
 import { useRequestHistory } from "../../composables/useRequestHistory";
@@ -89,7 +122,9 @@ import RPCMessageEditor from "./RPCMessageEditor.vue";
 import AuthorizationManager from "../auth/AuthorizationManager.vue";
 import MetadataEditor from "./MetadataEditor.vue";
 import ResponseViewer from "../response/ResponseViewer.vue";
-import { ArrowUp } from "@element-plus/icons-vue";
+import { ArrowUp, Folder, Link, Document } from "@element-plus/icons-vue";
+
+const emit = defineEmits(["update:unsaved", "save", "name-change"]);
 
 class RequestForm {
   type: "rpc";
@@ -112,7 +147,7 @@ class RequestForm {
 interface Response {
   response: string;
   responseTime: number | null;
-  responseHeaders: Record<string, string>;
+  responseHeaders: Record<string, string[]>;
   debugLogs: string;
   debugCommand: string;
   status: number;
@@ -121,7 +156,7 @@ interface Response {
 class Response implements Response {
   response: string;
   responseTime: number | null;
-  responseHeaders: Record<string, string>;
+  responseHeaders: Record<string, string[]>;
 
   constructor() {
     this.response = "";
@@ -149,7 +184,6 @@ const loadingMethods = ref(false);
 
 // 响应相关状态
 const requestHeaders = ref<Header[]>([]);
-const showRequestDetailsDrawer = ref(false);
 
 // 标签页相关状态
 const activePane = ref("message");
@@ -172,20 +206,28 @@ const auth = reactive({
 });
 
 // 历史记录相关
-const { historyItems: requestHistory, addHistoryItem: addToHistory } =
-  useRequestHistory();
+const {
+  history,
+  addHistoryItem: addToHistory,
+  getFolderPath,
+  rename,
+  loadHistory,
+} = useRequestHistory();
 
 const handleMethodChange = (method: any) => {
   selectedMethod.value = method;
   if (method) {
     requestForm.value.method = method.name;
+    emit("update:unsaved", true);
     generateExample();
   }
 };
 
 const updateMessage = (message: any) => {
+  console.log("Updating message, marking as unsaved"); // 添加日志
   if (requestForm.value) {
     requestForm.value.params = message;
+    emit("update:unsaved", true);
   }
 };
 
@@ -195,6 +237,7 @@ const updateMetadata = (metadata: Record<string, string>) => {
     name,
     value,
   }));
+  emit("update:unsaved", true);
 };
 
 const handleAuthChange = (authData: any) => {
@@ -204,6 +247,7 @@ const handleAuthChange = (authData: any) => {
   } else if (authData.type === "bearer") {
     auth.bearer.token = authData.bearerToken;
   }
+  emit("update:unsaved", true);
 };
 
 const loadServices = async () => {
@@ -236,6 +280,7 @@ const generateExample = async () => {
       console.log("Example string:", exampleStr);
       requestForm.value.params = JSON.parse(exampleStr);
       updateMessage(requestForm.value.params);
+      emit("update:unsaved", true);
     } else {
       console.log("No example or no current tab:", {
         example,
@@ -265,7 +310,7 @@ const sendRequest = async () => {
       const serviceName = methodParts.slice(0, -1).join(".");
       const methodName = methodParts[methodParts.length - 1];
 
-      // 确保参数是可序列化的对象
+      // 保数是可序列化的对象
       let params;
       try {
         params =
@@ -296,7 +341,12 @@ const sendRequest = async () => {
 
         responseInfo.value.response = formattedResponse;
         responseInfo.value.responseTime = Date.now() - startTime;
-        responseInfo.value.responseHeaders = response.headers || {};
+        responseInfo.value.responseHeaders = Object.entries(
+          response.headers || {}
+        ).reduce((acc, [key, value]) => {
+          acc[key] = Array.isArray(value) ? value : [value];
+          return acc;
+        }, {} as Record<string, string[]>);
 
         // 确保调试信息被正确设置
         responseInfo.value.debugLogs = response.debug || "";
@@ -314,20 +364,21 @@ const sendRequest = async () => {
         id: String(Date.now()),
         type: "rpc",
         url: requestForm.value.url,
-        serviceMethod: selectedMethod.value,
+        method: selectedMethod.value,
         params: params,
         response: response.data,
         timestamp: Date.now(),
         debugInfo: response.debug || "",
         debugCommand: response.command || "",
         requestMessage: JSON.stringify(params),
+        name: `${selectedMethod.value} Request`,
       });
     }
   } catch (error: any) {
     console.error("Request failed:", error);
     ElMessage.error(`Request failed: ${error.message}`);
 
-    // 清空响应，但保留错误信息
+    // 清空响应，但保错误信息
     if (requestForm.value) {
       responseInfo.value.response = "";
       responseInfo.value.responseTime = null;
@@ -339,6 +390,8 @@ const sendRequest = async () => {
   } finally {
     loading.value = false;
   }
+  console.log("Request sent, marking as saved"); // 添加日志
+  emit("update:unsaved", false);
 };
 
 const loadServiceMethods = async (serviceName: string) => {
@@ -364,8 +417,10 @@ const loadServiceMethods = async (serviceName: string) => {
 };
 
 const updateUrl = (url: string) => {
+  console.log("Updating URL, marking as unsaved"); // 添加日志
   if (requestForm.value) {
     requestForm.value.url = url;
+    emit("update:unsaved", true);
   }
 };
 
@@ -440,6 +495,134 @@ const startResize = (e: MouseEvent) => {
 
 const handleResponseCollapse = (collapsed: boolean) => {
   responseHeight.value = collapsed ? `${minResponseHeight}px` : "50%";
+};
+
+// 获取当前请求
+const currentRequest = computed(() => {
+  return history.value.find((item) => item.id === props.tabId);
+});
+
+// 获取文件夹路径
+const folderPath = computed(() => {
+  const path = getFolderPath(currentRequest.value?.folderId);
+  return path.length > 0 ? [path[path.length - 1]] : [];
+});
+
+const props = defineProps<{
+  tabId: string;
+  requestType: string;
+}>();
+
+// 自定义 gRPC 图标组件
+const GrpcIcon = {
+  name: "GrpcIcon",
+  render() {
+    return h(
+      "svg",
+      {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 16 16",
+        width: "1em",
+        height: "1em",
+        fill: "currentColor",
+      },
+      [
+        // 居中字母 g
+        h(
+          "text",
+          {
+            x: "8",
+            y: "10",
+            "font-size": "14",
+            "font-weight": "bold",
+            "font-family": "Arial",
+            "text-anchor": "middle",
+            "dominant-baseline": "central",
+          },
+          "g"
+        ),
+      ]
+    );
+  },
+};
+
+// 修改获取请求图标的方法
+function getRequestIcon(type: string) {
+  switch (type) {
+    case "http":
+      return {
+        component: Link,
+        color: "#67c23a",
+      };
+    case "rpc":
+      return {
+        component: GrpcIcon,
+        color: "#409eff",
+      };
+    default:
+      return {
+        component: Document,
+        color: "var(--text-color-secondary)",
+      };
+  }
+}
+
+// 添加重命名相关的状态
+const isEditing = ref(false);
+const editingName = ref("");
+const editInput = ref<HTMLInputElement | null>(null);
+
+// 开始编辑
+const startEditing = () => {
+  if (!currentRequest.value) return;
+  isEditing.value = true;
+  editingName.value = currentRequest.value.name;
+  nextTick(() => {
+    editInput.value?.focus();
+  });
+};
+
+// 完成编辑
+const finishEditing = async () => {
+  if (!currentRequest.value || !editingName.value.trim()) {
+    cancelEditing();
+    return;
+  }
+
+  const newName = editingName.value.trim();
+
+  // 先更新本地状态
+  if (currentRequest.value) {
+    currentRequest.value.name = newName;
+  }
+
+  // 调用 rename 方法更新名称
+  rename(currentRequest.value.id, newName, false);
+  isEditing.value = false;
+  editingName.value = "";
+  emit("update:unsaved", true);
+
+  // 强制更新视图
+  nextTick(async () => {
+    try {
+      await loadHistory();
+      // 触发父组件更新，添加非空断言
+      if (currentRequest.value) {
+        emit("name-change", {
+          id: currentRequest.value.id,
+          name: newName,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to sync name change:", error);
+    }
+  });
+};
+
+// 取消编辑
+const cancelEditing = () => {
+  isEditing.value = false;
+  editingName.value = "";
 };
 </script>
 
@@ -763,6 +946,9 @@ const handleResponseCollapse = (collapsed: boolean) => {
 :deep(.el-icon) {
   color: var(--text-color);
   font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 :deep(.el-tree) {
@@ -927,5 +1113,84 @@ const handleResponseCollapse = (collapsed: boolean) => {
 
 :deep(.el-empty) {
   padding: 40px;
+}
+
+.breadcrumb-container {
+  padding: 8px 16px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+:deep(.el-breadcrumb__item) {
+  display: flex;
+  align-items: center;
+}
+
+:deep(.el-breadcrumb__inner) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-color);
+}
+
+:deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+:deep(.el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner) {
+  color: var(--text-color-secondary);
+}
+
+:deep(.el-icon) {
+  margin-right: 4px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+/* 调整 gRPC 图标大小 */
+:deep(svg) {
+  width: 16px;
+  height: 16px;
+  overflow: visible;
+  transform-origin: center;
+  transform: scale(1.2); /* 稍微放大一点 */
+}
+
+:deep(svg text) {
+  fill: currentColor;
+  dominant-baseline: central;
+  transform-origin: center;
+  font-style: italic;
+}
+
+.request-name {
+  cursor: text;
+  &:hover {
+    color: var(--el-color-primary);
+  }
+}
+
+.editing-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+:deep(.el-input) {
+  width: 200px;
+}
+
+:deep(.el-input__wrapper) {
+  padding: 0 8px;
+}
+
+:deep(.el-input__inner) {
+  height: 24px;
+  font-size: inherit;
 }
 </style>

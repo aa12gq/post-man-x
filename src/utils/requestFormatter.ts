@@ -5,6 +5,12 @@ interface RequestData {
   params?: any
 }
 
+interface Headers {
+  [key: string]: string;
+  'accept-encoding': string;
+  'accept-language': string;
+}
+
 export const formatRequestMessage = (type: 'http' | 'rpc', data: RequestData): string => {
   let message = ""
 
@@ -24,7 +30,7 @@ export const formatRequestMessage = (type: 'http' | 'rpc', data: RequestData): s
   message += `引荐来源网址政策:\nstrict-origin-when-cross-origin\n\n`
 
   // 合并所有请求头
-  const allHeaders = {
+  const allHeaders: Headers = {
     // 基础请求头
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',

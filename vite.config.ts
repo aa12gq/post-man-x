@@ -36,6 +36,9 @@ export default defineConfig({
           editorWorker: ['monaco-editor/esm/vs/editor/editor.worker'],
         }
       }
-    }
+    },
+    sourcemap: false,
+    outDir: 'dist',
+    emptyOutDir: true,
   }
 }) 

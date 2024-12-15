@@ -17,6 +17,10 @@ interface RpcRequest {
   id: number | string;
 }
 
+interface ExampleResult {
+  [key: string]: any;
+}
+
 function createWindow() {
   // 禁用 CoreText 警告
   process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
@@ -42,7 +46,7 @@ function createWindow() {
     },
   });
 
-  // 设置更严格的 CSP
+  // 设置更�����格的 CSP
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -211,7 +215,7 @@ ipcMain.handle("get-rpc-methods", async (event, params) => {
   }
 });
 
-// 添加一些辅助函数来生成更真实的示例数据
+// 添加一些辅助函数来生成更真实��示��数据
 function generateRandomString(prefix: string = ""): string {
   const adjectives = [
     "happy",
@@ -272,7 +276,6 @@ function generateRandomUrl(): string {
 function generateRandomId(): string {
   return Math.random().toString(36).substring(2, 15);
 }
-
 //  generateFieldValue
 function generateFieldValue(type: string, fieldName: string = ""): any {
   // 移除包名前缀和修饰符
@@ -365,7 +368,7 @@ function generateFieldValue(type: string, fieldName: string = ""): any {
   }
 
   if (isMap) {
-    const result = {};
+    const result: ExampleResult = {};
     for (let i = 1; i <= 2; i++) {
       result[`key${i}`] = value;
     }
@@ -587,7 +590,7 @@ ipcMain.handle("get-rpc-example", async (event, params) => {
     console.log("Parsed fields:", fields);
 
     // 生成示例数据
-    const example = {};
+    const example: ExampleResult = {};
     for (const field of fields) {
       example[field.name] = generateFieldValue(field.type);
     }

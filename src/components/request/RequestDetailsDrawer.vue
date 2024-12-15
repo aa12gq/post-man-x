@@ -69,17 +69,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-const props = defineProps<{
-  modelValue: boolean
+defineProps<{
+  modelValue: boolean;
   details: {
-    type: string
-    url: string
-    method?: string
-    serviceMethod?: string
-    requestMessage: string
-    headers?: Record<string, string>
-    params?: any
-  }
+    type: string;
+    url: string;
+    method?: string;
+    serviceMethod?: string;
+    requestMessage: string;
+    headers?: Record<string, string>;
+    params?: any;
+  };
 }>()
 
 const emit = defineEmits<{

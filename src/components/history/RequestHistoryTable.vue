@@ -70,20 +70,12 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 
+defineProps<{
+  historyList: any[]
+}>();
+
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
-
-const props = defineProps<{
-  historyList: Array<{
-    id: string
-    type: 'http' | 'rpc'
-    url: string
-    method?: string
-    serviceMethod?: string
-    timestamp: number
-  }>
-}>()
-
 defineEmits<{
   (e: 'load', item: any): void
   (e: 'view-details', item: any): void

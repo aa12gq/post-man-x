@@ -61,23 +61,20 @@
 
             <div class="sidebar-header">
               <span class="sidebar-title">Collections</span>
-              <el-button text size="small" @click="handleAddCollection">
-                <el-icon><Plus /></el-icon>
-              </el-button>
+              <div class="header-actions">
+                <el-tooltip content="New Folder" placement="top">
+                  <el-button text size="small" @click="handleAddFolder">
+                    <el-icon><Plus /></el-icon>
+                  </el-button>
+                </el-tooltip>
+              </div>
             </div>
             <div class="sidebar-content">
-              <el-tree
-                :data="collectionsData"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-              >
-                <template #default="{ node, data }">
-                  <span class="custom-tree-node">
-                    <el-icon><Folder /></el-icon>
-                    <span>{{ node.label }}</span>
-                  </span>
-                </template>
-              </el-tree>
+              <FolderManager
+                @create-request="handleCreateRequest"
+                @open-request="handleOpenRequest"
+                @delete-request="handleDeleteRequest"
+              />
             </div>
           </div>
 
@@ -106,6 +103,7 @@
         <TabManager
           v-model="activeTab"
           :tabs="tabs"
+          :unsaved-tabs="unsavedTabsSet"
           @add="addTab"
           @remove="removeTab"
         />
@@ -129,6 +127,13 @@
                   :key="currentTab.id"
                   :tab-id="currentTab.id"
                   :request-type="currentTab.type"
+                  @update:unsaved="
+                    (value) =>
+                      currentTab?.id &&
+                      handleUnsavedChange(currentTab.id, value)
+                  "
+                  @save="saveRequest"
+                  @name-change="handleNameChange"
                 />
               </keep-alive>
             </div>
@@ -143,7 +148,7 @@
         </div>
       </div>
 
-      <!-- 新增请求类型选择对话框 -->
+      <!-- 新增请求类型选择话框 -->
       <el-dialog
         v-model="showRequestTypeDialog"
         title="New Request"
@@ -169,26 +174,26 @@
 <script lang="ts" setup>
 import {
   ref,
-  reactive,
   computed,
   onBeforeUnmount,
   watch,
   onMounted,
+  nextTick,
 } from "vue";
 import {
   CaretLeft,
-  Folder,
   Collection,
   Connection,
   Plus,
   Document,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
-import type { RpcService } from "../services/RpcService";
-import type { Header } from "./HeadersManager.vue";
-import { ElMessageBox } from "element-plus";
+import { ElMessageBox, ElMessage } from "element-plus";
 import RpcRequestRegion from "../components/rpc/RequestRegion.vue";
-import HttpRequestRegion from "../components/http/RequestRegion.vue";
+import FolderManager from "./FolderManager.vue";
+import { useRequestHistory } from "../composables/useRequestHistory";
+import { storage } from "../services/storage";
+import { HistoryItem } from "../types";
 
 // 基础状态
 const isSidebarCollapsed = ref(
@@ -203,23 +208,13 @@ interface Tab {
   type: "http" | "rpc"; // 添加类型字段
 }
 
-const tabs = ref<Tab[]>([]); // 移除默认标签页
+const tabs = ref<Tab[]>([]); // 移除默认签页
 const activeTab = ref("");
 
-// 获取当前活动的标签页
+// 获取当前动的标签页
 const currentTab = computed(() => {
   return tabs.value.find((tab) => tab.id === activeTab.value);
 });
-
-// 响应相关状态
-const requestHeaders = ref<Header[]>([]);
-const showRequestDetailsDrawer = ref(false);
-
-// RPC 相关状态
-const rpcServices = ref<RpcService[]>([]);
-const selectedMethod = ref("");
-const loadingServices = ref(false);
-const loadingMethods = ref(false);
 
 // 方法定义
 const toggleSidebar = () => {
@@ -282,7 +277,7 @@ const removeTab = async (targetId: string) => {
   // 如果关闭的是当前标签页,需要激活其他标签页
   if (activeTab.value === targetId) {
     if (tabs.value.length === 1) {
-      // 如果只有一个标签页,清空激活标签页
+      // 如果只有个标签页,清空激活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
       // 如果关闭的是最后一个标签页,激活前一个标签页
@@ -298,7 +293,7 @@ const removeTab = async (targetId: string) => {
   // 清理未保存状态
   hasUnsavedChanges.delete(targetId);
 
-  // 移除标签页后，清理相关状态
+  // 除标签页后，清理相关状态
   localStorage.removeItem(`request-state-${targetId}`);
   hasUnsavedChanges.delete(targetId);
 };
@@ -313,6 +308,9 @@ onMounted(() => {
     }
   `;
   document.head.appendChild(style);
+
+  // 添加键盘事件监听
+  window.addEventListener("keydown", handleKeyDown);
 });
 
 onBeforeUnmount(() => {
@@ -320,66 +318,10 @@ onBeforeUnmount(() => {
   if (style && style.innerHTML.includes("is-resizing")) {
     style.remove();
   }
+
+  // 移除键盘事件监听
+  window.removeEventListener("keydown", handleKeyDown);
 });
-
-// 树形结构的配置
-const defaultProps = {
-  children: "children",
-  label: "name",
-};
-
-// Collections 数据
-const collectionsData = ref([
-  {
-    name: "My Collections",
-    children: [
-      { name: "Project A" },
-      { name: "Project B" },
-      {
-        name: "Project C",
-        children: [{ name: "API v1" }, { name: "API v2" }],
-      },
-    ],
-  },
-]);
-
-// History 文件夹
-const historyFolders = ref([
-  {
-    name: "Today",
-    children: [],
-  },
-  {
-    name: "Yesterday",
-    children: [],
-  },
-  {
-    name: "Last 7 Days",
-    children: [],
-  },
-]);
-
-// Environment 文件夹
-const environmentFolders = ref([
-  {
-    name: "Global",
-    children: [],
-  },
-  {
-    name: "Local",
-    children: [],
-  },
-]);
-
-// 处理节点点击
-const handleNodeClick = (data: any) => {
-  console.log(data);
-};
-
-const handleAddCollection = () => {
-  // 处理添加合的逻辑
-  console.log("Add collection clicked");
-};
 
 // 活动视图状态
 const activeView = ref<"collections" | "apis" | null>(
@@ -392,7 +334,7 @@ const toggleView = (view: string) => {
     // 如果点击当前活动的视图，切换边栏的展开/收起状态
     isSidebarCollapsed.value = !isSidebarCollapsed.value;
   } else {
-    // 如果切换到新的视图，确保边栏展开
+    // 如切换到新的视图保存栏展开
     if (isSidebarCollapsed.value) {
       isSidebarCollapsed.value = false;
       // 恢复之前保存的宽度或默认宽度
@@ -430,7 +372,7 @@ const handleSidebarResize = (e: MouseEvent) => {
       }, 500);
     }
   } else {
-    // 如果宽度大于阈值，清除计时器
+    // 如宽度大于阈值，清除计时器
     if (collapseTimer) {
       clearTimeout(collapseTimer);
       collapseTimer = null;
@@ -451,7 +393,7 @@ const startSidebarResize = (e: MouseEvent) => {
     const deltaX = e.clientX - startX;
     const newWidth = startWidth + deltaX;
 
-    // 如果宽度小于阈值，自动收起边栏
+    // 如果宽度小于阈值自动收起边栏
     if (newWidth < COLLAPSE_THRESHOLD) {
       isSidebarCollapsed.value = true;
       localStorage.setItem("sidebarCollapsed", "true");
@@ -490,18 +432,6 @@ const stopSidebarResize = () => {
   }
 };
 
-// 将 headers 数组转换为 Record<string, string>
-const headersToRecord = (
-  headers: { enabled: boolean; name: string; value: string }[]
-): Record<string, string> => {
-  return headers.reduce((acc, header) => {
-    if (header.enabled) {
-      acc[header.name] = header.value;
-    }
-    return acc;
-  }, {} as Record<string, string>);
-};
-
 // 添加新的响应式变量
 const showRequestTypeDialog = ref(false);
 
@@ -511,16 +441,232 @@ const showNewRequestDialog = () => {
 };
 
 const createNewRequest = (type: "http" | "rpc") => {
-  const newId = String(Date.now()); // 使用时间戳作为唯一ID
+  const newId = String(Date.now());
+  const newRequest: HistoryItem = {
+    id: newId,
+    type: type,
+    url: "",
+    method: type === "http" ? "GET" : "",
+    name: `New ${type.toUpperCase()} Request`,
+    timestamp: Date.now(),
+    response: {
+      status: 0,
+      data: null,
+      headers: {},
+    },
+    requestMessage: "",
+    debugInfo: "",
+    debugCommand: "",
+    folderId: selectedFolderId.value || undefined,
+  };
+
+  // ��果有选中文件夹，设置请求的文件夹ID
+  if (selectedFolderId.value) {
+    storage.saveRequestFolder(newId, selectedFolderId.value);
+    selectedFolderId.value = null;
+  }
+
+  // 添加到历史记录
+  addHistoryItem(newRequest);
+
+  // 添加到标签页
   tabs.value.push({
     id: newId,
-    name: `New ${type.toUpperCase()} Request`,
-    title: `New ${type.toUpperCase()} Request`,
+    name: newRequest.name,
+    title: newRequest.name,
     type: type,
   });
+
   activeTab.value = newId;
   showRequestTypeDialog.value = false;
   hasUnsavedChanges.set(newId, false);
+
+  // 自动触发刷新
+  nextTick(async () => {
+    try {
+      await loadHistory();
+      console.log("Auto-refreshed after creating new request");
+    } catch (error) {
+      console.error("Failed to auto-refresh:", error);
+    }
+  });
+};
+
+const {
+  history,
+  addFolder,
+  addHistoryItem,
+  loadHistory,
+} = useRequestHistory();
+
+// 监听历史记录变化，更新标签页名称
+watch(
+  history,
+  (newHistory) => {
+    // 遍历所有标签页
+    tabs.value.forEach((tab) => {
+      // 在历史记录中查找对应的请求
+      const historyItem = newHistory.find((item) => item.id === tab.id);
+      // 如果找到且名称不同，则更新标签页名称
+      if (historyItem && historyItem.name !== tab.name) {
+        tab.name = historyItem.name;
+        tab.title = historyItem.name;
+        // 强制更新视图
+        tabs.value = [...tabs.value];
+      }
+    });
+  },
+  { deep: true }
+);
+const handleAddFolder = async () => {
+  try {
+    const { value: folderName } = await ElMessageBox.prompt(
+      "Enter folder name",
+      "New Folder",
+      {
+        confirmButtonText: "Create",
+        cancelButtonText: "Cancel",
+        inputValidator: (value) => {
+          if (!value) {
+            return "Folder name cannot be empty";
+          }
+          return true;
+        },
+      }
+    );
+
+    if (folderName) {
+      const folder = addFolder(folderName.trim());
+      console.log("Folder created:", folder); // 添加志
+      ElMessage.success(`Folder "${folderName}" created successfully`);
+    }
+  } catch (error) {
+    console.error("Error creating folder:", error); // 加错误日志
+    if (error !== "cancel") {
+      ElMessage.error("Failed to create folder");
+    }
+  }
+};
+
+// 处理在文件夹中创建新请求
+const handleCreateRequest = (folderId: string) => {
+  showRequestTypeDialog.value = true;
+  // 存储当前选中的文件夹ID，用于创建请求时设置所文件夹
+  selectedFolderId.value = folderId;
+};
+
+// 添加新的响应式变量
+const selectedFolderId = ref<string | null>(null);
+
+// 处理打开请求
+const handleOpenRequest = (request: any) => {
+  // 检查标签页是否已经存在
+  const existingTab = tabs.value.find((tab) => tab.id === request.id);
+  if (existingTab) {
+    // 如果标签页已存在，更新名称并激活它
+    existingTab.name = request.name || request.url;
+    existingTab.title = request.name || request.url;
+    activeTab.value = request.id;
+  } else {
+    // 如果标签页不在，创建新标签页
+    tabs.value.push({
+      id: request.id,
+      name: request.name || request.url,
+      title: request.name || request.url,
+      type: request.type,
+    });
+    activeTab.value = request.id;
+  }
+};
+
+// 将 Map 转换为 Set 以便于模板使用
+const unsavedTabsSet = ref(new Set<string>());
+
+// 修改标记未保存的方法
+const markTabAsUnsaved = (tabId: string) => {
+  console.log("Marking tab as unsaved:", tabId);
+  hasUnsavedChanges.set(tabId, true);
+  unsavedTabsSet.value.add(tabId);
+  console.log(
+    "Current unsaved changes map:",
+    Array.from(hasUnsavedChanges.entries())
+  );
+};
+
+// 修改标记已保存的方法
+const markTabAsSaved = (tabId: string) => {
+  console.log("Marking tab as saved:", tabId);
+  hasUnsavedChanges.set(tabId, false);
+  unsavedTabsSet.value.delete(tabId);
+};
+
+// 监听 hasUnsavedChanges 的变化
+watch(
+  hasUnsavedChanges,
+  () => {
+    // 更新 unsavedTabsSet
+    unsavedTabsSet.value.clear();
+    hasUnsavedChanges.forEach((value, key) => {
+      if (value) {
+        unsavedTabsSet.value.add(key);
+      }
+    });
+  },
+  { deep: true }
+);
+
+// 处理未保存状态变化
+const handleUnsavedChange = (tabId: string, isUnsaved: boolean) => {
+  console.log("Handling unsaved change:", tabId, isUnsaved);
+  if (isUnsaved) {
+    markTabAsUnsaved(tabId);
+  } else {
+    markTabAsSaved(tabId);
+  }
+};
+
+// 添加保存请求的方法
+const saveRequest = () => {
+  if (currentTab.value) {
+    // 保存当前请求的逻辑
+    markTabAsSaved(currentTab.value.id);
+    ElMessage.success("Request saved");
+  }
+};
+
+// 添加键盘快捷键监听
+const handleKeyDown = (e: KeyboardEvent) => {
+  // 检查是否按下 Ctrl/Command + S
+  if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+    e.preventDefault(); // 阻止浏览器默认保存行为
+    saveRequest();
+  }
+};
+
+// 处理请求删除
+const handleDeleteRequest = (requestId: string) => {
+  // 关闭对应的标签页
+  removeTab(requestId);
+};
+
+// 处理名称变更
+const handleNameChange = ({ id, name }: { id: string; name: string }) => {
+  // 更新标签页名称
+  const tab = tabs.value.find((tab) => tab.id === id);
+  if (tab) {
+    tab.name = name;
+    tab.title = name;
+    // 强制更新视图
+    tabs.value = [...tabs.value];
+  }
+
+  // 更新历史记录中的名称
+  const historyItem = history.value.find((item) => item.id === id);
+  if (historyItem) {
+    historyItem.name = name;
+    // 强制更新历史记录视图
+    history.value = [...history.value];
+  }
 };
 </script>
 <style scoped>
@@ -554,7 +700,7 @@ const createNewRequest = (type: "http" | "rpc") => {
 .left-section.is-collapsed {
   width: 48px !important;
 
-  /* 当折叠时隐藏 New ���钮区域和边栏 */
+  /* 当折叠时隐藏 New 按钮区域和边栏 */
   .new-area,
   .collections-sidebar {
     display: none;
@@ -663,7 +809,7 @@ const createNewRequest = (type: "http" | "rpc") => {
   flex: 1;
 }
 
-/* 当边栏折叠时的样式 */
+/* 当边栏折叠时样式 */
 .collections-sidebar.is-collapsed {
   width: 0;
   padding: 0;
@@ -812,7 +958,7 @@ const createNewRequest = (type: "http" | "rpc") => {
   overflow: hidden;
 }
 
-/* 响应域容器 */
+/* 响应域器 */
 .response-container {
   display: flex;
   flex-direction: column;
@@ -1091,5 +1237,22 @@ const createNewRequest = (type: "http" | "rpc") => {
 
 :deep(.el-empty) {
   padding: 40px;
+}
+
+/* 添加新的样式 */
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.collections-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow: auto;
 }
 </style>

@@ -5,11 +5,11 @@ const MAX_HISTORY_LENGTH = 10
 
 export class ServiceUrlHistoryService {
   private static getHistory(): string[] {
-    return storage.get(HISTORY_KEY, [])
+    return storage.getItem(HISTORY_KEY, [])
   }
 
   private static saveHistory(history: string[]) {
-    storage.set(HISTORY_KEY, history)
+    storage.setItem(HISTORY_KEY, history)
   }
 
   static addToHistory(url: string) {

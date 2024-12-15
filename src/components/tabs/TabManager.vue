@@ -10,10 +10,18 @@
       <el-tab-pane
         v-for="tab in tabs"
         :key="tab.id"
-        :label="tab.title"
         :name="tab.id"
       >
-        <slot :tab="tab"></slot>
+        <template #label>
+          <div class="tab-label">
+            {{ tab.title }}
+            <span
+              v-if="unsavedTabs?.has(tab.id)"
+              class="unsaved-indicator"
+              title="Unsaved changes"
+            />
+          </div>
+        </template>
       </el-tab-pane>
 
       <div class="add-tab-button" @click="$emit('add')">
@@ -33,6 +41,7 @@ const props = defineProps<{
     id: string;
     title: string;
   }>;
+  unsavedTabs?: Set<string>;
 }>();
 
 const emit = defineEmits<{
@@ -52,10 +61,6 @@ const handleTabClick = (tab: any) => {
 
 const handleTabRemove = (tabId: string) => {
   emit("remove", tabId);
-};
-
-const handleAddTab = () => {
-  emit("add");
 };
 </script>
 
@@ -98,6 +103,8 @@ const handleAddTab = () => {
   border-bottom: none;
   background-color: var(--header-bg);
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
 }
 
 :deep(.el-tabs__item.is-active) {
@@ -116,5 +123,22 @@ const handleAddTab = () => {
 
 .add-tab-button:hover {
   color: var(--el-color-primary);
+}
+
+.tab-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unsaved-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--el-color-primary);
+  margin-left: 6px;
+  display: inline-block;
+  flex-shrink: 0;
 }
 </style>
