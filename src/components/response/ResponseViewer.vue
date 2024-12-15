@@ -1,7 +1,7 @@
 <template>
   <div class="response-viewer">
     <div class="response-header">
-      <div class="resize-handle" >
+      <div class="resize-handle">
         <div class="resize-handle-line"></div>
         <div class="resize-handle-icon">
           <el-icon><ArrowUp /></el-icon>
@@ -22,7 +22,7 @@
         </span>
       </div>
       <div class="header-right">
-        <el-button size="small" text >
+        <el-button size="small" text>
           <el-icon>
             <ArrowUp />
           </el-icon>
@@ -40,8 +40,8 @@
 
     <div class="response-content">
       <el-tabs v-model="activeTab" type="border-card">
-        <!-- Response Body 选项卡 -->
-        <el-tab-pane label="Response Body" name="body">
+        <!-- Payload 选项卡 -->
+        <el-tab-pane label="Payload" name="body">
           <div class="tab-content">
             <CodeEditor
               style="height: 100%"
@@ -72,18 +72,28 @@
           </div>
         </el-tab-pane>
 
-        <!-- Response Headers 选项卡 -->
-        <el-tab-pane label="Response Headers" name="headers">
+        <!-- Metadata 选项卡 -->
+        <el-tab-pane label="Metadata" name="headers">
           <div class="tab-content">
-            <div v-for="(value, key) in headers" :key="key" class="header-item">
+            <div v-for="(values, key) in headers" :key="key" class="header-item">
               <span class="header-name">{{ key }}:</span>
-              <span class="header-value">{{ value }}</span>
+              <span class="header-value">{{ Array.isArray(values) ? values.join(', ') : values }}</span>
             </div>
-            <div
-              v-if="Object.keys(headers).length === 0"
-              class="empty-response"
-            >
-              No headers
+            <div v-if="Object.keys(headers).length === 0" class="empty-response">
+              No metadata available
+            </div>
+          </div>
+        </el-tab-pane>
+
+        <!-- Trailers 选项卡 -->
+        <el-tab-pane label="Trailers" name="trailers">
+          <div class="tab-content">
+            <div v-for="(values, key) in trailers" :key="key" class="header-item">
+              <span class="header-name">{{ key }}:</span>
+              <span class="header-value">{{ Array.isArray(values) ? values.join(', ') : values }}</span>
+            </div>
+            <div v-if="Object.keys(trailers).length === 0" class="empty-response">
+              No trailers available
             </div>
           </div>
         </el-tab-pane>
@@ -101,7 +111,8 @@ import CodeEditor from "../CodeEditor.vue";
 const props = defineProps<{
   response: string;
   responseTime: number | null;
-  headers: Record<string, string>;
+  headers: Record<string, string[]>;
+  trailers?: Record<string, string[]>;
   debugLogs?: string;
   debugCommand?: string;
   status?: number | string;
@@ -142,6 +153,8 @@ const statusText = computed(() => {
   };
   return `${statusCode} ${statusMap[statusCode] || ""}`;
 });
+
+const trailers = computed(() => props.trailers || {});
 </script>
 
 <style scoped>
@@ -221,8 +234,8 @@ const statusText = computed(() => {
 
 .tab-content {
   height: 100%;
-  overflow: hidden;
-  padding: 0;
+  overflow: auto;
+  padding: 16px;
 }
 
 .empty-response {
@@ -236,17 +249,24 @@ const statusText = computed(() => {
 .header-item {
   display: flex;
   gap: 8px;
-  padding: 4px 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.header-item:last-child {
+  border-bottom: none;
 }
 
 .header-name {
-  font-weight: bold;
+  font-weight: 500;
   color: var(--el-text-color-primary);
+  min-width: 150px;
 }
 
 .header-value {
   color: var(--el-text-color-regular);
   word-break: break-all;
+  flex: 1;
 }
 
 .command-section,
@@ -261,14 +281,14 @@ const statusText = computed(() => {
 }
 
 .logs-section {
-  max-height: calc(100vh - 300px);
-  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .logs-section pre {
   margin: 0;
-  overflow: auto;
-  max-height: 100%;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 pre {

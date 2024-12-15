@@ -318,8 +318,8 @@ const sendRequest = async () => {
         params: params,
         response: response.data,
         timestamp: Date.now(),
-        debugInfo: response.debug,
-        debugCommand: response.command,
+        debugInfo: response.debug || "",
+        debugCommand: response.command || "",
         requestMessage: JSON.stringify(params),
       });
     }
@@ -390,7 +390,6 @@ onMounted(() => {
   if (workspace) {
     const workspaceHeight = workspace.getBoundingClientRect().height;
     responseHeight.value = `${workspaceHeight / 2}px`;
-    console.log("Initial responseHeight in pixels:", responseHeight.value);
   }
 });
 
@@ -402,7 +401,9 @@ const startResize = (e: MouseEvent) => {
   const workspaceRect = workspace.getBoundingClientRect();
   const startY = e.clientY;
 
-  const currentHeight = parseInt(responseHeight.value.replace('px', '')) || workspaceRect.height / 2;
+  const currentHeight =
+    parseInt(responseHeight.value.replace("px", "")) ||
+    workspaceRect.height / 2;
   const startHeight = currentHeight;
 
   console.log("Initial startHeight:", startHeight);
@@ -415,8 +416,6 @@ const startResize = (e: MouseEvent) => {
       Math.max(startHeight + deltaY, minResponseHeight),
       workspaceRect.height - 200
     );
-
-    console.log("New height during drag:", newHeight);
 
     if (
       newHeight >= minResponseHeight &&

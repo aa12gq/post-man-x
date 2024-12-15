@@ -12,6 +12,16 @@ export interface RpcMethod {
 export interface RpcResponse {
   data: any;
   headers: Record<string, string>;
+  metadata: Record<string, string>;
+  trailers: Record<string, string>;
+  debug?: string;
+  command?: string;
+}
+
+export interface GrpcResponse {
+  payload: any;
+  metadata: Record<string, string>;
+  trailers: Record<string, string>;
 }
 
 export default class RpcClient {
@@ -59,7 +69,7 @@ export default class RpcClient {
     }
   }
 
-  async invoke(serviceName: string, methodName: string, params: any) {
+  async invoke(serviceName: string, methodName: string, params: any): Promise<RpcResponse> {
     try {
       const response = await window.electron.invoke('rpc-request', {
         url: this.url,
@@ -72,12 +82,13 @@ export default class RpcClient {
         throw new Error(response.error);
       }
 
-      // 返回完整的响应对象，包括调试信息
       return {
         data: response.data,
         headers: response.headers || {},
-        debug: response.debug || '',    // 调试日志
-        command: response.command || '' // 执行的命令
+        metadata: response.metadata || {},
+        trailers: response.trailers || {},
+        debug: response.debug || '',
+        command: response.command || ''
       };
     } catch (error: any) {
       console.error('RPC request failed:', error);
