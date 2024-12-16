@@ -1,5 +1,15 @@
 <template>
-  <MainLayout />
+  <div 
+    class="app-container"
+    :class="{
+      [`layout-${layoutStore.settings.currentLayout}`]: true,
+      'sidebar-collapsed': layoutStore.settings.isCollapsed,
+      [`toolbar-${layoutStore.settings.toolbarPosition}`]: true,
+      [`tabs-${layoutStore.settings.tabsPosition}`]: true,
+    }"
+  >
+    <MainLayout />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -8,9 +18,11 @@ import MainLayout from "./layouts/MainLayout.vue";
 import { useThemeStore } from "./stores/theme";
 import { useSettings } from "./stores/settings";
 import type { Settings } from "./stores/settings";
+import { useLayoutStore } from './stores/layout';
 
 const themeStore = useThemeStore();
 const settingsStore = useSettings();
+const layoutStore = useLayoutStore();
 
 // 在 setup 中直接初始化，而不是在 onMounted 中
 themeStore.initializeTheme();
@@ -126,6 +138,12 @@ body {
   --editor-tab-size: 2;
   --editor-word-wrap: normal;
   --editor-line-height: 1.5;
+
+  /* 布局相关的 CSS 变量 */
+  --sidebar-width: 240px;
+  --header-height: 48px;
+  --toolbar-height: 40px;
+  --tabs-height: 36px;
 }
 
 :root[data-theme="dark"] {
@@ -196,5 +214,59 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* 布局样式 */
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 经典布局 */
+.layout-classic {
+  /* ... */
+}
+
+/* 现代布局 */
+.layout-modern {
+  /* ... */
+}
+
+/* 紧凑布局 */
+.layout-compact {
+  /* ... */
+}
+
+/* 简约布局 */
+.layout-minimal {
+  /* ... */
+}
+
+/* 工具栏位置 */
+.toolbar-top {
+  /* ... */
+}
+
+.toolbar-bottom {
+  /* ... */
+}
+
+/* 标签页位置 */
+.tabs-top {
+  /* ... */
+}
+
+.tabs-left {
+  /* ... */
+}
+
+.tabs-bottom {
+  /* ... */
+}
+
+/* 侧边栏状态 */
+.sidebar-collapsed {
+  /* ... */
 }
 </style>

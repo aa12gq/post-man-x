@@ -10,6 +10,10 @@
           <el-icon><Brush /></el-icon>
           Theme
         </el-dropdown-item>
+        <el-dropdown-item command="layout">
+          <el-icon><Grid /></el-icon>
+          Layout
+        </el-dropdown-item>
         <el-dropdown-item command="general">
           <el-icon><Setting /></el-icon>
           General
@@ -39,7 +43,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Setting, Brush, Operation, InfoFilled } from '@element-plus/icons-vue';
+import { 
+  Setting, 
+  Brush, 
+  Operation, 
+  InfoFilled,
+  Grid 
+} from '@element-plus/icons-vue';
 import SettingsPanel from '../../components/settings/SettingsPanel.vue';
 
 const showSettings = ref(false);

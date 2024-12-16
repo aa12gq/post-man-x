@@ -1,12 +1,35 @@
 <template>
-  <div class="main-layout">
+  <div
+    class="request-panel"
+    :class="{
+      [`layout-${layoutStore.settings.currentLayout}`]: true,
+      'sidebar-collapsed': layoutStore.settings.isCollapsed,
+      [`toolbar-${layoutStore.settings.toolbarPosition}`]: true,
+      [`tabs-${layoutStore.settings.tabsPosition}`]: true,
+      'hide-sidebar': !layoutStore.settings.showSidebar,
+      'hide-toolbar': !layoutStore.settings.showToolbar,
+      'hide-tabs': !layoutStore.settings.showTabs,
+      'compact-mode': layoutStore.settings.compactMode,
+      'show-borders': layoutStore.settings.showBorders,
+      'show-shadows': layoutStore.settings.showShadows,
+    }"
+  >
     <!-- 主要内容区域 -->
     <div class="content-layout">
       <!-- 左侧区域 -->
       <div
+        v-if="layoutStore.settings.showSidebar"
         class="left-section"
-        :class="{ 'is-collapsed': isSidebarCollapsed }"
-        :style="{ width: isSidebarCollapsed ? '48px' : `${sidebarWidth}px` }"
+        :class="{
+          'is-collapsed': layoutStore.settings.isCollapsed,
+          'is-collapsible': layoutStore.settings.isCollapsible,
+          'position-right': layoutStore.settings.sidebarPosition === 'right'
+        }"
+        :style="{
+          width: layoutStore.settings.isCollapsed
+            ? '48px'
+            : `${layoutStore.settings.sidebarWidth}px`,
+        }"
       >
         <!-- New 按钮区域 -->
         <div class="new-area">
@@ -90,21 +113,26 @@
           <div
             class="collections-sidebar"
             :class="{
-              'is-collapsed':
-                isSidebarCollapsed || activeView !== 'collections',
+              'is-collapsed': layoutStore.settings.isCollapsed || activeView !== 'collections',
               'is-hidden': activeView !== 'collections',
             }"
           >
-            <!-- 拖动条 -->
-            <div class="sidebar-resizer" @mousedown="startSidebarResize"></div>
-
-            <!-- 折叠按钮 -->
-            <div class="sidebar-toggle" @click="toggleSidebar">
-              <el-icon :class="{ 'is-collapsed': isSidebarCollapsed }">
-                <CaretLeft />
-              </el-icon>
+            <!-- 动条和折叠按钮 -->
+            <div class="sidebar-controls">
+              <div
+                class="sidebar-resizer"
+                @mousedown="startSidebarResize"
+              ></div>
+              <div class="sidebar-toggle" @click="toggleSidebar">
+                <el-icon
+                  :class="{ 'is-collapsed': layoutStore.settings.isCollapsed }"
+                >
+                  <CaretLeft />
+                </el-icon>
+              </div>
             </div>
 
+            <!-- 内容区域 -->
             <div class="sidebar-header">
               <span class="sidebar-title">Collections</span>
               <div class="header-actions">
@@ -128,7 +156,7 @@
           <div
             class="collections-sidebar"
             :class="{
-              'is-collapsed': isSidebarCollapsed || activeView !== 'apis',
+              'is-collapsed': layoutStore.settings.isCollapsed || activeView !== 'apis',
               'is-hidden': activeView !== 'apis',
             }"
           >
@@ -143,19 +171,32 @@
         </div>
       </div>
 
-      <!-- 右侧主内容区 -->
-      <div class="main-content">
+      <!-- 右侧主内容 -->
+      <div
+        class="main-content"
+        :class="{
+          'tabs-left': layoutStore.settings.tabsPosition === 'left',
+          'tabs-bottom': layoutStore.settings.tabsPosition === 'bottom',
+          'no-sidebar': !layoutStore.settings.showSidebar
+        }"
+      >
         <!-- 标签页管理器 -->
         <TabManager
           v-model="activeTab"
           :tabs="tabs"
           :unsaved-tabs="unsavedTabsSet"
+          :position="layoutStore.settings.tabsPosition"
           @add="addTab"
           @remove="removeTab"
         />
 
         <!-- 请求和响应区域包装器 -->
-        <div class="request-response-wrapper">
+        <div
+          class="request-response-wrapper"
+          :class="{
+            'toolbar-bottom': layoutStore.settings.toolbarPosition === 'bottom',
+          }"
+        >
           <template v-if="tabs.length === 0">
             <!-- 空状态提示 -->
             <div class="empty-state">
@@ -239,6 +280,9 @@ import FolderManager from "./FolderManager.vue";
 import { useRequestHistory } from "../composables/useRequestHistory";
 import { storage } from "../services/storage";
 import { HistoryItem } from "../types";
+import { useLayoutStore } from "../stores/layout";
+
+const layoutStore = useLayoutStore();
 
 // 基础状态
 const isSidebarCollapsed = ref(
@@ -263,12 +307,9 @@ const currentTab = computed(() => {
 
 // 方法定义
 const toggleSidebar = () => {
-  isSidebarCollapsed.value = !isSidebarCollapsed.value;
-  if (!isSidebarCollapsed.value) {
-    // 开时恢复之前的宽度或默认宽度
-    sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 248;
+  if (layoutStore.settings.isCollapsible) {
+    layoutStore.toggleSidebar();
   }
-  localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
 };
 
 const addTab = () => {
@@ -289,7 +330,7 @@ const removeTab = async (targetId: string) => {
   const tab = tabs.value.find((tab) => tab.id === targetId);
   if (!tab) return;
 
-  // 检查是否有未保存的更改
+  // 检查是否未保存的更改
   if (hasUnsavedChanges.value.get(targetId)) {
     try {
       await ElMessageBox.confirm(
@@ -322,7 +363,7 @@ const removeTab = async (targetId: string) => {
   // 如果关闭的是当前标签页,需要激活其他标签页
   if (activeTab.value === targetId) {
     if (tabs.value.length === 1) {
-      // 如果只有个标签页,清空激活标签页
+      // 如果只有个标签页,清空存活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
       // 如果闭的是最后一个标签页,激活前一个标签页
@@ -338,7 +379,7 @@ const removeTab = async (targetId: string) => {
   // 清理未保存状态
   hasUnsavedChanges.value.delete(targetId);
 
-  // 除标签页后，清理相关状态
+  // 除签页后，清理相关状态
   localStorage.removeItem(`request-state-${targetId}`);
   hasUnsavedChanges.value.delete(targetId);
 };
@@ -379,17 +420,15 @@ const activeView = ref<
   | null
 >((localStorage.getItem("activeView") as any) || null);
 
-// 切换视图
+// 修改 toggleView 函数
 const toggleView = (view: string) => {
   if (activeView.value === view) {
     // 如果点击当前活动的视图，切换边栏的展开/收起状态
-    isSidebarCollapsed.value = !isSidebarCollapsed.value;
+    layoutStore.toggleSidebar();
   } else {
-    // 如切换到新的视图保存栏展开
-    if (isSidebarCollapsed.value) {
-      isSidebarCollapsed.value = false;
-      // 恢复之前保存的宽度或默认宽度
-      sidebarWidth.value = Number(localStorage.getItem("sidebarWidth")) || 348;
+    // 如果切换到新的视图，展开边栏并更新活动视图
+    if (layoutStore.settings.isCollapsed) {
+      layoutStore.updateSettings({ isCollapsed: false });
     }
     activeView.value = view as
       | "collections"
@@ -400,7 +439,8 @@ const toggleView = (view: string) => {
       | "settings"
       | null;
   }
-  localStorage.setItem("sidebarCollapsed", isSidebarCollapsed.value.toString());
+  // 保存当前视图到本地存储
+  localStorage.setItem("activeView", activeView.value || "");
 };
 
 const minWidth = 200; // 最小宽度
@@ -415,7 +455,7 @@ const handleSidebarResize = (e: MouseEvent) => {
   const deltaX = e.clientX - startX;
   const newWidth = startWidth + deltaX;
 
-  // 更新宽度值
+  // 更改宽度值
   sidebarWidth.value = Math.min(Math.max(newWidth, minWidth), maxWidth);
 
   // 如果宽度小于阈值，启动计时器
@@ -430,7 +470,7 @@ const handleSidebarResize = (e: MouseEvent) => {
       }, 500);
     }
   } else {
-    // 如宽度度于阈值，清除计时器
+    // 如宽度度阈值，清除计时器
     if (collapseTimer) {
       clearTimeout(collapseTimer);
       collapseTimer = null;
@@ -445,34 +485,37 @@ const handleSidebarResize = (e: MouseEvent) => {
 const startSidebarResize = (e: MouseEvent) => {
   e.preventDefault();
   const startX = e.clientX;
-  const startWidth = sidebarWidth.value;
+  const startWidth = layoutStore.settings.sidebarWidth;
 
   const handleMouseMove = (e: MouseEvent) => {
     const deltaX = e.clientX - startX;
     const newWidth = startWidth + deltaX;
 
+    // 使用 layoutStore 中的最小和最大宽度限制
+    const minWidth = layoutStore.settings.minSidebarWidth;
+    const maxWidth = layoutStore.settings.maxSidebarWidth;
+
     // 当宽度接近收起阈值时添加视觉提示
     const leftSection = document.querySelector(".left-section") as HTMLElement;
-    if (newWidth < 150) {
+    if (newWidth < minWidth + 50) {
       leftSection?.classList.add("near-collapse");
     } else {
       leftSection?.classList.remove("near-collapse");
     }
 
-    // 如果宽度小于 100px 自动收起边栏
-    if (newWidth < 100) {
+    // 如果宽度小于最小宽度且允许折叠，则自动折叠
+    if (newWidth < minWidth && layoutStore.settings.isCollapsible) {
       leftSection?.classList.remove("near-collapse");
-      isSidebarCollapsed.value = true;
-      localStorage.setItem("sidebarCollapsed", "true");
+      layoutStore.updateSettings({ isCollapsed: true });
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       document.body.style.cursor = "";
       return;
     }
 
-    // 只限制最大宽度，移除最小宽度限制
-    sidebarWidth.value = Math.min(800, newWidth);
-    localStorage.setItem("sidebarWidth", String(sidebarWidth.value));
+    // 限制宽度在最小和最大值之间
+    const clampedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
+    layoutStore.updateSettings({ sidebarWidth: clampedWidth });
   };
 
   const handleMouseUp = () => {
@@ -605,7 +648,7 @@ const handleAddFolder = async () => {
       ElMessage.success(`Folder "${folderName}" created successfully`);
     }
   } catch (error) {
-    console.error("Error creating folder:", error); // 加错误日志
+    console.error("Error creating folder:", error); // 加误日志
     if (error !== "cancel") {
       ElMessage.error("Failed to create folder");
     }
@@ -615,7 +658,7 @@ const handleAddFolder = async () => {
 // 处理在文件夹中创建新请求
 const handleCreateRequest = (folderId: string) => {
   showRequestTypeDialog.value = true;
-  // 存储当前选中的文件夹ID，用于新建请求时设置所文件夹
+  // 存储当前选的文件夹ID，用于新建请求时设置文件夹
   selectedFolderId.value = folderId;
 };
 
@@ -679,7 +722,7 @@ watch(
   { deep: true }
 );
 
-// 处理未保存状态变化
+// 处理保存状态变化
 const handleUnsavedChange = (tabId: string, isUnsaved: boolean) => {
   console.log("Handling unsaved change:", tabId, isUnsaved);
   if (isUnsaved) {
@@ -734,6 +777,131 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 };
 </script>
 <style scoped>
+/* 基础布局样式 */
+.request-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 经典布局 */
+.layout-classic {
+  .content-layout {
+    display: flex;
+  }
+
+  .left-section {
+    border-right: 1px solid var(--border-color);
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* 现代布局 */
+.layout-modern {
+  .content-layout {
+    display: flex;
+  }
+
+  .left-section {
+    border-right: 1px solid var(--border-color);
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+
+    &.tabs-left {
+      flex-direction: row;
+
+      .tab-manager {
+        width: 200px;
+        border-right: 1px solid var(--border-color);
+      }
+
+      .request-response-wrapper {
+        flex: 1;
+      }
+    }
+  }
+}
+
+/* 紧凑布局 */
+.layout-compact {
+  .content-layout {
+    display: flex;
+  }
+
+  .left-section {
+    width: 180px;
+  }
+
+  .main-content {
+    flex: 1;
+  }
+
+  .toolbar-bottom {
+    flex-direction: column-reverse;
+  }
+}
+
+/* 简约布局 */
+.layout-minimal {
+  .left-section {
+    display: none;
+  }
+
+  .main-content {
+    flex: 1;
+  }
+}
+
+/* 标签页位置样式 */
+.tabs-left {
+  flex-direction: row;
+
+  .tab-manager {
+    width: 200px;
+    border-right: 1px solid var(--border-color);
+  }
+}
+
+.tabs-bottom {
+  flex-direction: column-reverse;
+}
+
+/* 工具栏位样式 */
+.toolbar-bottom {
+  .request-toolbar {
+    order: 1;
+  }
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .left-section:not(.is-collapsed) {
+    position: absolute;
+    z-index: 100;
+    height: 100%;
+    background-color: var(--bg-color);
+    box-shadow: var(--shadow-base);
+  }
+
+  .layout-modern .tabs-left {
+    flex-direction: column;
+
+    .tab-manager {
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+
 .main-layout {
   display: flex;
   flex-direction: column;
@@ -745,7 +913,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .content-layout {
   flex: 1;
   display: flex;
-  flex-direction: row;
+  min-height: 0;
   overflow: hidden;
   position: relative;
 }
@@ -876,18 +1044,16 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   overflow: hidden;
   flex-shrink: 0;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 当边栏折叠时样式 */
-.collections-sidebar.is-collapsed {
-  width: 0;
-  padding: 0;
-  margin: 0;
-  border-right: none;
-}
-
-.collections-sidebar.is-hidden {
-  display: none;
+.sidebar-controls {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
 }
 
 .sidebar-header {
@@ -897,26 +1063,70 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
-/* 调整折叠按钮位置 */
-.sidebar-toggle {
-  right: -24px;
+.sidebar-content {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+}
+
+/* 当边栏折叠时样式 */
+.collections-sidebar.is-collapsed {
+  width: 0;
+  padding: 0;
+  margin: 0;
+  border-right: none;
+  overflow: hidden;
+}
+
+.collections-sidebar.is-hidden {
+  display: none;
+}
+
+/* 拖动条样式 */
+.sidebar-resizer {
   position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 100;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer:active {
+  background-color: var(--el-color-primary);
+}
+
+/* 折叠按钮样式 */
+.sidebar-toggle {
+  position: absolute;
+  right: -24px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1000;
   width: 24px;
   height: 48px;
   background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   border-left: none;
   border-radius: 0 4px 4px 0;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  color: var(--text-color);
+}
+
+.sidebar-toggle .el-icon {
+  transition: transform 0.3s;
+}
+
+.sidebar-toggle .el-icon.is-collapsed {
+  transform: rotate(180deg);
 }
 
 /* 右侧内容区域 */
@@ -924,6 +1134,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -1043,7 +1254,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   padding: 0;
 }
 
-/* 分割线样式 */
+/* 分线样式 */
 .resizer {
   height: 4px;
   background-color: var(--border-color);
@@ -1243,7 +1454,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   border-bottom: 2px solid var(--el-color-primary);
 }
 
-/* 添加新的���式 */
+/* 添加新的样式 */
 .new-request {
   margin-bottom: 8px;
   color: var(--el-color-primary);
@@ -1308,7 +1519,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   padding: 40px;
 }
 
-/* 添加新的样式 */
+/* 添加新样式 */
 .header-actions {
   display: flex;
   gap: 8px;
@@ -1351,7 +1562,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   margin-bottom: 16px;
 }
 
-/* 调整活动栏样式，确保 Home 图标位置正确 */
+/* 调整活动栏样式确保 Home 图标位置正确 */
 .activity-bar {
   display: flex;
   flex-direction: column;
@@ -1379,5 +1590,121 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   background-color: var(--header-bg);
   color: var(--text-color);
   border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 100;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer:active {
+  background-color: var(--el-color-primary);
+}
+
+.left-section.is-collapsible .sidebar-resizer {
+  display: block;
+}
+
+.left-section:not(.is-collapsible) .sidebar-resizer {
+  display: none;
+}
+
+.left-section.near-collapse {
+  background-color: var(--el-color-danger-light-9);
+}
+
+/* 折叠按钮样式 */
+.sidebar-toggle {
+  display: none;
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 48px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  z-index: 99;
+}
+
+.left-section.is-collapsible .sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle .el-icon {
+  transition: transform 0.3s;
+}
+
+.sidebar-toggle .el-icon.is-collapsed {
+  transform: rotate(180deg);
+}
+
+/* 隐藏侧边栏时的样式 */
+.hide-sidebar .left-section {
+  display: none;
+}
+
+.hide-sidebar .main-content {
+  margin-left: 0;
+}
+
+/* 侧边栏位置样式 */
+.left-section.position-right {
+  order: 2;
+  border-right: none;
+  border-left: 1px solid var(--border-color);
+}
+
+/* 主内容区域在没有侧边栏时的样式 */
+.main-content.no-sidebar {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* 隐藏工具栏和标签页时的样式 */
+.hide-toolbar .toolbar {
+  display: none;
+}
+
+.hide-tabs .tab-manager {
+  display: none;
+}
+
+/* 紧凑模式样式 */
+.compact-mode {
+  --header-height: 40px;
+  --toolbar-height: 36px;
+  --tabs-height: 32px;
+}
+
+/* 显示边框样式 */
+.show-borders {
+  border: 1px solid var(--border-color);
+}
+
+/* 显示阴影样式 */
+.show-shadows {
+  box-shadow: var(--shadow-base);
+}
+
+.show-shadows .left-section {
+  box-shadow: 2px 0 4px var(--shadow-color);
+}
+
+.show-shadows .main-content {
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 </style>

@@ -277,6 +277,8 @@ const getThemeTagClass = (theme: Theme) => {
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
+  position: relative;
+  z-index: 100;
 }
 
 .toolbar-left {
@@ -634,5 +636,25 @@ const getThemeTagClass = (theme: Theme) => {
   background-color: var(--el-color-primary-dark-2);
   color: white;
   border: 1px solid transparent;
+}
+
+/* 当工具栏在底部时的样式 */
+:deep(.toolbar-bottom) .toolbar {
+  border-top: 1px solid var(--border-color);
+  border-bottom: none;
+  box-shadow: var(--shadow-light);
+}
+
+/* 响应式布局调整 */
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 0 4px;
+  }
+  
+  /* 确保在底部时也保持正确的样式 */
+  :deep(.toolbar-bottom) .toolbar {
+    position: sticky;
+    bottom: 0;
+  }
 }
 </style>

@@ -187,7 +187,7 @@ const loadingMethods = ref(false);
 // 响应相关状态
 const requestHeaders = ref<Header[]>([]);
 
-// 标签���相关状态
+// 标签相关状态
 const activePane = ref("message");
 
 // 授权相关状态
