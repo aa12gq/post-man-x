@@ -5,25 +5,15 @@
         <LogoIcon class="logo" />
         <span class="app-title">RPC Master</span>
       </div>
-      <WorkspaceSelector />
-      <ToolbarIcons />
     </div>
     <div class="toolbar-right">
-      <button class="toolbar-btn" @click="handleImport">
-        <ImportIcon class="btn-icon" />
-        <span class="btn-text">导入</span>
-      </button>
-      <button class="toolbar-btn" @click="handleExport">
-        <ExportIcon class="btn-icon" />
-        <span class="btn-text">导出</span>
-      </button>
       <div class="divider"></div>
 
       <!-- 主题切换按钮 -->
       <button class="toolbar-btn" @click="showThemeDrawer = true">
         <div class="theme-indicator">
-          <div 
-            class="color-block" 
+          <div
+            class="color-block"
             :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
           ></div>
           <span class="theme-name">{{ currentThemeDisplay }}</span>
@@ -101,19 +91,14 @@
 
 <script setup lang="ts">
 import LogoIcon from "../../components/icons/LogoIcon.vue";
-import WorkspaceSelector from "./WorkspaceSelector.vue";
-import ToolbarIcons from "./ToolbarIcons.vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
 import UserAvatar from "./UserAvatar.vue";
-import ImportIcon from "../../components/icons/ImportIcon.vue";
-import ExportIcon from "../../components/icons/ExportIcon.vue";
 import { useRouter, useRoute } from "vue-router";
 import { ref, computed } from "vue";
-import { ArrowDown, Sunny, Moon, Plus, Monitor } from "@element-plus/icons-vue";
+import { Plus } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
 import { Theme } from "../../types/theme";
-import type { ThemePreset } from "../../types/theme";
 import ThemePreviewCard from "../../components/common/ThemePreviewCard.vue";
 
 const router = useRouter();
@@ -127,66 +112,6 @@ const goHome = () => {
   if (route.path !== "/") {
     router.push("/");
   }
-};
-
-const handleImport = () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".json";
-  input.onchange = (e: Event) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target?.result as string);
-          console.log("导入的数据:", data);
-          // TODO: 处理导入的数据
-        } catch (err) {
-          console.error("导入失败:", err);
-          // TODO: 显示错误提示
-        }
-      };
-      reader.readAsText(file);
-    }
-  };
-  input.click();
-};
-
-const handleExport = () => {
-  // 模拟导出数据
-  const mockData = {
-    version: "1.0",
-    exportTime: new Date().toISOString(),
-    environments: [
-      { id: "dev", name: "开发环境", baseUrl: "http://dev-api.example.com" },
-      { id: "prod", name: "生产环境", baseUrl: "http://api.example.com" },
-    ],
-    collections: [
-      {
-        id: "1",
-        name: "用户服务",
-        methods: [
-          { name: "getUserInfo", request: { id: 1 } },
-          { name: "updateUser", request: { id: 1, name: "test" } },
-        ],
-      },
-    ],
-  };
-
-  const blob = new Blob([JSON.stringify(mockData, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `rpc-master-export-${
-    new Date().toISOString().split("T")[0]
-  }.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 };
 
 // 处理主题相关命令
@@ -214,50 +139,45 @@ const currentThemeDisplay = computed(() => {
   return theme.name;
 });
 
-// 添加获取主题标签样式的函数
-const getThemeTagClass = (theme: Theme) => {
-  if (theme.name.includes("GitHub")) {
-    return theme.isDark ? "tag-github-dark" : "tag-github-light";
-  }
-  if (theme.name.includes("One Dark")) {
-    return "tag-one-dark";
-  }
-  if (theme.name.includes("Solarized")) {
-    return "tag-solarized";
-  }
-  return theme.isDark ? "tag-dark" : "tag-light";
-};
-
 // 获取主题风格描述
 const getThemeStyle = (theme: Theme) => {
   const styleMap: Record<string, string> = {
     // 官方主题
-    'light': '素雅清风',
-    'dark': '暗夜星河',
-    'github_light': '晴空雅境',
-    'github_dark': '墨韵沉香',
-    'one_dark': '玄黛之美',
-    'catppuccin_latte': '奶茶物语',
-    'rose_pine_dawn': '曦光微醺',
-    'everforest_light': '青松翠竹',
-    'rainbow': '绚烂霓虹',
-    'high_contrast': '黑白交响',
-    'eye_care': '青玉护目',
+    light: "素雅清风",
+    dark: "暗夜星河",
+    github_light: "晴空雅境",
+    github_dark: "墨韵沉香",
+    one_dark: "玄黛之美",
+    catppuccin_latte: "奶茶物语",
+    rose_pine_dawn: "曦光微醺",
+    everforest_light: "青松翠竹",
+    rainbow: "绚烂霓虹",
+    high_contrast: "黑白交响",
+    eye_care: "青玉护目",
   };
 
   // 自定义主题名称池
   const customThemeNames = [
-    '流云幻境', '碧海潮声', '紫气东来', '春日暖阳',
-    '秋水伊人', '月华流转', '山岚雾霭', '江南烟雨',
-    '琉璃光影', '竹影清风', '梅雪飘香', '夏夜星辰'
+    "流云幻境",
+    "碧海潮声",
+    "紫气东来",
+    "春日暖阳",
+    "秋水伊人",
+    "月华流转",
+    "山岚雾霭",
+    "江南烟雨",
+    "琉璃光影",
+    "竹影清风",
+    "梅雪飘香",
+    "夏夜星辰",
   ];
-  
+
   // 如果是自定义主题，从名称池中选择一个（基于主题ID的哈希）
-  if (theme.id.startsWith('custom_')) {
+  if (theme.id.startsWith("custom_")) {
     const index = Math.abs(hashCode(theme.id)) % customThemeNames.length;
     return customThemeNames[index];
   }
-  
+
   // 返回映射中的名称，如果没有找到则返回主题原名
   return styleMap[theme.id] || theme.name;
 };
@@ -267,7 +187,7 @@ const hashCode = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return hash;

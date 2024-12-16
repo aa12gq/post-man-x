@@ -98,7 +98,7 @@ import {
 } from "@element-plus/icons-vue";
 
 const handleLearnMore = () => {
-  window.open("https://github.com/yourusername/rpc-master", "_blank");
+  window.open("https://github.com/vtyug/rpc-master", "_blank");
 };
 </script>
 
