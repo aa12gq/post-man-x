@@ -110,7 +110,7 @@ import { ref, computed } from "vue";
 import { useThemeStore } from "../../stores/theme";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { Edit, Download, Delete, CopyDocument } from "@element-plus/icons-vue";
-import type { Theme, ThemePreset } from "../../types/theme";
+import type { Theme } from "../../types/theme";
 import ThemeEditor from "./ThemeEditor.vue";
 import type { UploadFile } from "element-plus";
 import ThemePreviewCard from "../common/ThemePreviewCard.vue";
