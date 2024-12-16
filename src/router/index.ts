@@ -1,8 +1,8 @@
 import {
   createRouter,
   createWebHashHistory,
-  RouteRecordRaw,
   RouteLocationNormalized,
+  RouteRecordRaw,
 } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
@@ -20,6 +20,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import("../components/RequestPanel.vue"),
     meta: {
       title: "Request",
+    },
+  },
+  {
+    path: "/workspace-setup",
+    name: "WorkspaceSetup",
+    component: () => import("../components/WorkspaceSetup.vue"),
+    meta: {
+      title: "WorkspaceSetup",
     },
   },
 ];
