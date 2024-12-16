@@ -92,7 +92,6 @@ const handleChange = (value: string) => {
   flex: 1;
   min-height: 200px;
   height: calc(100% - 60px);
-  border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
   display: flex;
@@ -104,7 +103,6 @@ const handleChange = (value: string) => {
   justify-content: flex-end;
   padding: 8px;
   background-color: var(--background);
-  border-bottom: 1px solid var(--border);
 }
 
 :deep(.code-editor-wrapper) {

@@ -5,6 +5,7 @@
         <LogoIcon class="logo" />
         <span class="app-title">RPC Master</span>
       </div>
+      <WorkspaceSelector />
     </div>
     <div class="toolbar-right">
       <div class="divider"></div>
@@ -100,6 +101,7 @@ import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
 import { Theme } from "../../types/theme";
 import ThemePreviewCard from "../../components/common/ThemePreviewCard.vue";
+import WorkspaceSelector from "./WorkspaceSelector.vue";
 
 const router = useRouter();
 const route = useRoute();

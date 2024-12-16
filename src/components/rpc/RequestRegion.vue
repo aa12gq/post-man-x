@@ -668,7 +668,6 @@ const cancelEditing = () => {
   align-items: center;
   padding: 0 16px;
   background-color: var(--background);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .new-button {
@@ -676,7 +675,7 @@ const cancelEditing = () => {
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   cursor: pointer;
   transition: all 0.2s;
   color: var(--text-color);
@@ -698,7 +697,7 @@ const cancelEditing = () => {
   width: 48px;
   height: 100%;
   background-color: var(--header-bg);
-  border-right: 1px solid var(--border-color);
+  /* border-right: 1px solid var(--border-color); */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -737,7 +736,7 @@ const cancelEditing = () => {
 .collections-sidebar {
   position: relative;
   background-color: var(--background);
-  border-right: 1px solid var(--border-color);
+  /* border-right: 1px solid var(--border-color); */
   overflow: hidden;
   flex-shrink: 0;
   flex: 1;
@@ -752,7 +751,6 @@ const cancelEditing = () => {
 
 .sidebar-header {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
   background-color: var(--header-bg);
   display: flex;
   justify-content: space-between;
@@ -768,7 +766,7 @@ const cancelEditing = () => {
   width: 24px;
   height: 48px;
   background-color: var(--background);
-  border: 1px solid var(--border-color);
+  /* border: 1px solid var(--border-color); */
   border-left: none;
   border-radius: 0 4px 4px 0;
   display: flex;
@@ -787,7 +785,6 @@ const cancelEditing = () => {
 
 .tabs-container {
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border-color);
   background-color: var(--background);
 }
 
@@ -835,7 +832,6 @@ const cancelEditing = () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-top: 16px;
   overflow: hidden;
 }
 
@@ -877,7 +873,6 @@ const cancelEditing = () => {
 
 :deep(.el-tabs--border-card > .el-tabs__header) {
   background-color: var(--header);
-  border-bottom: 1px solid var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
@@ -1007,7 +1002,7 @@ const cancelEditing = () => {
   height: 24px;
   border-radius: 50%;
   background-color: var(--background);
-  border: 2px solid var(--border);
+  /* border: 2px solid var(--border); */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1053,7 +1048,7 @@ const cancelEditing = () => {
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item) {
   border: none;
-  border-right: 1px solid var(--border-color);
+  /* border-right: 1px solid var(--border-color); */
   height: 40px;
   line-height: 40px;
   font-size: 13px;
@@ -1061,7 +1056,6 @@ const cancelEditing = () => {
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
   background-color: var(--background);
-  border-bottom: 2px solid var(--el-color-primary);
 }
 
 .new-request {
@@ -1092,11 +1086,11 @@ const cancelEditing = () => {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   cursor: pointer;
   transition: all 0.3s;
   background-color: var(--background);
-  border: 1px solid var(--border-color);
+  /* border: 1px solid var(--border-color); */
   &:hover {
     background-color: var(--el-color-primary-light-9);
     border-color: var(--el-color-primary);
@@ -1118,9 +1112,8 @@ const cancelEditing = () => {
 }
 
 .breadcrumb-container {
-  padding: 8px 16px;
+  padding: 8px 10px 4px 10px;
   background-color: var(--background);
-  border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 2px var(--shadow);
 }
 
@@ -1203,7 +1196,6 @@ const cancelEditing = () => {
 
 .request-header {
   background-color: var(--header);
-  border-bottom: 1px solid var(--border);
 }
 
 .invoke-button {
@@ -1226,20 +1218,17 @@ const cancelEditing = () => {
 }
 
 .request-body {
-  border: 1px solid var(--border);
   border-radius: 4px;
   background-color: var(--background-light);
 }
 
 .response-panel {
   background-color: var(--background-light);
-  border: 1px solid var(--border);
   border-radius: 4px;
 }
 
 .response-header {
   background-color: var(--header);
-  border-bottom: 1px solid var(--border);
   color: var(--text);
 }
 
