@@ -29,23 +29,56 @@
                 backgroundColor: themeStore.currentTheme.colors.primary,
               }"
             ></div>
-            <span class="theme-name">{{ themeStore.currentTheme.name }}</span>
+            <span class="theme-name">{{ currentThemeDisplay }}</span>
             <el-icon><ArrowDown /></el-icon>
           </div>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
+            <el-dropdown-item command="system">
+              <el-icon><Monitor /></el-icon>
+              跟随系统
+            </el-dropdown-item>
             <el-dropdown-item command="light">
               <el-icon><Sunny /></el-icon>
-              Light Mode
+              明亮模式
             </el-dropdown-item>
             <el-dropdown-item command="dark">
               <el-icon><Moon /></el-icon>
-              Dark Mode
+              暗黑模式
             </el-dropdown-item>
-            <el-dropdown-item divided command="customize">
-              <el-icon><Plus /></el-icon>
-              New Theme
+
+            <!-- 官方主题列表 -->
+            <el-dropdown-item
+              v-if="themeStore.officialCustomThemes.length"
+              divided
+              class="section-header"
+            >
+              <span class="dropdown-section-title">官方主题</span>
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-for="theme in themeStore.officialCustomThemes"
+              :key="theme.id"
+              :command="['custom', theme.id]"
+              class="theme-item"
+            >
+              <div class="custom-theme-item">
+                <ThemePreviewCard :theme="theme" />
+                <div class="theme-info">
+                  <span class="theme-name">{{ theme.name }}</span>
+                  <span class="theme-type">{{
+                    theme.isDark ? "暗色" : "亮色"
+                  }}</span>
+                  <span class="theme-tag" :class="getThemeTagClass(theme)">
+                    Official
+                  </span>
+                </div>
+              </div>
+            </el-dropdown-item>
+
+            <!-- 自定义主题列表 -->
+            <el-dropdown-item v-if="themeStore.customThemes.length" divided>
+              <span class="dropdown-section-title">自定义主题</span>
             </el-dropdown-item>
             <el-dropdown-item
               v-for="theme in themeStore.customThemes"
@@ -59,6 +92,12 @@
                 ></div>
                 {{ theme.name }}
               </div>
+            </el-dropdown-item>
+
+            <!-- 创建新主题按钮 -->
+            <el-dropdown-item divided command="customize">
+              <el-icon><Plus /></el-icon>
+              创建新主题
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -88,12 +127,13 @@ import UserAvatar from "./UserAvatar.vue";
 import ImportIcon from "../../components/icons/ImportIcon.vue";
 import ExportIcon from "../../components/icons/ExportIcon.vue";
 import { useRouter, useRoute } from "vue-router";
-import { ref } from "vue";
-import { ArrowDown, Sunny, Moon, Plus } from "@element-plus/icons-vue";
+import { ref, computed } from "vue";
+import { ArrowDown, Sunny, Moon, Plus, Monitor } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
 import { Theme } from "../../types/theme";
 import type { ThemePreset } from "../../types/theme";
+import ThemePreviewCard from "../../components/common/ThemePreviewCard.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -190,6 +230,38 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
   const newTheme = themeStore.addCustomTheme(theme);
   themeStore.switchTheme("custom", newTheme.id);
   showThemeEditor.value = false;
+};
+
+// 添加当前主题显示计算属性
+const currentThemeDisplay = computed(() => {
+  const theme = themeStore.currentTheme;
+  switch (themeStore.themePreset) {
+    case "system":
+      return "跟随系统";
+    case "light":
+      return "明亮模式";
+    case "dark":
+      return "暗黑模式";
+    case "custom":
+      const isOfficial = theme.id.startsWith("official_");
+      return isOfficial ? `${theme.name} (Official)` : theme.name;
+    default:
+      return "默认";
+  }
+});
+
+// 添加获取主题标签样式的函数
+const getThemeTagClass = (theme: Theme) => {
+  if (theme.name.includes("GitHub")) {
+    return theme.isDark ? "tag-github-dark" : "tag-github-light";
+  }
+  if (theme.name.includes("One Dark")) {
+    return "tag-one-dark";
+  }
+  if (theme.name.includes("Solarized")) {
+    return "tag-solarized";
+  }
+  return theme.isDark ? "tag-dark" : "tag-light";
 };
 </script>
 
@@ -377,5 +449,190 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
 :deep(.el-dropdown-menu) {
   max-height: 400px;
   overflow-y: auto;
+}
+
+.dropdown-section-title {
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 0 12px;
+}
+
+.theme-tag {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background-color: var(--el-color-primary);
+  color: white;
+  margin-left: 8px;
+}
+
+/* 调整下拉菜单项的样式 */
+:deep(.el-dropdown-menu__item) {
+  padding: 8px 16px;
+  line-height: 1.4;
+}
+
+:deep(.el-dropdown-menu__item .el-icon) {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.custom-theme-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.section-header {
+  pointer-events: none;
+  cursor: default;
+}
+
+.theme-item {
+  height: auto !important;
+  padding: 8px 16px !important;
+}
+
+.custom-theme-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+  padding: 4px 0;
+}
+
+.theme-preview-colors {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.preview-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.theme-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.theme-name {
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.theme-type {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.theme-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: var(--el-color-primary-light-8);
+  color: var(--el-color-primary);
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+/* 修改下拉菜单样式 */
+:deep(.el-dropdown-menu) {
+  padding: 4px !important;
+}
+
+:deep(.el-dropdown-menu__item) {
+  padding: 8px 12px !important;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+:deep(.el-dropdown-menu__item:not(.el-dropdown-menu__item--divided):hover) {
+  background-color: var(--el-color-primary-light-9);
+}
+
+.dropdown-section-title {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 4px;
+}
+
+/* 主题指示器样式优化 */
+.theme-indicator {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background-color: var(--bg-color-light);
+}
+
+.theme-preview {
+  gap: 10px;
+}
+
+.color-block {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+/* 添加主题标签样式 */
+.theme-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.tag-github-light {
+  background-color: #f6f8fa;
+  color: #0969da;
+  border: 1px solid #0969da;
+}
+
+.tag-github-dark {
+  background-color: #161b22;
+  color: #58a6ff;
+  border: 1px solid #58a6ff;
+}
+
+.tag-one-dark {
+  background-color: #282c34;
+  color: #61afef;
+  border: 1px solid #61afef;
+}
+
+.tag-solarized {
+  background-color: #eee8d5;
+  color: #268bd2;
+  border: 1px solid #268bd2;
+}
+
+.tag-light {
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+  border: 1px solid var(--el-color-primary);
+}
+
+.tag-dark {
+  background-color: var(--el-color-primary-dark-2);
+  color: white;
+  border: 1px solid transparent;
 }
 </style>

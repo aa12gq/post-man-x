@@ -1,14 +1,10 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { Theme, ThemePreset } from "../types/theme";
 import type { PersistenceOptions } from "pinia-plugin-persistedstate";
+import { officialThemes } from '../constants/officialThemes';
 
-declare module "pinia" {
-  export interface DefineStoreOptionsBase<S, Store> {
-    persist?: boolean | PersistenceOptions | PersistenceOptions[];
-  }
-}
-
+// 默认主题设置
 const defaultLightTheme: Theme = {
   id: "light",
   name: "Light",
@@ -57,6 +53,39 @@ const defaultDarkTheme: Theme = {
   },
 };
 
+// Element Plus 主题变量映射
+const elementPlusVariables = {
+  primary: "--el-color-primary",
+  "primary-light": "--el-color-primary-light-3",
+  "primary-dark": "--el-color-primary-dark-2",
+  success: "--el-color-success",
+  warning: "--el-color-warning",
+  danger: "--el-color-danger",
+  info: "--el-color-info",
+  text: "--el-text-color-primary",
+  "text-secondary": "--el-text-color-regular",
+  border: "--el-border-color",
+  background: "--el-bg-color",
+  "background-light": "--el-bg-color-page",
+} as const;
+
+// 安全深拷贝函数
+function deepClone<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+// 在文件开头添加一个函数来重置到默认主题
+function resetToDefaultTheme(): Theme {
+  // 只清除当前主题相关的存储
+  localStorage.removeItem("theme-settings");
+  localStorage.removeItem("current-theme");
+  // 不要清除 theme-store，因为它包含自定义主题列表
+  // localStorage.removeItem("theme-store"); // 删除这行
+  
+  // 返回一个全新的默认主题实例
+  return deepClone(defaultLightTheme);
+}
+
 export const useThemeStore = defineStore(
   "theme",
   () => {
@@ -64,10 +93,27 @@ export const useThemeStore = defineStore(
     const customThemes = ref<Theme[]>([]);
     const themePreset = ref<ThemePreset>("light");
     const isInitialized = ref(false);
+    const officialCustomThemes = ref<Theme[]>([]);
 
     // 初始化主题
     function initializeTheme() {
       if (isInitialized.value) return;
+
+      // 初始化官方主题
+      officialCustomThemes.value = officialThemes.map(theme => ({
+        ...theme,
+        id: `official_${theme.name.toLowerCase().replace(/\s+/g, '_')}`,
+      }));
+
+      // 监听系统主题变化
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      mediaQuery.addEventListener("change", (e) => {
+        if (themePreset.value === "system") {
+          const theme = e.matches ? defaultDarkTheme : defaultLightTheme;
+          currentTheme.value = deepClone(theme);
+          applyTheme(currentTheme.value);
+        }
+      });
 
       loadThemeSettings();
       isInitialized.value = true;
@@ -79,30 +125,52 @@ export const useThemeStore = defineStore(
         const savedTheme = localStorage.getItem("theme-settings");
         const savedCurrentTheme = localStorage.getItem("current-theme");
 
-        if (savedTheme) {
-          const { preset, custom } = JSON.parse(savedTheme);
-          customThemes.value = custom || [];
-          themePreset.value = preset;
+        if (!savedTheme) {
+          applyDefaultTheme();
+          return;
+        }
 
-          if (preset === "custom") {
-            try {
-              const parsedTheme = JSON.parse(savedCurrentTheme || "");
-              if (parsedTheme && parsedTheme.id && parsedTheme.colors) {
-                currentTheme.value = parsedTheme;
-                applyTheme(parsedTheme);
-              }
-            } catch {
-              console.warn("Failed to parse saved theme, using default");
-              applyDefaultTheme();
+        let settings;
+        try {
+          settings = JSON.parse(savedTheme);
+        } catch {
+          console.warn("Invalid theme settings JSON");
+          applyDefaultTheme();
+          return;
+        }
+
+        const { preset, custom = [] } = settings;
+
+        if (
+          !preset ||
+          !["system", "light", "dark", "custom"].includes(preset)
+        ) {
+          console.warn("Invalid theme preset");
+          applyDefaultTheme();
+          return;
+        }
+
+        customThemes.value = custom;
+        themePreset.value = preset;
+
+        if (preset === "custom") {
+          try {
+            const parsedTheme = JSON.parse(savedCurrentTheme || "");
+            if (isValidTheme(parsedTheme)) {
+              currentTheme.value = parsedTheme;
+              applyTheme(parsedTheme);
+            } else {
+              throw new Error("Invalid theme structure");
             }
-          } else {
-            const theme =
-              preset === "dark" ? defaultDarkTheme : defaultLightTheme;
-            currentTheme.value = theme;
-            applyTheme(theme);
+          } catch {
+            console.warn("Invalid custom theme, using default");
+            applyDefaultTheme();
           }
         } else {
-          applyDefaultTheme();
+          const theme =
+            preset === "dark" ? defaultDarkTheme : defaultLightTheme;
+          currentTheme.value = theme;
+          applyTheme(theme);
         }
       } catch (error) {
         console.error("Failed to load theme settings:", error);
@@ -110,15 +178,30 @@ export const useThemeStore = defineStore(
       }
     }
 
+    function isValidTheme(theme: any): theme is Theme {
+      return (
+        theme &&
+        typeof theme.id === "string" &&
+        isValidThemeId(theme.id) &&
+        typeof theme.name === "string" &&
+        typeof theme.isDark === "boolean" &&
+        theme.colors &&
+        typeof theme.colors === "object"
+      );
+    }
+
     // 应用默认主题
     function applyDefaultTheme() {
+      // 使用重置函数来确保完全回到默认状态
+      const defaultTheme = resetToDefaultTheme();
+
       // 更新 store 状态
       themePreset.value = "light";
-      currentTheme.value = defaultLightTheme;
+      currentTheme.value = defaultTheme;
       customThemes.value = [];
 
       // 应用主题
-      applyTheme(defaultLightTheme);
+      applyTheme(defaultTheme);
 
       // 保存设置
       saveThemeSettings();
@@ -127,74 +210,33 @@ export const useThemeStore = defineStore(
     // 应用主题
     function applyTheme(theme: Theme) {
       const root = document.documentElement;
+      const style =
+        document.getElementById("element-plus-theme") ||
+        document.createElement("style");
+      const cssVars: string[] = [];
+      const elementVars: string[] = [];
 
-      // 应用基础主题类型
-      root.setAttribute("data-theme", theme.isDark ? "dark" : "light");
-
-      // 应用所有颜色变量
+      // 批量收集 CSS 变量
       Object.entries(theme.colors).forEach(([key, value]) => {
-        root.style.setProperty(`--${key}`, value);
+        cssVars.push(`--${key}: ${value};`);
 
-        // 设置 Element Plus 对应的变量
-        switch (key) {
-          case "primary":
-            root.style.setProperty("--el-color-primary", value);
-            break;
-          case "success":
-            root.style.setProperty("--el-color-success", value);
-            break;
-          case "warning":
-            root.style.setProperty("--el-color-warning", value);
-            break;
-          case "danger":
-            root.style.setProperty("--el-color-danger", value);
-            break;
-          case "info":
-            root.style.setProperty("--el-color-info", value);
-            break;
-          case "text":
-            root.style.setProperty("--el-text-color-primary", value);
-            break;
-          case "text-secondary":
-            root.style.setProperty("--el-text-color-regular", value);
-            break;
-          case "border":
-            root.style.setProperty("--el-border-color", value);
-            break;
-          case "background":
-            root.style.setProperty("--el-bg-color", value);
-            break;
-          case "background-light":
-            root.style.setProperty("--el-bg-color-page", value);
-            break;
+        // 设置对应的 Element Plus 变量
+        if (key in elementPlusVariables) {
+          const elVar =
+            elementPlusVariables[key as keyof typeof elementPlusVariables];
+          elementVars.push(`${elVar}: ${value} !important;`);
         }
       });
 
-      // 应用 Element Plus 主题变量
-      const elementStyles =
-        document.getElementById("element-plus-theme") ||
-        document.createElement("style");
-      elementStyles.id = "element-plus-theme";
-      elementStyles.textContent = `
-        :root {
-          --el-color-primary: ${theme.colors.primary} !important;
-          --el-color-primary-light-3: ${theme.colors["primary-light"]} !important;
-          --el-color-primary-dark-2: ${theme.colors["primary-dark"]} !important;
-          --el-color-success: ${theme.colors.success} !important;
-          --el-color-warning: ${theme.colors.warning} !important;
-          --el-color-danger: ${theme.colors.danger} !important;
-          --el-color-info: ${theme.colors.info} !important;
-          
-          --el-bg-color: ${theme.colors.background} !important;
-          --el-bg-color-page: ${theme.colors["background-light"]} !important;
-          --el-text-color-primary: ${theme.colors.text} !important;
-          --el-text-color-regular: ${theme.colors["text-secondary"]} !important;
-          --el-border-color: ${theme.colors.border} !important;
-        }
-      `;
+      // 一次性设置主题属性
+      root.setAttribute("data-theme", theme.isDark ? "dark" : "light");
+      root.setAttribute("style", cssVars.join(" "));
 
-      if (!elementStyles.parentNode) {
-        document.head.appendChild(elementStyles);
+      // 一次性更新 Element Plus 样式
+      style.id = "element-plus-theme";
+      style.textContent = `:root { ${elementVars.join(" ")} }`;
+      if (!style.parentNode) {
+        document.head.appendChild(style);
       }
 
       currentTheme.value = theme;
@@ -203,7 +245,6 @@ export const useThemeStore = defineStore(
     // 保存主题设置到本地存储
     function saveThemeSettings() {
       try {
-        // 保存主题设置
         localStorage.setItem(
           "theme-settings",
           JSON.stringify({
@@ -212,7 +253,6 @@ export const useThemeStore = defineStore(
           })
         );
 
-        // 如果是自定义主题，保存当前主题的完整信息
         if (themePreset.value === "custom") {
           localStorage.setItem(
             "current-theme",
@@ -226,110 +266,183 @@ export const useThemeStore = defineStore(
 
     // 切换主题
     function switchTheme(preset: ThemePreset, themeId?: string) {
-      themePreset.value = preset;
       let themeToApply: Theme;
 
-      if (preset === "custom" && themeId) {
-        const theme = customThemes.value.find((t) => t.id === themeId);
-        if (theme) {
-          themeToApply = { ...theme }; // 创建一个副本
-        } else {
-          console.warn("Theme not found:", themeId);
-          themeToApply = { ...defaultLightTheme };
-        }
-      } else {
-        themeToApply =
-          preset === "dark"
-            ? { ...defaultDarkTheme }
-            : { ...defaultLightTheme };
+      switch (preset) {
+        case "custom":
+          if (themeId) {
+            // 先从官方主题中查找
+            const officialTheme = officialCustomThemes.value.find(
+              (t) => t.id === themeId
+            );
+            // 再从自定义主题中查找
+            const customTheme = customThemes.value.find(
+              (t) => t.id === themeId
+            );
+            
+            const foundTheme = officialTheme || customTheme;
+            
+            if (!foundTheme) {
+              console.warn("Theme not found, using default light theme");
+              themeToApply = deepClone(defaultLightTheme);
+              preset = "light";
+            } else {
+              themeToApply = deepClone(foundTheme);
+            }
+          } else {
+            themeToApply = deepClone(defaultLightTheme);
+            preset = "light";
+          }
+          break;
+
+        case "system":
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          themeToApply = prefersDark
+            ? deepClone(defaultDarkTheme)
+            : deepClone(defaultLightTheme);
+          break;
+
+        case "dark":
+          themeToApply = deepClone(defaultDarkTheme);
+          break;
+
+        case "light":
+          themeToApply = deepClone(defaultLightTheme);
+          break;
+
+        default:
+          themeToApply = deepClone(defaultLightTheme);
+          preset = "light";
+          break;
       }
 
-      // 更新 store 状态
+      // 更新主题预设和当前主题
+      themePreset.value = preset;
       currentTheme.value = themeToApply;
-
-      // 应用主题
       applyTheme(themeToApply);
 
-      // 保存设置到 localStorage
+      // 保存设置
       saveThemeSettings();
     }
 
-    // 添加自定义主题
+    // 自定义题管理
     function addCustomTheme(theme: Omit<Theme, "id">) {
-      const newTheme = {
-        ...theme,
-        id: Date.now().toString(),
-      };
-      customThemes.value = [...customThemes.value, newTheme];
+      const id = generateThemeId();
+      if (!isValidThemeId(id)) {
+        throw new Error("Failed to generate valid theme ID");
+      }
 
-      // 添加后自动切换到新主题
+      const newTheme = { ...theme, id };
+      customThemes.value = [...customThemes.value, newTheme];
       themePreset.value = "custom";
-      applyTheme(newTheme);
+      currentTheme.value = deepClone(newTheme);
+      applyTheme(currentTheme.value);
       saveThemeSettings();
 
       return newTheme;
     }
 
-    // 更新自定义主题
-    const updateCustomTheme = (theme: Theme) => {
+    function generateThemeId(): string {
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 10);
+      const prefix = "theme";
+      return `${prefix}_${timestamp}_${random}`;
+    }
+
+    function isValidThemeId(id: string): boolean {
+      return /^theme_\d+_[a-z0-9]{8}$/.test(id);
+    }
+
+    function updateCustomTheme(theme: Theme) {
       const index = customThemes.value.findIndex((t) => t.id === theme.id);
-      if (index !== -1) {
-        customThemes.value[index] = theme;
-        saveThemeSettings();
-
-        if (currentTheme.value.id === theme.id) {
-          applyTheme(theme);
-        }
+      if (index === -1) {
+        throw new Error("Theme not found");
       }
-    };
 
-    // 删除自定义主题
-    const removeCustomTheme = (themeId: string) => {
+      customThemes.value[index] = theme;
+
+      if (currentTheme.value.id === theme.id) {
+        currentTheme.value = theme;
+        applyTheme(theme);
+      }
+
+      saveThemeSettings();
+    }
+
+    function removeCustomTheme(themeId: string) {
       const index = customThemes.value.findIndex((t) => t.id === themeId);
-      if (index !== -1) {
-        customThemes.value.splice(index, 1);
-        saveThemeSettings();
-      }
-    };
+      if (index === -1) return;
 
-    // 导出主题
-    const exportTheme = (theme: Theme) => {
-      const blob = new Blob([JSON.stringify(theme, null, 2)], {
-        type: "application/json",
-      });
+      customThemes.value = customThemes.value.filter((t) => t.id !== themeId);
+
+      if (currentTheme.value.id === themeId) {
+        // 如果删除的是当前主题，切换到默认主题
+        switchTheme("light");
+      }
+
+      saveThemeSettings();
+    }
+
+    function exportTheme(theme: Theme) {
+      const themeData = JSON.stringify(theme, null, 2);
+      const blob = new Blob([themeData], { type: "application/json" });
       const url = URL.createObjectURL(blob);
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = `theme-${theme.name.toLowerCase()}.json`;
+      a.download = `${theme.name
+        .toLowerCase()
+        .replace(/\s+/g, "-")}-theme.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    };
+    }
 
-    // 导入主题
-    const importTheme = async (file: File): Promise<Theme> => {
+    async function importTheme(file: File): Promise<Omit<Theme, "id">> {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
-            const theme = JSON.parse(e.target?.result as string);
-            resolve(theme);
-          } catch (err) {
+            const content = e.target?.result as string;
+            const theme = JSON.parse(content);
+
+            if (!isValidThemeStructure(theme)) {
+              throw new Error("Invalid theme structure");
+            }
+
+            // 移除 id，因为导入时会生成新的 id
+            const { id, ...themeWithoutId } = theme;
+            resolve(themeWithoutId);
+          } catch (error) {
             reject(new Error("Invalid theme file"));
           }
         };
-        reader.onerror = () => reject(new Error("Failed to read theme file"));
+        reader.onerror = () => reject(new Error("Failed to read file"));
         reader.readAsText(file);
       });
-    };
+    }
 
-    // 在主题切换函数中应用所有变量
-    const applyThemeVariables = (variables: Record<string, string>) => {
-      Object.entries(variables).forEach(([key, value]) => {
-        document.documentElement.style.setProperty(key, value);
-      });
-    };
+    // 验证主题结构的辅助函数
+    function isValidThemeStructure(theme: any): theme is Theme {
+      return (
+        theme &&
+        typeof theme.name === "string" &&
+        typeof theme.isDark === "boolean" &&
+        theme.colors &&
+        typeof theme.colors === "object" &&
+        Object.keys(defaultLightTheme.colors).every(
+          (key) => typeof theme.colors[key] === "string"
+        )
+      );
+    }
+
+    const allCustomThemes = computed(() => [
+      ...officialCustomThemes.value,
+      ...customThemes.value
+    ]);
 
     return {
       currentTheme,
@@ -342,14 +455,15 @@ export const useThemeStore = defineStore(
       removeCustomTheme,
       exportTheme,
       importTheme,
-      applyThemeVariables,
+      officialCustomThemes,
+      allCustomThemes,
     };
   },
   {
     persist: {
       key: "theme-store",
       storage: localStorage,
-      paths: ["currentTheme", "customThemes", "themePreset"] as string[],
+      paths: ["customThemes", "themePreset"],
     } as PersistenceOptions,
   }
 );

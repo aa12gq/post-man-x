@@ -32,17 +32,42 @@
         <el-option label="JavaScript" value="javascript" />
         <el-option label="TypeScript" value="typescript" />
       </el-select>
+      <el-select
+        v-model="currentThemeValue"
+        @change="handleThemeChange"
+        class="theme-selector"
+      >
+        <el-option
+          v-for="option in themeOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        >
+          <template v-if="option.children">
+            <el-option-group :label="option.label">
+              <el-option
+                v-for="child in option.children"
+                :key="child.value"
+                :label="child.label"
+                :value="child.value"
+              />
+            </el-option-group>
+          </template>
+        </el-option>
+      </el-select>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { ElMessage } from "element-plus";
 import {
   Document as Format,
   DocumentCopy as Copy,
 } from "@element-plus/icons-vue";
+import { useThemeStore } from "../../stores/theme";
+import type { ThemePreset } from "../../types/theme";
 
 const props = defineProps<{
   modelValue?: string;
@@ -73,6 +98,54 @@ const handleCopy = async () => {
     }
   }
 };
+
+const themeStore = useThemeStore();
+interface ThemeOption {
+  label: string;
+  value: string;
+  children?: {
+    label: string;
+    value: string;
+  }[];
+}
+
+const themeOptions = computed<ThemeOption[]>(() => {
+  const options: ThemeOption[] = [
+    { label: '跟随系统', value: 'system' },
+    { label: '明亮', value: 'light' },
+    { label: '暗黑', value: 'dark' },
+  ];
+
+  if (themeStore.allCustomThemes.length > 0) {
+    options.push({
+      label: '自定义主题',
+      value: 'custom-group',
+      children: themeStore.allCustomThemes.map(theme => ({
+        label: theme.id.startsWith('official_') ? `${theme.name} (Official)` : theme.name,
+        value: `custom:${theme.id}`,
+      })),
+    });
+  }
+
+  return options;
+});
+
+const handleThemeChange = (value: string) => {
+  if (value.startsWith('custom:')) {
+    const themeId = value.split(':')[1];
+    themeStore.switchTheme('custom', themeId);
+  } else {
+    themeStore.switchTheme(value as ThemePreset);
+  }
+};
+
+const currentThemeValue = computed(() => {
+  const { themePreset, currentTheme } = themeStore;
+  if (themePreset === 'custom') {
+    return `custom:${currentTheme.id}`;
+  }
+  return themePreset;
+});
 </script>
 
 <style scoped>
@@ -108,5 +181,9 @@ const handleCopy = async () => {
 
 :deep(.el-button .el-icon) {
   margin: 0;
+}
+
+.theme-selector {
+  width: 160px;
 }
 </style>

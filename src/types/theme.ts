@@ -24,4 +24,4 @@ export interface Theme {
   isDark: boolean;
 }
 
-export type ThemePreset = 'light' | 'dark' | 'custom'; 
+export type ThemePreset = "system" | "light" | "dark" | "custom"; 

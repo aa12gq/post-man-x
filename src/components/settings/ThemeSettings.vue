@@ -5,68 +5,109 @@
     <!-- 主题预设选择 -->
     <div class="theme-presets">
       <el-radio-group v-model="currentPreset" @change="handlePresetChange">
-        <el-radio-button label="light">Light</el-radio-button>
-        <el-radio-button label="dark">Dark</el-radio-button>
-        <el-radio-button label="custom">Custom</el-radio-button>
+        <el-radio-button value="system">跟随系统</el-radio-button>
+        <el-radio-button value="light">明亮</el-radio-button>
+        <el-radio-button value="dark">暗黑</el-radio-button>
+        <el-radio-button
+          value="custom"
+          :disabled="!themeStore.allCustomThemes.length"
+        >
+          自定义
+        </el-radio-button>
       </el-radio-group>
     </div>
 
     <!-- 自定义主题列表 -->
     <div v-if="currentPreset === 'custom'" class="custom-themes">
-      <div class="themes-header">
-        <h3>Custom Themes</h3>
-        <el-button type="primary" @click="showThemeEditor = true">
-          Create Theme
-        </el-button>
-      </div>
-
-      <div class="theme-list">
-        <div
-          v-for="theme in themeStore.customThemes"
-          :key="theme.id"
-          class="theme-item"
-          :class="{ active: themeStore.currentTheme.id === theme.id }"
-        >
-          <div class="theme-preview" @click="applyCustomTheme(theme)">
-            <div
-              class="color-block"
-              :style="{ backgroundColor: theme.colors.primary }"
-            ></div>
-            <div class="theme-info">
-              <span class="theme-name">{{ theme.name }}</span>
-              <span class="theme-type">{{
-                theme.isDark ? "Dark" : "Light"
-              }}</span>
+      <!-- 官方推荐主题 -->
+      <div class="themes-section">
+        <h3>Official Themes</h3>
+        <div class="theme-list">
+          <div
+            v-for="theme in themeStore.officialCustomThemes"
+            :key="theme.id"
+            class="theme-item"
+            :class="{
+              active: themeStore.currentTheme.id === theme.id,
+              'theme-item-official': true,
+            }"
+          >
+            <div class="theme-preview" @click="applyCustomTheme(theme)">
+              <ThemePreviewCard :theme="theme" />
+              <div class="theme-info">
+                <span class="theme-name">{{ theme.name }}</span>
+                <span class="theme-type">{{
+                  theme.isDark ? "Dark" : "Light"
+                }}</span>
+              </div>
             </div>
-          </div>
-          <div class="theme-actions">
-            <el-button type="primary" link @click="editTheme(theme)">
-              <el-icon><Edit /></el-icon>
-              Edit
-            </el-button>
-            <el-button type="primary" link @click="handleExport(theme)">
-              <el-icon><Download /></el-icon>
-              Export
-            </el-button>
-            <el-button type="danger" link @click="handleDelete(theme)">
-              <el-icon><Delete /></el-icon>
-              Delete
-            </el-button>
+            <div class="theme-actions">
+              <el-button type="primary" link @click="handleExport(theme)">
+                <el-icon><Download /></el-icon>
+                Export
+              </el-button>
+              <el-button type="primary" link @click="handleDuplicate(theme)">
+                <el-icon><CopyDocument /></el-icon>
+                Duplicate
+              </el-button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 导入主题按钮 -->
-      <div class="import-theme">
-        <el-upload
-          class="upload-demo"
-          accept=".json"
-          :auto-upload="false"
-          :show-file-list="false"
-          :on-change="handleImport"
-        >
-          <el-button>Import Theme</el-button>
-        </el-upload>
+      <!-- 用户自定义主题 -->
+      <div class="themes-section">
+        <div class="themes-header">
+          <h3>Custom Themes</h3>
+          <el-button type="primary" @click="showThemeEditor = true">
+            Create Theme
+          </el-button>
+        </div>
+        <div class="theme-list">
+          <div
+            v-for="theme in themeStore.customThemes"
+            :key="theme.id"
+            class="theme-item"
+            :class="{ active: themeStore.currentTheme.id === theme.id }"
+          >
+            <div class="theme-preview" @click="applyCustomTheme(theme)">
+              <ThemePreviewCard :theme="theme" />
+              <div class="theme-info">
+                <span class="theme-name">{{ theme.name }}</span>
+                <span class="theme-type">{{
+                  theme.isDark ? "Dark" : "Light"
+                }}</span>
+              </div>
+            </div>
+            <div class="theme-actions">
+              <el-button type="primary" link @click="editTheme(theme)">
+                <el-icon><Edit /></el-icon>
+                Edit
+              </el-button>
+              <el-button type="primary" link @click="handleExport(theme)">
+                <el-icon><Download /></el-icon>
+                Export
+              </el-button>
+              <el-button type="danger" link @click="handleDelete(theme)">
+                <el-icon><Delete /></el-icon>
+                Delete
+              </el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 导入主题按钮 -->
+        <div class="import-theme">
+          <el-upload
+            class="upload-demo"
+            accept=".json"
+            :auto-upload="false"
+            :show-file-list="false"
+            :on-change="handleImport"
+          >
+            <el-button>Import Theme</el-button>
+          </el-upload>
+        </div>
       </div>
     </div>
 
@@ -89,34 +130,63 @@
 import { ref, computed } from "vue";
 import { useThemeStore } from "../../stores/theme";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { Edit, Download, Delete } from "@element-plus/icons-vue";
+import { Edit, Download, Delete, CopyDocument } from "@element-plus/icons-vue";
 import type { Theme, ThemePreset } from "../../types/theme";
 import ThemeEditor from "./ThemeEditor.vue";
 import type { UploadFile } from "element-plus";
+import ThemePreviewCard from "../common/ThemePreviewCard.vue";
 
 const themeStore = useThemeStore();
-
-// 使用计算属性来处理当前预设
 const currentPreset = computed({
   get: () => themeStore.themePreset,
-  set: (value) => themeStore.switchTheme(value),
+  set: (value: ThemePreset) => {
+    if (value === "custom") {
+      // 如果切换到自定义主题
+      if (themeStore.allCustomThemes.length > 0) {
+        // 使用第一个可用的主题（包括官方主题）
+        const firstTheme = themeStore.allCustomThemes[0];
+        themeStore.switchTheme("custom", firstTheme.id);
+      } else {
+        // 没有任何主题时保持当前主题
+        ElMessage.warning("No themes available");
+        return;
+      }
+    } else {
+      // 切换到其他预设主题
+      themeStore.switchTheme(value);
+    }
+  },
 });
 
 const showThemeEditor = ref(false);
 const editingTheme = ref<Theme | null>(null);
 
 const handlePresetChange = (val: string | number | boolean | undefined) => {
-  if (typeof val === "string") {
-    themeStore.switchTheme(val as ThemePreset);
+  const preset = val as ThemePreset;
+  if (preset === "custom" && themeStore.allCustomThemes.length === 0) {
+    ElMessage.warning("No themes available");
+    currentPreset.value = themeStore.themePreset;
+    return;
   }
+
+  // 更新 currentPreset
+  currentPreset.value = preset;
 };
 
+// 应用自定义主题
 const applyCustomTheme = (theme: Theme) => {
+  // 先设置 preset，再切换主题
+  currentPreset.value = "custom";
   themeStore.switchTheme("custom", theme.id);
 };
 
 const handleExport = (theme: Theme) => {
-  themeStore.exportTheme(theme);
+  try {
+    themeStore.exportTheme(theme);
+    ElMessage.success("Theme exported successfully");
+  } catch (error) {
+    ElMessage.error("Failed to export theme");
+  }
 };
 
 const handleDelete = async (theme: Theme) => {
@@ -126,16 +196,31 @@ const handleDelete = async (theme: Theme) => {
       "Delete Theme"
     );
     themeStore.removeCustomTheme(theme.id);
+    ElMessage.success("Theme deleted successfully");
+
+    // 如果删除后没有自定义主题了，自动切换到 light 主题
+    if (
+      themeStore.customThemes.length === 0 &&
+      currentPreset.value === "custom"
+    ) {
+      themeStore.switchTheme("light");
+    }
   } catch {}
 };
 
 const handleImport = async (uploadFile: UploadFile) => {
+  if (!uploadFile.raw) {
+    ElMessage.error("Please select a file");
+    return;
+  }
+
   try {
-    const theme = await themeStore.importTheme(uploadFile.raw as File);
-    themeStore.addCustomTheme(theme);
+    const themeData = await themeStore.importTheme(uploadFile.raw);
+    const newTheme = themeStore.addCustomTheme(themeData);
+    themeStore.switchTheme("custom", newTheme.id);
     ElMessage.success("Theme imported successfully");
   } catch (error) {
-    ElMessage.error("Failed to import theme");
+    ElMessage.error("Failed to import theme: Invalid theme file");
   }
 };
 
@@ -161,6 +246,18 @@ const editTheme = (theme: Theme) => {
 const closeEditor = () => {
   showThemeEditor.value = false;
   editingTheme.value = null;
+};
+
+// 复制主题
+const handleDuplicate = (theme: Theme) => {
+  const { id, ...themeWithoutId } = theme;
+  const newTheme = {
+    ...themeWithoutId,
+    name: `${theme.name} Copy`,
+  };
+  const addedTheme = themeStore.addCustomTheme(newTheme);
+  themeStore.switchTheme("custom", addedTheme.id);
+  ElMessage.success("Theme duplicated successfully");
 };
 </script>
 
@@ -251,5 +348,91 @@ const closeEditor = () => {
 
 .import-theme {
   margin-top: 20px;
+}
+
+.themes-section {
+  margin-bottom: 32px;
+}
+
+.theme-item-official {
+  position: relative;
+}
+
+.theme-item-official::after {
+  content: "Official";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--el-color-primary);
+  color: white;
+}
+
+.theme-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.tag-github-light {
+  background-color: #f6f8fa;
+  color: #0969da;
+  border: 1px solid #0969da;
+}
+
+.tag-github-dark {
+  background-color: #161b22;
+  color: #58a6ff;
+  border: 1px solid #58a6ff;
+}
+
+.tag-one-dark {
+  background-color: #282c34;
+  color: #61afef;
+  border: 1px solid #61afef;
+}
+
+.tag-solarized {
+  background-color: #eee8d5;
+  color: #268bd2;
+  border: 1px solid #268bd2;
+}
+
+.tag-light {
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+  border: 1px solid var(--el-color-primary);
+}
+
+.tag-dark {
+  background-color: var(--el-color-primary-dark-2);
+  color: white;
+  border: 1px solid transparent;
+}
+
+/* 调整主题卡片的布局 */
+.theme-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.theme-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theme-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.theme-type {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 </style>

@@ -25,18 +25,13 @@ export function createEditorOptions(
     scrollbar: {
       verticalScrollbarSize: 8,
       horizontalScrollbarSize: 8,
-      alwaysConsumeMouseWheel: false
+      alwaysConsumeMouseWheel: false,
     },
     overviewRulerLanes: 0,
     hideCursorInOverviewRuler: true,
     overviewRulerBorder: false,
     lineNumbersMinChars: 3,
     folding: false,
-    renderStatusBar: {
-      position: 'right',
-      alignment: 'right'
-    },
-    showMemory: true,
     maxTokenizationLineLength: 20000,
   };
 }
@@ -98,9 +93,9 @@ export async function setupEditor(
     }
 
     const editor = monaco.editor.create(container, options);
-    editorManager.registerEditor(id, { 
-      editor, 
-      dispose: () => editor.dispose() 
+    editorManager.registerEditor(id, {
+      editor,
+      dispose: () => editor.dispose(),
     });
     return editor;
   } catch (error) {
@@ -129,9 +124,11 @@ export function setupEditorKeybindings(
 }
 
 // 创建自定义主题
-export function createMonacoTheme(isDark: boolean): monaco.editor.IStandaloneThemeData {
+export function createMonacoTheme(
+  isDark: boolean
+): monaco.editor.IStandaloneThemeData {
   return {
-    base: isDark ? 'vs-dark' as const : 'vs' as const,
+    base: isDark ? ("vs-dark" as const) : ("vs" as const),
     inherit: true,
     rules: [],
     colors: {
@@ -161,4 +158,4 @@ export function applyMonacoTheme(
   editor.updateOptions({ theme: "custom-theme" });
 }
 
-export { applyThemeToMonaco } from './editorTheme.js';
+export { applyThemeToMonaco } from "./editorTheme.js";
