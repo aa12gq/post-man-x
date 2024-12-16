@@ -98,6 +98,8 @@ const emitChange = () => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: var(--background);
+  color: var(--text);
 }
 
 .editor-header {
@@ -110,6 +112,7 @@ const emitChange = () => {
 .header-title {
   font-size: 14px;
   font-weight: 500;
+  color: var(--text);
 }
 
 .metadata-list {
@@ -129,5 +132,14 @@ const emitChange = () => {
 
 .metadata-value {
   flex: 1;
+}
+
+:deep(.el-input__wrapper) {
+  background-color: var(--background-light);
+  border-color: var(--border);
+}
+
+:deep(.el-input__inner) {
+  color: var(--text);
 }
 </style>

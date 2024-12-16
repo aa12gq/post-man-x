@@ -85,23 +85,26 @@ const handleChange = (value: string) => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background-color: var(--background);
 }
 
 .editor-container {
   flex: 1;
+  min-height: 200px;
+  height: calc(100% - 60px);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
 }
 
 .editor-toolbar {
   display: flex;
   justify-content: flex-end;
   padding: 8px;
-  background-color: var(--bg-color);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
 }
 
 :deep(.code-editor-wrapper) {

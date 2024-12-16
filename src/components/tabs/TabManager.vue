@@ -92,7 +92,7 @@ const getTabIcon = (tab: any) => {
 
 <style scoped>
 .tab-manager {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -161,7 +161,7 @@ const getTabIcon = (tab: any) => {
   }
 
   &.is-active {
-    background-color: var(--bg-color);
+    background-color: var(--background);
 
     &::after {
       opacity: 1;
@@ -378,7 +378,7 @@ const getTabIcon = (tab: any) => {
     }
 
     &.is-active {
-      background-color: var(--bg-color);
+      background-color: var(--background);
       &::after {
         opacity: 1;
       }

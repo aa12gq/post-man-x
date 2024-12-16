@@ -667,7 +667,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 /* 预览区域的样式 */
@@ -734,7 +734,7 @@ onBeforeUnmount(() => {
 
 .preview-tabs {
   height: 36px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   padding: 4px 8px 0;
@@ -759,7 +759,7 @@ onBeforeUnmount(() => {
 }
 
 .preview-tab.active {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 2px solid var(--el-color-primary);
 }
 
@@ -772,7 +772,7 @@ onBeforeUnmount(() => {
 
 .preview-toolbar {
   height: 40px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -784,7 +784,7 @@ onBeforeUnmount(() => {
 
 .preview-editor {
   flex: 1;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   margin: 8px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
@@ -876,7 +876,7 @@ onBeforeUnmount(() => {
 
 .grid-area {
   padding: 8px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: move;

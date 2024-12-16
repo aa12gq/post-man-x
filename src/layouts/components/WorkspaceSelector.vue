@@ -28,38 +28,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ArrowDown, FolderOpened, Plus, Management } from '@element-plus/icons-vue'
+import { ref } from "vue";
+import {
+  ArrowDown,
+  FolderOpened,
+  Plus,
+  Management,
+} from "@element-plus/icons-vue";
 
 interface Workspace {
-  id: string
-  name: string
-  description?: string
+  id: string;
+  name: string;
+  description?: string;
 }
 
-const currentWorkspace = ref('Default Workspace')
+const currentWorkspace = ref("Default Workspace");
 const workspaces = ref<Workspace[]>([
-  { id: 'default', name: 'Default Workspace' },
-  { id: 'team', name: 'Team Workspace' },
-])
+  { id: "default", name: "Default Workspace" },
+  { id: "team", name: "Team Workspace" },
+]);
 
 const handleWorkspaceChange = (command: string) => {
-  if (command === 'create') {
+  if (command === "create") {
     // 触发创建工作空间事件
-  } else if (command === 'manage') {
+  } else if (command === "manage") {
     // 触发管理工作空间事件
   } else {
-    const workspace = workspaces.value.find((w) => w.id === command)
+    const workspace = workspaces.value.find((w) => w.id === command);
     if (workspace) {
-      currentWorkspace.value = workspace.name
+      currentWorkspace.value = workspace.name;
     }
   }
-}
+};
 </script>
 
 <style scoped>
 .workspace-selector {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   color: var(--text-color);
 }
@@ -69,7 +74,7 @@ const handleWorkspaceChange = (command: string) => {
 }
 
 .workspace-list {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-base);
 }
@@ -86,4 +91,4 @@ const handleWorkspaceChange = (command: string) => {
   background-color: var(--selected-color);
   color: var(--primary-color);
 }
-</style> 
+</style>

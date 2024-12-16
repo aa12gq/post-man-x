@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Theme, ThemePreset } from "../types/theme";
 import type { PersistenceOptions } from "pinia-plugin-persistedstate";
-import { officialThemes } from '../constants/officialThemes';
+import { officialThemes } from "../constants/officialThemes";
 
 // 默认主题设置
 const defaultLightTheme: Theme = {
@@ -81,7 +81,7 @@ function resetToDefaultTheme(): Theme {
   localStorage.removeItem("current-theme");
   // 不要清除 theme-store，因为它包含自定义主题列表
   // localStorage.removeItem("theme-store"); // 删除这行
-  
+
   // 返回一个全新的默认主题实例
   return deepClone(defaultLightTheme);
 }
@@ -100,9 +100,9 @@ export const useThemeStore = defineStore(
       if (isInitialized.value) return;
 
       // 初始化官方主题
-      officialCustomThemes.value = officialThemes.map(theme => ({
+      officialCustomThemes.value = officialThemes.map((theme) => ({
         ...theme,
-        id: `official_${theme.name.toLowerCase().replace(/\s+/g, '_')}`,
+        id: `official_${theme.name.toLowerCase().replace(/\s+/g, "_")}`,
       }));
 
       // 监听系统主题变化
@@ -279,9 +279,9 @@ export const useThemeStore = defineStore(
             const customTheme = customThemes.value.find(
               (t) => t.id === themeId
             );
-            
+
             const foundTheme = officialTheme || customTheme;
-            
+
             if (!foundTheme) {
               console.warn("Theme not found, using default light theme");
               themeToApply = deepClone(defaultLightTheme);
@@ -441,7 +441,7 @@ export const useThemeStore = defineStore(
 
     const allCustomThemes = computed(() => [
       ...officialCustomThemes.value,
-      ...customThemes.value
+      ...customThemes.value,
     ]);
 
     return {

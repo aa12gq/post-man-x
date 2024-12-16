@@ -20,7 +20,11 @@
         </el-button>
       </el-button-group>
     </div>
-    <div ref="editorContainer" class="monaco-editor-container" v-show="isReady"></div>
+    <div
+      ref="editorContainer"
+      class="monaco-editor-container"
+      v-show="isReady"
+    ></div>
   </div>
 </template>
 
@@ -29,7 +33,7 @@ import { ref, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import { setupEditor } from "../utils/editor";
 import { Document, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { editorManager } from '../utils/editorManager';
+import { editorManager } from "../utils/editorManager";
 
 const props = defineProps<{
   modelValue: string;
@@ -83,7 +87,7 @@ onMounted(async () => {
   await nextTick();
 
   if (!editorContainer.value) {
-    console.error('Editor container not found');
+    console.error("Editor container not found");
     return;
   }
 
@@ -223,7 +227,7 @@ defineExpose({
 
 :deep(.monaco-editor .margin),
 :deep(.monaco-editor .monaco-editor-background) {
-  background-color: var(--bg-color) !important;
+  background-color: var(--background) !important;
 }
 
 :deep(.monaco-editor .lines-content) {

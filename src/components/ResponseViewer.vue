@@ -34,49 +34,49 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, computed } from "vue";
+import { ElMessage } from "element-plus";
 
 const props = defineProps<{
-  response: string
-  responseTime?: number
-}>()
+  response: string;
+  responseTime?: number;
+}>();
 
-const viewMode = ref<'preview' | 'raw'>('preview')
+const viewMode = ref<"preview" | "raw">("preview");
 
 const isJson = computed(() => {
   try {
-    JSON.parse(props.response)
-    return true
+    JSON.parse(props.response);
+    return true;
   } catch {
-    return false
+    return false;
   }
-})
+});
 
 const formattedJson = computed(() => {
   if (isJson.value) {
     try {
-      return JSON.stringify(JSON.parse(props.response), null, 2)
+      return JSON.stringify(JSON.parse(props.response), null, 2);
     } catch {
-      return props.response
+      return props.response;
     }
   }
-  return props.response
-})
+  return props.response;
+});
 
 const copyResponse = async () => {
   try {
-    await navigator.clipboard.writeText(props.response)
-    ElMessage.success('已复制到剪贴板')
+    await navigator.clipboard.writeText(props.response);
+    ElMessage.success("已复制到剪贴板");
   } catch (error) {
-    ElMessage.error('复制失败')
+    ElMessage.error("复制失败");
   }
-}
+};
 </script>
 
 <style scoped>
 .response-viewer {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
 }
 
@@ -131,7 +131,7 @@ const copyResponse = async () => {
 
 .response-content {
   border: 1px solid var(--border-color);
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-radius: 4px;
   padding: 10px;
   min-height: 200px;
@@ -157,4 +157,4 @@ pre {
   word-wrap: break-word;
   color: var(--text-color);
 }
-</style> 
+</style>

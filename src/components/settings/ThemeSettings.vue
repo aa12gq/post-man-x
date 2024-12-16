@@ -2,26 +2,9 @@
   <div class="theme-settings">
     <h2>Theme Settings</h2>
 
-    <!-- 主题预设选择 -->
-    <div class="theme-presets">
-      <el-radio-group v-model="currentPreset" @change="handlePresetChange">
-        <el-radio-button value="system">跟随系统</el-radio-button>
-        <el-radio-button value="light">明亮</el-radio-button>
-        <el-radio-button value="dark">暗黑</el-radio-button>
-        <el-radio-button
-          value="custom"
-          :disabled="!themeStore.allCustomThemes.length"
-        >
-          自定义
-        </el-radio-button>
-      </el-radio-group>
-    </div>
-
-    <!-- 自定义主题列表 -->
-    <div v-if="currentPreset === 'custom'" class="custom-themes">
-      <!-- 官方推荐主题 -->
-      <div class="themes-section">
-        <h3>Official Themes</h3>
+    <!-- 主题类型选择标签页 -->
+    <el-tabs v-model="activeTab">
+      <el-tab-pane label="Official Themes" name="official">
         <div class="theme-list">
           <div
             v-for="theme in themeStore.officialCustomThemes"
@@ -53,12 +36,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </el-tab-pane>
 
-      <!-- 用户自定义主题 -->
-      <div class="themes-section">
+      <el-tab-pane label="Custom Themes" name="custom">
         <div class="themes-header">
-          <h3>Custom Themes</h3>
           <el-button type="primary" @click="showThemeEditor = true">
             Create Theme
           </el-button>
@@ -95,8 +76,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 导入主题按钮 -->
         <div class="import-theme">
           <el-upload
             class="upload-demo"
@@ -108,8 +87,8 @@
             <el-button>Import Theme</el-button>
           </el-upload>
         </div>
-      </div>
-    </div>
+      </el-tab-pane>
+    </el-tabs>
 
     <!-- 主题编辑器对话框 -->
     <el-dialog
@@ -137,46 +116,22 @@ import type { UploadFile } from "element-plus";
 import ThemePreviewCard from "../common/ThemePreviewCard.vue";
 
 const themeStore = useThemeStore();
-const currentPreset = computed({
-  get: () => themeStore.themePreset,
-  set: (value: ThemePreset) => {
-    if (value === "custom") {
-      // 如果切换到自定义主题
-      if (themeStore.allCustomThemes.length > 0) {
-        // 使用第一个可用的主题（包括官方主题）
-        const firstTheme = themeStore.allCustomThemes[0];
-        themeStore.switchTheme("custom", firstTheme.id);
-      } else {
-        // 没有任何主题时保持当前主题
-        ElMessage.warning("No themes available");
-        return;
-      }
-    } else {
-      // 切换到其他预设主题
-      themeStore.switchTheme(value);
-    }
-  },
-});
-
 const showThemeEditor = ref(false);
 const editingTheme = ref<Theme | null>(null);
-
-const handlePresetChange = (val: string | number | boolean | undefined) => {
-  const preset = val as ThemePreset;
-  if (preset === "custom" && themeStore.allCustomThemes.length === 0) {
-    ElMessage.warning("No themes available");
-    currentPreset.value = themeStore.themePreset;
-    return;
+const activeTab = computed(() => {
+  const currentTheme = themeStore.currentTheme;
+  if (themeStore.officialCustomThemes.some(theme => theme.id === currentTheme.id)) {
+    return "official";
   }
-
-  // 更新 currentPreset
-  currentPreset.value = preset;
-};
+  if (themeStore.customThemes.some(theme => theme.id === currentTheme.id)) {
+    return "custom";
+  }
+  return "official";
+});
 
 // 应用自定义主题
 const applyCustomTheme = (theme: Theme) => {
   // 先设置 preset，再切换主题
-  currentPreset.value = "custom";
   themeStore.switchTheme("custom", theme.id);
 };
 
@@ -201,7 +156,7 @@ const handleDelete = async (theme: Theme) => {
     // 如果删除后没有自定义主题了，自动切换到 light 主题
     if (
       themeStore.customThemes.length === 0 &&
-      currentPreset.value === "custom"
+      themeStore.themePreset === "custom"
     ) {
       themeStore.switchTheme("light");
     }
@@ -266,108 +221,165 @@ const handleDuplicate = (theme: Theme) => {
   padding: 20px;
 }
 
-.theme-presets {
-  margin: 20px 0;
-}
-
-.custom-themes {
-  margin-top: 20px;
-}
-
-.themes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
 .theme-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .theme-item {
+  position: relative;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
+  background: var(--bg-color);
 }
 
 .theme-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 12px 0 var(--shadow-color);
+  box-shadow: 0 4px 16px 0 var(--shadow-color);
 }
 
 .theme-item.active {
   border-color: var(--el-color-primary);
+  border-width: 2px;
 }
 
 .theme-preview {
   cursor: pointer;
-  padding: 16px;
-}
-
-.color-block {
-  height: 40px;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
 }
 
 .theme-info {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 4px;
+  text-align: center;
   align-items: center;
+  width: 100%;
 }
 
 .theme-name {
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .theme-type {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.theme-type::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--el-color-primary);
 }
 
 .theme-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 8px;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
   border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
 }
 
 .theme-actions .el-button {
-  padding: 4px 8px;
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
-.theme-actions .el-icon {
-  margin-right: 4px;
+.theme-actions .el-button .el-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.theme-item-official::before {
+  content: "OFFICIAL";
+  position: absolute;
+  top: 0;
+  right: 16px;
+  font-size: 10px;
+  padding: 3px 12px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--el-color-primary-light-8) 0%,
+    var(--el-color-primary-light-7) 100%
+  );
+  color: var(--el-color-primary-dark-2);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 1;
+  border: 1px solid var(--el-color-primary-light-5);
+  border-top: none;
+  box-shadow: 0 2px 4px rgba(var(--el-color-primary-rgb), 0.1);
+  text-align: center;
+  min-width: 60px;
+}
+
+.theme-item-official::after {
+  display: none;
 }
 
 .import-theme {
   margin-top: 20px;
 }
 
-.themes-section {
-  margin-bottom: 32px;
+.themes-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.theme-item-official {
-  position: relative;
+/* 调整标签页样式 */
+:deep(.el-tabs__header) {
+  margin-bottom: 24px;
 }
 
-.theme-item-official::after {
-  content: "Official";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background-color: var(--el-color-primary);
-  color: white;
+:deep(.el-tabs__nav-wrap::after) {
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+:deep(.el-tabs__item) {
+  font-size: 15px;
+  height: 40px;
+  line-height: 40px;
+}
+
+:deep(.el-tabs__item.is-active) {
+  font-weight: 600;
+}
+
+/* 调整主题列表布局 */
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.themes-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .theme-tag {
@@ -413,26 +425,9 @@ const handleDuplicate = (theme: Theme) => {
   border: 1px solid transparent;
 }
 
-/* 调整主题卡片的布局 */
-.theme-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.theme-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.theme-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.theme-type {
-  font-size: 12px;
-  color: var(--text-secondary);
+:deep(.theme-preview-card) {
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
 }
 </style>

@@ -35,7 +35,7 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="system">
+            <!-- <el-dropdown-item command="system">
               <el-icon><Monitor /></el-icon>
               跟随系统
             </el-dropdown-item>
@@ -46,7 +46,7 @@
             <el-dropdown-item command="dark">
               <el-icon><Moon /></el-icon>
               暗黑模式
-            </el-dropdown-item>
+            </el-dropdown-item> -->
 
             <!-- 官方主题列表 -->
             <el-dropdown-item
@@ -232,7 +232,7 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
   showThemeEditor.value = false;
 };
 
-// 添加当前主题显示计算属性
+// 当前主题显示计算属性
 const currentThemeDisplay = computed(() => {
   const theme = themeStore.currentTheme;
   switch (themeStore.themePreset) {
@@ -399,7 +399,7 @@ const getThemeTagClass = (theme: Theme) => {
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
   margin-right: 12px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   box-shadow: var(--shadow-light);
 }
 
@@ -650,7 +650,7 @@ const getThemeTagClass = (theme: Theme) => {
   .toolbar {
     padding: 0 4px;
   }
-  
+
   /* 确保在底部时也保持正确的样式 */
   :deep(.toolbar-bottom) .toolbar {
     position: sticky;

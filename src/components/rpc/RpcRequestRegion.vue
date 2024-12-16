@@ -58,14 +58,14 @@ const handleInvoke = async () => {
   gap: 16px;
   height: 100%;
   position: relative;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-editor {
   flex: 1;
   min-height: 200px;
   height: calc(100% - 60px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
   display: flex;
@@ -78,6 +78,7 @@ const handleInvoke = async () => {
   padding: 8px 0;
   height: 44px;
   flex-shrink: 0;
+  background-color: var(--background);
 }
 
 :deep(.code-editor-wrapper) {
@@ -88,5 +89,16 @@ const handleInvoke = async () => {
 :deep(.monaco-editor-container) {
   height: 100% !important;
   min-height: 200px;
+}
+
+:deep(.el-button) {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--background);
+}
+
+:deep(.el-button:hover) {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
 }
 </style> 

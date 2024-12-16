@@ -570,7 +570,7 @@ const isRefreshing = ref(false);
 
 <style scoped>
 .folder-manager {
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .folder {
@@ -604,7 +604,7 @@ const isRefreshing = ref(false);
 }
 
 .request-item {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-left: 2px solid transparent;
 }
 
@@ -715,7 +715,7 @@ const isRefreshing = ref(false);
   top: 17px;
   bottom: 0;
   width: 1px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-item {

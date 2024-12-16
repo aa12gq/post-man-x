@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="app-container"
     :class="{
       [`layout-${layoutStore.settings.currentLayout}`]: true,
@@ -18,7 +18,7 @@ import MainLayout from "./layouts/MainLayout.vue";
 import { useThemeStore } from "./stores/theme";
 import { useSettings } from "./stores/settings";
 import type { Settings } from "./stores/settings";
-import { useLayoutStore } from './stores/layout';
+import { useLayoutStore } from "./stores/layout";
 
 const themeStore = useThemeStore();
 const settingsStore = useSettings();
@@ -84,7 +84,7 @@ body {
     "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   color: var(--text-color);
 }
 
@@ -197,7 +197,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {

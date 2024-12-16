@@ -108,7 +108,7 @@ const handleLearnMore = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   padding: 40px;
   position: relative;
   overflow: auto;
