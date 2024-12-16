@@ -2,26 +2,9 @@
   <div class="theme-settings">
     <h2>Theme Settings</h2>
 
-    <!-- 主题预设选择 -->
-    <div class="theme-presets">
-      <el-radio-group v-model="currentPreset" @change="handlePresetChange">
-        <!-- <el-radio-button value="system">跟随系统</el-radio-button>
-        <el-radio-button value="light">明亮</el-radio-button>
-        <el-radio-button value="dark">暗黑</el-radio-button> -->
-        <el-radio-button
-          value="custom"
-          :disabled="!themeStore.allCustomThemes.length"
-        >
-          自定义
-        </el-radio-button>
-      </el-radio-group>
-    </div>
-
-    <!-- 自定义主题列表 -->
-    <div v-if="currentPreset === 'custom'" class="custom-themes">
-      <!-- 官方推荐主题 -->
-      <div class="themes-section">
-        <h3>Official Themes</h3>
+    <!-- 主题类型选择标签页 -->
+    <el-tabs v-model="activeTab">
+      <el-tab-pane label="Official Themes" name="official">
         <div class="theme-list">
           <div
             v-for="theme in themeStore.officialCustomThemes"
@@ -53,12 +36,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </el-tab-pane>
 
-      <!-- 用户自定义主题 -->
-      <div class="themes-section">
+      <el-tab-pane label="Custom Themes" name="custom">
         <div class="themes-header">
-          <h3>Custom Themes</h3>
           <el-button type="primary" @click="showThemeEditor = true">
             Create Theme
           </el-button>
@@ -95,8 +76,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 导入主题按钮 -->
         <div class="import-theme">
           <el-upload
             class="upload-demo"
@@ -108,8 +87,8 @@
             <el-button>Import Theme</el-button>
           </el-upload>
         </div>
-      </div>
-    </div>
+      </el-tab-pane>
+    </el-tabs>
 
     <!-- 主题编辑器对话框 -->
     <el-dialog
@@ -137,46 +116,22 @@ import type { UploadFile } from "element-plus";
 import ThemePreviewCard from "../common/ThemePreviewCard.vue";
 
 const themeStore = useThemeStore();
-const currentPreset = computed({
-  get: () => themeStore.themePreset,
-  set: (value: ThemePreset) => {
-    if (value === "custom") {
-      // 如果切换到自定义主题
-      if (themeStore.allCustomThemes.length > 0) {
-        // 使用第一个可用的主题（包括官方主题）
-        const firstTheme = themeStore.allCustomThemes[0];
-        themeStore.switchTheme("custom", firstTheme.id);
-      } else {
-        // 没有任何主题时保持当前主题
-        ElMessage.warning("No themes available");
-        return;
-      }
-    } else {
-      // 切换到其他预设主题
-      themeStore.switchTheme(value);
-    }
-  },
-});
-
 const showThemeEditor = ref(false);
 const editingTheme = ref<Theme | null>(null);
-
-const handlePresetChange = (val: string | number | boolean | undefined) => {
-  const preset = val as ThemePreset;
-  if (preset === "custom" && themeStore.allCustomThemes.length === 0) {
-    ElMessage.warning("No themes available");
-    currentPreset.value = themeStore.themePreset;
-    return;
+const activeTab = computed(() => {
+  const currentTheme = themeStore.currentTheme;
+  if (themeStore.officialCustomThemes.some(theme => theme.id === currentTheme.id)) {
+    return "official";
   }
-
-  // 更新 currentPreset
-  currentPreset.value = preset;
-};
+  if (themeStore.customThemes.some(theme => theme.id === currentTheme.id)) {
+    return "custom";
+  }
+  return "official";
+});
 
 // 应用自定义主题
 const applyCustomTheme = (theme: Theme) => {
   // 先设置 preset，再切换主题
-  currentPreset.value = "custom";
   themeStore.switchTheme("custom", theme.id);
 };
 
@@ -201,7 +156,7 @@ const handleDelete = async (theme: Theme) => {
     // 如果删除后没有自定义主题了，自动切换到 light 主题
     if (
       themeStore.customThemes.length === 0 &&
-      currentPreset.value === "custom"
+      themeStore.themePreset === "custom"
     ) {
       themeStore.switchTheme("light");
     }
@@ -266,30 +221,11 @@ const handleDuplicate = (theme: Theme) => {
   padding: 20px;
 }
 
-.theme-presets {
-  margin: 20px 0;
-}
-
-.custom-themes {
-  margin-top: 20px;
-}
-
-.themes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
 .theme-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 24px;
   margin-bottom: 24px;
-  justify-content: center;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .theme-item {
@@ -406,8 +342,44 @@ const handleDuplicate = (theme: Theme) => {
   margin-top: 20px;
 }
 
-.themes-section {
-  margin-bottom: 32px;
+.themes-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 调整标签页样式 */
+:deep(.el-tabs__header) {
+  margin-bottom: 24px;
+}
+
+:deep(.el-tabs__nav-wrap::after) {
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+:deep(.el-tabs__item) {
+  font-size: 15px;
+  height: 40px;
+  line-height: 40px;
+}
+
+:deep(.el-tabs__item.is-active) {
+  font-weight: 600;
+}
+
+/* 调整主题列表布局 */
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.themes-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .theme-tag {
