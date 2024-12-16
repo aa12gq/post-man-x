@@ -59,21 +59,31 @@ const handleWorkspaceChange = (command: string) => {
 
 <style scoped>
 .workspace-selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 .workspace-selector:hover {
+  border-color: var(--primary-color);
+}
+
+.workspace-list {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-base);
+}
+
+.workspace-item {
+  color: var(--text-color);
+}
+
+.workspace-item:hover {
   background-color: var(--hover-color);
 }
 
-.workspace-name {
-  font-size: 14px;
-  color: var(--text-color);
+.workspace-item.active {
+  background-color: var(--selected-color);
+  color: var(--primary-color);
 }
 </style> 

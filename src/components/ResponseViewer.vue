@@ -76,15 +76,47 @@ const copyResponse = async () => {
 
 <style scoped>
 .response-viewer {
-  margin-top: 20px;
-  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
 }
 
 .response-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.response-body {
+  color: var(--text-color);
+}
+
+.response-tabs {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.response-tab {
+  color: var(--text-color);
+  border-bottom: 2px solid transparent;
+}
+
+.response-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.response-tab:hover {
+  color: var(--primary-color);
+}
+
+.status-code {
+  color: var(--text-color-secondary);
+}
+
+.status-code.success {
+  color: var(--success-color);
+}
+
+.status-code.error {
+  color: var(--danger-color);
 }
 
 .response-actions {

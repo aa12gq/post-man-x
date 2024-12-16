@@ -1,27 +1,42 @@
 <template>
-  <div ref="editorContainer" class="monaco-editor-container"></div>
+  <div class="code-editor-wrapper">
+    <div class="editor-toolbar" v-if="!hideToolbar">
+      <el-button-group>
+        <el-button
+          size="small"
+          :icon="Document"
+          @click="formatCode"
+          :title="formatShortcut"
+        >
+          Format
+        </el-button>
+        <el-button
+          size="small"
+          :icon="CopyDocument"
+          @click="copyCode"
+          :title="copyShortcut"
+        >
+          Copy
+        </el-button>
+      </el-button-group>
+    </div>
+    <div ref="editorContainer" class="monaco-editor-container" v-show="isReady"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import * as monaco from "monaco-editor";
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-
-// 配置 worker
-self.MonacoEnvironment = {
-  getWorker(_, label) {
-    if (label === "json") {
-      return new jsonWorker();
-    }
-    return new editorWorker();
-  },
-};
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import { setupEditor } from "../utils/editor";
+import { Document, CopyDocument } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { editorManager } from '../utils/editorManager';
 
 const props = defineProps<{
   modelValue: string;
   language?: string;
   readOnly?: boolean;
+  hideToolbar?: boolean;
+  editorId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -29,8 +44,13 @@ const emit = defineEmits<{
   change: [value: string];
 }>();
 
+const isReady = ref(false);
 const editorContainer = ref<HTMLElement | null>(null);
-let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+let editor: any = null;
+
+const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+const formatShortcut = isMac ? "⌘K" : "Ctrl+K";
+const copyShortcut = isMac ? "⌘C" : "Ctrl+C";
 
 // 获取当前主题
 const getCurrentTheme = () => {
@@ -39,45 +59,77 @@ const getCurrentTheme = () => {
     : "vs";
 };
 
+// 格式化代码
+const formatCode = () => {
+  if (editor) {
+    editor.getAction("editor.action.formatDocument")?.run();
+  }
+};
+
+// 复制代码
+const copyCode = async () => {
+  if (editor) {
+    const value = editor.getValue();
+    try {
+      await navigator.clipboard.writeText(value);
+      ElMessage.success("Copied to clipboard");
+    } catch (error) {
+      ElMessage.error("Failed to copy");
+    }
+  }
+};
+
 onMounted(async () => {
-  if (!editorContainer.value) return;
+  await nextTick();
 
-  // 创建编辑器
-  editor = monaco.editor.create(editorContainer.value, {
-    value: props.modelValue,
-    language: props.language || "json",
-    theme: getCurrentTheme(),
-    automaticLayout: true,
-    minimap: { enabled: false },
-    readOnly: props.readOnly,
-    scrollBeyondLastLine: false,
-    fontSize: 14,
-    tabSize: 2,
-    formatOnPaste: true,
-    formatOnType: true,
-    padding: { top: 0, bottom: 0 },
-    lineNumbers: "on",
-    folding: false,
-    wordWrap: "on",
-    lineDecorationsWidth: 0,
-    lineNumbersMinChars: 3,
-    glyphMargin: false,
-    fixedOverflowWidgets: true,
-  });
+  if (!editorContainer.value) {
+    console.error('Editor container not found');
+    return;
+  }
 
-  // 配置 JSON 格式化
-  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-    validate: true,
-    allowComments: true,
-    schemas: [],
-  });
+  try {
+    isReady.value = true;
+    await nextTick();
 
-  // 监听内容变化
-  editor.onDidChangeModelContent(() => {
-    const value = editor?.getValue() || "";
-    emit("update:modelValue", value);
-    emit("change", value);
-  });
+    const id = props.editorId || "default";
+    editor = await setupEditor(
+      editorContainer.value,
+      {
+        value: props.modelValue,
+        language: props.language || "json",
+        theme: getCurrentTheme(),
+        readOnly: props.readOnly,
+        automaticLayout: true,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        fontSize: 14,
+        tabSize: 2,
+        formatOnPaste: true,
+        formatOnType: true,
+      },
+      id
+    );
+
+    // 确保初始值被设置
+    if (editor && props.modelValue) {
+      editor.setValue(props.modelValue);
+    }
+
+    // 监听内容变化
+    editor.onDidChangeModelContent(() => {
+      const value = editor?.getValue() || "";
+      emit("update:modelValue", value);
+      emit("change", value);
+    });
+  } catch (error) {
+    console.error("Failed to initialize Monaco editor:", error);
+    ElMessage.error({
+      message: "Failed to load editor",
+      duration: 5000,
+      showClose: true,
+    });
+    throw error;
+  }
 
   // 监听主题变化
   const observer = new MutationObserver((mutations) => {
@@ -96,6 +148,9 @@ onMounted(async () => {
   // 组件销毁时停止观察
   onBeforeUnmount(() => {
     observer.disconnect();
+    if (props.editorId) {
+      editorManager.disposeEditor(props.editorId);
+    }
   });
 });
 
@@ -116,20 +171,54 @@ onBeforeUnmount(() => {
     editor = null;
   }
 });
+
+// 暴露方法
+defineExpose({
+  editor,
+  format: formatCode,
+  copy: copyCode,
+});
 </script>
 
 <style scoped>
-.monaco-editor-container {
+.code-editor-wrapper {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: inherit;
+  position: relative;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px;
+  background-color: var(--bg-color-light);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.monaco-editor-container {
+  flex: 1;
   min-height: 200px;
   border: none;
   border-radius: 0;
   overflow: hidden;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 :deep(.monaco-editor) {
   padding: 0;
+  height: 100% !important;
 }
 
 :deep(.monaco-editor .margin),
@@ -160,5 +249,32 @@ onBeforeUnmount(() => {
 /* 确保内容完全展开 */
 :deep(.monaco-editor .view-line) {
   white-space: pre-wrap !important;
+}
+
+:deep(.el-button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+:deep(.el-button .el-icon) {
+  margin: 0;
+}
+
+:deep(.monaco-editor .editor-statusbar-container) {
+  position: absolute;
+  bottom: 2px;
+  right: 8px;
+  padding: 1px 4px;
+  font-size: 11px;
+  background-color: var(--bg-color-light);
+  border-radius: 3px;
+  opacity: 0.9;
+  z-index: 1;
+  pointer-events: none;
+}
+
+:deep(.monaco-editor .editor-scrollable) {
+  margin-bottom: 20px;
 }
 </style>

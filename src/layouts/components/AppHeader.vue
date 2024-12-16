@@ -18,11 +18,65 @@
         <span class="btn-text">导出</span>
       </button>
       <div class="divider"></div>
-      <SettingsDropdown />
-      <ThemeSwitch />
+
+      <!-- 主题相关功能整合 -->
+      <el-dropdown trigger="click" @command="handleThemeCommand">
+        <div class="theme-indicator">
+          <div class="theme-preview">
+            <div
+              class="color-block"
+              :style="{
+                backgroundColor: themeStore.currentTheme.colors.primary,
+              }"
+            ></div>
+            <span class="theme-name">{{ themeStore.currentTheme.name }}</span>
+            <el-icon><ArrowDown /></el-icon>
+          </div>
+        </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="light">
+              <el-icon><Sunny /></el-icon>
+              Light Mode
+            </el-dropdown-item>
+            <el-dropdown-item command="dark">
+              <el-icon><Moon /></el-icon>
+              Dark Mode
+            </el-dropdown-item>
+            <el-dropdown-item divided command="customize">
+              <el-icon><Plus /></el-icon>
+              New Theme
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-for="theme in themeStore.customThemes"
+              :key="theme.id"
+              :command="['custom', theme.id]"
+            >
+              <div class="custom-theme-item">
+                <div
+                  class="color-dot"
+                  :style="{ backgroundColor: theme.colors.primary }"
+                ></div>
+                {{ theme.name }}
+              </div>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+
+      <SettingsDropdown ref="settingsDropdownRef" />
       <UserAvatar />
     </div>
   </div>
+
+  <!-- 添加主题编辑器对话框 -->
+  <el-dialog v-model="showThemeEditor" title="Create New Theme" width="800px">
+    <ThemeEditor
+      :initial-theme="null"
+      @save="handleSaveTheme"
+      @cancel="showThemeEditor = false"
+    />
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -30,14 +84,22 @@ import LogoIcon from "../../components/icons/LogoIcon.vue";
 import WorkspaceSelector from "./WorkspaceSelector.vue";
 import ToolbarIcons from "./ToolbarIcons.vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
-import ThemeSwitch from "./ThemeSwitch.vue";
 import UserAvatar from "./UserAvatar.vue";
 import ImportIcon from "../../components/icons/ImportIcon.vue";
 import ExportIcon from "../../components/icons/ExportIcon.vue";
 import { useRouter, useRoute } from "vue-router";
+import { ref } from "vue";
+import { ArrowDown, Sunny, Moon, Plus } from "@element-plus/icons-vue";
+import { useThemeStore } from "../../stores/theme";
+import ThemeEditor from "../../components/settings/ThemeEditor.vue";
+import { Theme } from "../../types/theme";
+import type { ThemePreset } from "../../types/theme";
 
 const router = useRouter();
 const route = useRoute();
+const themeStore = useThemeStore();
+const settingsDropdownRef = ref();
+const showThemeEditor = ref(false);
 
 const goHome = () => {
   if (route.path !== "/") {
@@ -104,6 +166,31 @@ const handleExport = () => {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 };
+
+// 处理主题相关命令
+const handleThemeCommand = (command: string | [ThemePreset, string]) => {
+  if (Array.isArray(command)) {
+    const [preset, themeId] = command;
+    themeStore.switchTheme(preset, themeId);
+  } else {
+    switch (command) {
+      case "light":
+      case "dark":
+        themeStore.switchTheme(command);
+        break;
+      case "customize":
+        showThemeEditor.value = true;
+        break;
+    }
+  }
+};
+
+// 处理保存新主题
+const handleSaveTheme = (theme: Omit<Theme, "id">) => {
+  const newTheme = themeStore.addCustomTheme(theme);
+  themeStore.switchTheme("custom", newTheme.id);
+  showThemeEditor.value = false;
+};
 </script>
 
 <style scoped>
@@ -111,8 +198,9 @@ const handleExport = () => {
   height: 48px;
   min-height: 48px;
   padding: 0 8px;
-  background-color: var(--bg-color);
+  background-color: var(--toolbar-bg);
   border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -216,11 +304,78 @@ const handleExport = () => {
   .toolbar-btn {
     padding: 6px;
   }
+
+  .theme-name {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
   .divider {
     display: none;
   }
+}
+
+.theme-indicator {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  margin-right: 12px;
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow-light);
+}
+
+.theme-indicator:hover {
+  border-color: var(--primary-color);
+  background-color: var(--hover-color);
+  box-shadow: var(--shadow-base);
+}
+
+.theme-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-block {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.theme-name {
+  font-size: 13px;
+  color: var(--text-color);
+}
+
+.theme-preview .el-icon {
+  font-size: 14px;
+  color: var(--text-color-secondary);
+}
+
+.theme-indicator:hover .el-icon {
+  color: var(--primary-color);
+}
+
+.custom-theme-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* 确保下拉菜单有合适的最大高度和滚动 */
+:deep(.el-dropdown-menu) {
+  max-height: 400px;
+  overflow-y: auto;
 }
 </style>

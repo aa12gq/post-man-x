@@ -27,14 +27,6 @@
             <ArrowUp />
           </el-icon>
         </el-button>
-        <el-button size="small" @click="copyResponse">
-          <el-icon><DocumentCopy /></el-icon>
-          Copy
-        </el-button>
-        <el-button size="small" @click="$emit('clear')">
-          <el-icon><Delete /></el-icon>
-          Clear
-        </el-button>
       </div>
     </div>
 

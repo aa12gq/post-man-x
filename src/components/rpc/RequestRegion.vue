@@ -107,6 +107,7 @@
         @resize="startResize"
       />
     </div>
+    <EditorConfig />
   </div>
 </template>
 
@@ -123,6 +124,7 @@ import AuthorizationManager from "../auth/AuthorizationManager.vue";
 import MetadataEditor from "./MetadataEditor.vue";
 import ResponseViewer from "../response/ResponseViewer.vue";
 import { ArrowUp, Folder, Link, Document } from "@element-plus/icons-vue";
+import EditorConfig from '../editor/EditorConfig.vue';
 
 const emit = defineEmits(["update:unsaved", "save", "name-change"]);
 
@@ -185,7 +187,7 @@ const loadingMethods = ref(false);
 // 响应相关状态
 const requestHeaders = ref<Header[]>([]);
 
-// 标签页相关状态
+// 标签���相关状态
 const activePane = ref("message");
 
 // 授权相关状态
@@ -1192,5 +1194,60 @@ const cancelEditing = () => {
 :deep(.el-input__inner) {
   height: 24px;
   font-size: inherit;
+}
+
+.request-region {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.request-header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.invoke-button {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.invoke-button:hover {
+  background-color: var(--primary-dark);
+}
+
+.invoke-button:disabled {
+  background-color: var(--text-color-disabled);
+  cursor: not-allowed;
+}
+
+.request-body {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-color-light);
+}
+
+.response-panel {
+  background-color: var(--bg-color-light);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.response-header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.status-success {
+  color: var(--success-color);
+}
+
+.status-error {
+  color: var(--danger-color);
 }
 </style>

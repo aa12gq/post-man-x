@@ -34,6 +34,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Plus } from "@element-plus/icons-vue";
+import type { TabPaneName } from 'element-plus';
 
 const props = defineProps<{
   modelValue: string;
@@ -59,17 +60,45 @@ const handleTabClick = (tab: any) => {
   activeTab.value = tab.props.name;
 };
 
-const handleTabRemove = (tabId: string) => {
-  emit("remove", tabId);
+const handleTabRemove = (name: TabPaneName) => {
+  if (typeof name === 'string') {
+    emit("remove", name);
+  }
 };
 </script>
 
 <style scoped>
 .tab-manager {
-  width: 100%;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab {
+  background-color: var(--bg-color-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.tab.active {
+  background-color: var(--bg-color);
+  border-bottom-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.tab:hover {
+  background-color: var(--hover-color);
+}
+
+.tab-close {
+  color: var(--text-color-secondary);
+}
+
+.tab-close:hover {
+  color: var(--danger-color);
+}
+
+.unsaved-indicator {
+  color: var(--primary-color);
 }
 
 :deep(.el-tabs) {
@@ -130,15 +159,5 @@ const handleTabRemove = (tabId: string) => {
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.unsaved-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--el-color-primary);
-  margin-left: 6px;
-  display: inline-block;
-  flex-shrink: 0;
 }
 </style>

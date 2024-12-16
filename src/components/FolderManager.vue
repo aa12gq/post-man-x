@@ -570,7 +570,51 @@ const isRefreshing = ref(false);
 
 <style scoped>
 .folder-manager {
-  padding: 8px;
+  background-color: var(--bg-color);
+}
+
+.folder {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.folder-header {
+  background-color: var(--bg-color-light);
+  color: var(--text-color);
+}
+
+.folder-header:hover {
+  background-color: var(--hover-color);
+}
+
+.folder-header.active {
+  background-color: var(--active-color);
+  color: var(--primary-color);
+}
+
+.folder-name {
+  color: var(--text-color);
+}
+
+.folder-actions {
+  color: var(--text-color-secondary);
+}
+
+.folder-actions button:hover {
+  color: var(--primary-color);
+}
+
+.request-item {
+  background-color: var(--bg-color);
+  border-left: 2px solid transparent;
+}
+
+.request-item:hover {
+  background-color: var(--hover-color);
+}
+
+.request-item.active {
+  background-color: var(--selected-color);
+  border-left-color: var(--primary-color);
 }
 
 .folder-item {

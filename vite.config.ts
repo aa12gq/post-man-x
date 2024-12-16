@@ -3,10 +3,12 @@ import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { resolve } from 'path'
+import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
 export default defineConfig({
   plugins: [
     vue(),
+    monacoEditorPlugin({}),
     electron([
       {
         entry: 'electron/main.ts',

@@ -1243,7 +1243,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   border-bottom: 2px solid var(--el-color-primary);
 }
 
-/* 添加新的样式 */
+/* 添加新的���式 */
 .new-request {
   margin-bottom: 8px;
   color: var(--el-color-primary);
@@ -1368,5 +1368,16 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
 .activity-item:first-child:hover {
   background-color: var(--hover-color);
+}
+
+.request-panel {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.panel-header {
+  background-color: var(--header-bg);
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
 }
 </style>
