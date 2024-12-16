@@ -15,6 +15,13 @@ export interface ThemeColors {
   warning: string;
   danger: string;
   info: string;
+  rainbow1?: string;
+  rainbow2?: string;
+  rainbow3?: string;
+  rainbow4?: string;
+  rainbow5?: string;
+  rainbow6?: string;
+  rainbow7?: string;
 }
 
 export interface Theme {

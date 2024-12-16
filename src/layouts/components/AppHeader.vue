@@ -19,96 +19,77 @@
       </button>
       <div class="divider"></div>
 
-      <!-- 主题相关功能整合 -->
-      <el-dropdown trigger="click" @command="handleThemeCommand">
+      <!-- 主题切换按钮 -->
+      <button class="toolbar-btn" @click="showThemeDrawer = true">
         <div class="theme-indicator">
-          <div class="theme-preview">
-            <div
-              class="color-block"
-              :style="{
-                backgroundColor: themeStore.currentTheme.colors.primary,
-              }"
-            ></div>
-            <span class="theme-name">{{ currentThemeDisplay }}</span>
-            <el-icon><ArrowDown /></el-icon>
-          </div>
+          <div 
+            class="color-block" 
+            :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
+          ></div>
+          <span class="theme-name">{{ currentThemeDisplay }}</span>
         </div>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <!-- <el-dropdown-item command="system">
-              <el-icon><Monitor /></el-icon>
-              跟随系统
-            </el-dropdown-item>
-            <el-dropdown-item command="light">
-              <el-icon><Sunny /></el-icon>
-              明亮模式
-            </el-dropdown-item>
-            <el-dropdown-item command="dark">
-              <el-icon><Moon /></el-icon>
-              暗黑模式
-            </el-dropdown-item> -->
-
-            <!-- 官方主题列表 -->
-            <el-dropdown-item
-              v-if="themeStore.officialCustomThemes.length"
-              divided
-              class="section-header"
-            >
-              <span class="dropdown-section-title">官方主题</span>
-            </el-dropdown-item>
-            <el-dropdown-item
-              v-for="theme in themeStore.officialCustomThemes"
-              :key="theme.id"
-              :command="['custom', theme.id]"
-              class="theme-item"
-            >
-              <div class="custom-theme-item">
-                <ThemePreviewCard :theme="theme" />
-                <div class="theme-info">
-                  <span class="theme-name">{{ theme.name }}</span>
-                  <span class="theme-type">{{
-                    theme.isDark ? "暗色" : "亮色"
-                  }}</span>
-                  <span class="theme-tag" :class="getThemeTagClass(theme)">
-                    Official
-                  </span>
-                </div>
-              </div>
-            </el-dropdown-item>
-
-            <!-- 自定义主题列表 -->
-            <el-dropdown-item v-if="themeStore.customThemes.length" divided>
-              <span class="dropdown-section-title">自定义主题</span>
-            </el-dropdown-item>
-            <el-dropdown-item
-              v-for="theme in themeStore.customThemes"
-              :key="theme.id"
-              :command="['custom', theme.id]"
-            >
-              <div class="custom-theme-item">
-                <div
-                  class="color-dot"
-                  :style="{ backgroundColor: theme.colors.primary }"
-                ></div>
-                {{ theme.name }}
-              </div>
-            </el-dropdown-item>
-
-            <!-- 创建新主题按钮 -->
-            <el-dropdown-item divided command="customize">
-              <el-icon><Plus /></el-icon>
-              创建新主题
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      </button>
 
       <SettingsDropdown ref="settingsDropdownRef" />
       <UserAvatar />
     </div>
   </div>
 
-  <!-- 添加主题编辑器对话框 -->
+  <!-- 主题选择抽屉 -->
+  <el-drawer
+    v-model="showThemeDrawer"
+    title="选择主题"
+    size="400px"
+    :with-header="true"
+  >
+    <div class="theme-drawer-content">
+      <div class="theme-section">
+        <h3 class="section-title">官方主题</h3>
+        <div class="theme-list">
+          <div
+            v-for="theme in themeStore.officialCustomThemes"
+            :key="theme.id"
+            class="theme-item"
+            :class="{ active: themeStore.currentTheme.id === theme.id }"
+            @click="applyTheme(['custom', theme.id])"
+          >
+            <ThemePreviewCard :theme="theme" />
+            <div class="theme-info">
+              <span class="theme-name">{{ theme.name }}</span>
+              <span class="theme-type">{{ getThemeStyle(theme) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="theme-section">
+        <div class="section-header">
+          <h3 class="section-title">自定义主题</h3>
+          <el-button type="primary" link @click="showThemeEditor = true">
+            <el-icon><Plus /></el-icon>
+            创建新主题
+          </el-button>
+        </div>
+        <div class="theme-list">
+          <div
+            v-for="theme in themeStore.customThemes"
+            :key="theme.id"
+            class="theme-item"
+            :class="{ active: themeStore.currentTheme.id === theme.id }"
+            @click="applyTheme(['custom', theme.id])"
+          >
+            <ThemePreviewCard :theme="theme" />
+            <div class="theme-info">
+              <span class="theme-name">{{ theme.name }}</span>
+              <span class="theme-type">{{ getThemeStyle(theme) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
+
+  <!-- 主题编辑器对话框 -->
   <el-dialog v-model="showThemeEditor" title="Create New Theme" width="800px">
     <ThemeEditor
       :initial-theme="null"
@@ -140,6 +121,7 @@ const route = useRoute();
 const themeStore = useThemeStore();
 const settingsDropdownRef = ref();
 const showThemeEditor = ref(false);
+const showThemeDrawer = ref(false);
 
 const goHome = () => {
   if (route.path !== "/") {
@@ -208,20 +190,14 @@ const handleExport = () => {
 };
 
 // 处理主题相关命令
-const handleThemeCommand = (command: string | [ThemePreset, string]) => {
+const applyTheme = (command: [string, string]) => {
   if (Array.isArray(command)) {
-    const [preset, themeId] = command;
-    themeStore.switchTheme(preset, themeId);
-  } else {
-    switch (command) {
-      case "light":
-      case "dark":
-        themeStore.switchTheme(command);
-        break;
-      case "customize":
-        showThemeEditor.value = true;
-        break;
+    const [type, id] = command;
+    if (type === "custom") {
+      themeStore.switchTheme("custom", id);
     }
+  } else if (command === "customize") {
+    showThemeEditor.value = true;
   }
 };
 
@@ -235,19 +211,7 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
 // 当前主题显示计算属性
 const currentThemeDisplay = computed(() => {
   const theme = themeStore.currentTheme;
-  switch (themeStore.themePreset) {
-    case "system":
-      return "跟随系统";
-    case "light":
-      return "明亮模式";
-    case "dark":
-      return "暗黑模式";
-    case "custom":
-      const isOfficial = theme.id.startsWith("official_");
-      return isOfficial ? `${theme.name} (Official)` : theme.name;
-    default:
-      return "默认";
-  }
+  return theme.name;
 });
 
 // 添加获取主题标签样式的函数
@@ -262,6 +226,51 @@ const getThemeTagClass = (theme: Theme) => {
     return "tag-solarized";
   }
   return theme.isDark ? "tag-dark" : "tag-light";
+};
+
+// 获取主题风格描述
+const getThemeStyle = (theme: Theme) => {
+  const styleMap: Record<string, string> = {
+    // 官方主题
+    'light': '素雅清风',
+    'dark': '暗夜星河',
+    'github_light': '晴空雅境',
+    'github_dark': '墨韵沉香',
+    'one_dark': '玄黛之美',
+    'catppuccin_latte': '奶茶物语',
+    'rose_pine_dawn': '曦光微醺',
+    'everforest_light': '青松翠竹',
+    'rainbow': '绚烂霓虹',
+    'high_contrast': '黑白交响',
+    'eye_care': '青玉护目',
+  };
+
+  // 自定义主题名称池
+  const customThemeNames = [
+    '流云幻境', '碧海潮声', '紫气东来', '春日暖阳',
+    '秋水伊人', '月华流转', '山岚雾霭', '江南烟雨',
+    '琉璃光影', '竹影清风', '梅雪飘香', '夏夜星辰'
+  ];
+  
+  // 如果是自定义主题，从名称池中选择一个（基于主题ID的哈希）
+  if (theme.id.startsWith('custom_')) {
+    const index = Math.abs(hashCode(theme.id)) % customThemeNames.length;
+    return customThemeNames[index];
+  }
+  
+  // 返回映射中的名称，如果没有找到则返回主题原名
+  return styleMap[theme.id] || theme.name;
+};
+
+// 简单的字符串哈希函数
+const hashCode = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash;
 };
 </script>
 
@@ -500,15 +509,15 @@ const getThemeTagClass = (theme: Theme) => {
 
 .theme-item {
   height: auto !important;
-  padding: 8px 16px !important;
+  padding: 4px 12px !important;
 }
 
 .custom-theme-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 200px;
-  padding: 4px 0;
+  gap: 8px;
+  min-width: 180px;
+  padding: 2px 0;
 }
 
 .theme-preview-colors {
@@ -527,13 +536,13 @@ const getThemeTagClass = (theme: Theme) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 
 .theme-name {
-  font-weight: 500;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.2;
   color: var(--text-color);
   white-space: nowrap;
   overflow: hidden;
@@ -542,12 +551,13 @@ const getThemeTagClass = (theme: Theme) => {
 
 .theme-type {
   font-size: 11px;
+  line-height: 1.2;
   color: var(--text-secondary);
 }
 
 .theme-tag {
-  font-size: 11px;
-  padding: 2px 6px;
+  font-size: 10px;
+  padding: 1px 6px;
   border-radius: 10px;
   background-color: var(--el-color-primary-light-8);
   color: var(--el-color-primary);
@@ -656,5 +666,118 @@ const getThemeTagClass = (theme: Theme) => {
     position: sticky;
     bottom: 0;
   }
+}
+
+/* 调整主题项样式 */
+.theme-item {
+  height: auto !important;
+  padding: 4px 12px !important;
+}
+
+.custom-theme-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+  padding: 2px 0;
+}
+
+/* 调整预览卡片大小 */
+:deep(.theme-preview-card) {
+  transform: scale(0.7);
+  transform-origin: left center;
+  margin: -8px 0;
+}
+
+.theme-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.theme-name {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.theme-type {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.theme-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  line-height: 1.2;
+}
+
+/* 调整下拉菜单的最大高度 */
+:deep(.el-dropdown-menu) {
+  max-height: 360px;
+  padding: 2px !important;
+}
+
+.theme-drawer-content {
+  padding: 16px;
+}
+
+.theme-section {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 16px;
+}
+
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.theme-item {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-item:hover {
+  background: var(--hover-color);
+}
+
+.theme-item.active {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.theme-info {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.theme-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.theme-type {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 </style>
