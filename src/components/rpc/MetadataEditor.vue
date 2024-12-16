@@ -2,7 +2,7 @@
   <div class="metadata-editor">
     <div class="editor-header">
       <div class="header-content">
-        <el-checkbox 
+        <el-checkbox
           v-if="metadataList.length"
           v-model="isAllSelected"
           :indeterminate="isIndeterminate"
@@ -17,12 +17,10 @@
       </div>
       <div class="header-actions">
         <template v-if="selectedItems.length">
-          <span class="selected-count">{{ selectedItems.length }} selected</span>
-          <el-button 
-            link 
-            type="danger" 
-            @click="removeSelected"
+          <span class="selected-count"
+            >{{ selectedItems.length }} selected</span
           >
+          <el-button link type="danger" @click="removeSelected">
             <el-icon><Delete /></el-icon>
             Delete Selected
           </el-button>
@@ -43,14 +41,14 @@
             v-for="(item, index) in metadataList"
             :key="item.id"
             class="metadata-item"
-            :class="{ 
+            :class="{
               'is-disabled': !item.enabled,
-              'is-selected': selectedItems.includes(item.id)
+              'is-selected': selectedItems.includes(item.id),
             }"
             @click="toggleSelect(item)"
           >
             <div class="item-status">
-              <el-checkbox 
+              <el-checkbox
                 v-model="item.selected"
                 @change="handleItemSelect"
                 @click.stop
@@ -74,11 +72,7 @@
               :prefix-icon="Edit"
             />
             <div class="item-actions">
-              <el-button 
-                link
-                type="danger" 
-                @click="removeMetadata(index)"
-              >
+              <el-button link type="danger" @click="removeMetadata(index)">
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>
@@ -86,7 +80,7 @@
         </TransitionGroup>
       </el-scrollbar>
     </div>
-    
+
     <div v-else class="empty-state">
       <div class="empty-content">
         <h3>No Headers</h3>
@@ -141,9 +135,9 @@ watch(
 );
 
 const addMetadata = () => {
-  metadataList.value.push({ 
-    key: "", 
-    value: "", 
+  metadataList.value.push({
+    key: "",
+    value: "",
     enabled: true,
     id: generateId(),
   });
@@ -152,24 +146,6 @@ const addMetadata = () => {
 const removeMetadata = (index: number) => {
   metadataList.value.splice(index, 1);
   emitChange();
-};
-
-const clearAll = async () => {
-  try {
-    await ElMessageBox.confirm(
-      'Are you sure you want to clear all metadata?',
-      'Warning',
-      {
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-        type: 'warning',
-      }
-    );
-    metadataList.value = [];
-    emitChange();
-  } catch {
-    // User cancelled
-  }
 };
 
 const emitChange = () => {
@@ -182,30 +158,30 @@ const emitChange = () => {
   emit("update:metadata", metadata);
 };
 
-const activeCount = computed(() => 
-  metadataList.value.filter(item => item.enabled).length
+const activeCount = computed(
+  () => metadataList.value.filter((item) => item.enabled).length
 );
 
 const isAllSelected = ref(false);
 const isIndeterminate = ref(false);
 
-const selectedItems = computed(() => 
-  metadataList.value
-    .filter(item => item.selected)
-    .map(item => item.id)
+const selectedItems = computed(() =>
+  metadataList.value.filter((item) => item.selected).map((item) => item.id)
 );
 
 const handleSelectAll = (val: boolean | string | number) => {
-  metadataList.value.forEach(item => {
+  metadataList.value.forEach((item) => {
     item.selected = Boolean(val);
   });
   isIndeterminate.value = false;
 };
 
 const handleItemSelect = () => {
-  const checkedCount = metadataList.value.filter(item => item.selected).length;
+  const checkedCount = metadataList.value.filter(
+    (item) => item.selected
+  ).length;
   const totalCount = metadataList.value.length;
-  
+
   isAllSelected.value = checkedCount === totalCount;
   isIndeterminate.value = checkedCount > 0 && checkedCount < totalCount;
 };
@@ -219,15 +195,15 @@ const removeSelected = async () => {
   try {
     await ElMessageBox.confirm(
       `Are you sure you want to delete ${selectedItems.value.length} selected items?`,
-      'Warning',
+      "Warning",
       {
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-        type: 'warning',
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        type: "warning",
       }
     );
     metadataList.value = metadataList.value.filter(
-      item => !selectedItems.value.includes(item.id)
+      (item) => !selectedItems.value.includes(item.id)
     );
     emitChange();
   } catch {

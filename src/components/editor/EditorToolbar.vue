@@ -67,7 +67,6 @@ import {
   DocumentCopy as Copy,
 } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
-import type { ThemePreset } from "../../types/theme";
 
 const props = defineProps<{
   modelValue?: string;
