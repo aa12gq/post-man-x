@@ -283,67 +283,123 @@ const handleDuplicate = (theme: Theme) => {
 
 .theme-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+  justify-content: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .theme-item {
+  position: relative;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
+  background: var(--bg-color);
 }
 
 .theme-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 12px 0 var(--shadow-color);
+  box-shadow: 0 4px 16px 0 var(--shadow-color);
 }
 
 .theme-item.active {
   border-color: var(--el-color-primary);
+  border-width: 2px;
 }
 
 .theme-preview {
   cursor: pointer;
-  padding: 16px;
-}
-
-.color-block {
-  height: 40px;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
 }
 
 .theme-info {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 4px;
+  text-align: center;
   align-items: center;
+  width: 100%;
 }
 
 .theme-name {
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .theme-type {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.theme-type::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--el-color-primary);
 }
 
 .theme-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 8px;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
   border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
 }
 
 .theme-actions .el-button {
-  padding: 4px 8px;
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
-.theme-actions .el-icon {
-  margin-right: 4px;
+.theme-actions .el-button .el-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.theme-item-official::before {
+  content: "OFFICIAL";
+  position: absolute;
+  top: 0;
+  right: 16px;
+  font-size: 10px;
+  padding: 3px 12px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--el-color-primary-light-8) 0%,
+    var(--el-color-primary-light-7) 100%
+  );
+  color: var(--el-color-primary-dark-2);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 1;
+  border: 1px solid var(--el-color-primary-light-5);
+  border-top: none;
+  box-shadow: 0 2px 4px rgba(var(--el-color-primary-rgb), 0.1);
+  text-align: center;
+  min-width: 60px;
+}
+
+.theme-item-official::after {
+  display: none;
 }
 
 .import-theme {
@@ -352,22 +408,6 @@ const handleDuplicate = (theme: Theme) => {
 
 .themes-section {
   margin-bottom: 32px;
-}
-
-.theme-item-official {
-  position: relative;
-}
-
-.theme-item-official::after {
-  content: "Official";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background-color: var(--el-color-primary);
-  color: white;
 }
 
 .theme-tag {
@@ -413,26 +453,9 @@ const handleDuplicate = (theme: Theme) => {
   border: 1px solid transparent;
 }
 
-/* 调整主题卡片的布局 */
-.theme-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.theme-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.theme-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.theme-type {
-  font-size: 12px;
-  color: var(--text-secondary);
+:deep(.theme-preview-card) {
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
 }
 </style>
