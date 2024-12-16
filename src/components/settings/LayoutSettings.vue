@@ -608,7 +608,7 @@ const resetLayout = () => {
   updatePreview();
 };
 
-// 修改关闭处理方法
+// 关闭处理方法
 const handleClose = () => {
   // 出确认对话框
   ElMessageBox.confirm("确定要取消布局设置吗？未保存的更改将会丢失。", "提示", {
@@ -627,7 +627,7 @@ const handleClose = () => {
     });
 };
 
-// 修改应用布局方法
+// 应用布局方法
 const handleApply = () => {
   applySettings();
   // 确保设置应用后再关闭弹窗

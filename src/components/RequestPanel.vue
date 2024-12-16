@@ -423,7 +423,7 @@ const activeView = ref<
   | null
 >((localStorage.getItem("activeView") as any) || null);
 
-// 修改 toggleView 函数
+//  toggleView 函数
 const toggleView = (view: string) => {
   if (activeView.value === view) {
     // 如果点击当前活动的视图，切换边栏的展开/收起状态

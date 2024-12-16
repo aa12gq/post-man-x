@@ -223,15 +223,15 @@ const handleDuplicate = (theme: Theme) => {
 
 .theme-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
   margin-bottom: 24px;
 }
 
 .theme-item {
   position: relative;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   transition: all 0.3s ease;
   background: var(--bg-color);
@@ -249,17 +249,17 @@ const handleDuplicate = (theme: Theme) => {
 
 .theme-preview {
   cursor: pointer;
-  padding: 24px 20px 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
 }
 
 .theme-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   padding: 0 4px;
   text-align: center;
   align-items: center;
@@ -267,18 +267,14 @@ const handleDuplicate = (theme: Theme) => {
 }
 
 .theme-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .theme-type {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
 }
 
 .theme-type::before {
@@ -293,20 +289,20 @@ const handleDuplicate = (theme: Theme) => {
 .theme-actions {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 8px 12px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-secondary);
 }
 
 .theme-actions .el-button {
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 4px 8px;
+  font-size: 12px;
 }
 
 .theme-actions .el-button .el-icon {
-  margin-right: 6px;
-  font-size: 14px;
+  margin-right: 4px;
+  font-size: 12px;
 }
 
 .theme-item-official::before {
@@ -371,8 +367,8 @@ const handleDuplicate = (theme: Theme) => {
 /* 调整主题列表布局 */
 .theme-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
   margin-bottom: 24px;
 }
 
@@ -427,7 +423,7 @@ const handleDuplicate = (theme: Theme) => {
 
 :deep(.theme-preview-card) {
   width: 100%;
-  max-width: 200px;
+  max-width: 160px;
   margin: 0 auto;
 }
 </style>

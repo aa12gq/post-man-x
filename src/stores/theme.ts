@@ -53,6 +53,8 @@ const defaultDarkTheme: Theme = {
   },
 };
 
+// 添加在 defaultDarkTheme 后面
+
 // Element Plus 主题变量映射
 const elementPlusVariables = {
   primary: "--el-color-primary",
