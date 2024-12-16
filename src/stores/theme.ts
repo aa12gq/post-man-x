@@ -26,6 +26,9 @@ const defaultLightTheme: Theme = {
     warning: "#e6a23c",
     danger: "#f56c6c",
     info: "#909399",
+    selected: 'var(--el-color-primary-light-9)',
+    'selected-hover': 'var(--el-color-primary-light-8)',
+    'border-active': 'var(--el-color-primary-light-5)',
   },
 };
 
@@ -50,6 +53,9 @@ const defaultDarkTheme: Theme = {
     warning: "#e6a23c",
     danger: "#f56c6c",
     info: "#909399",
+    selected: 'rgba(64, 158, 255, 0.1)',
+    'selected-hover': 'rgba(64, 158, 255, 0.15)',
+    'border-active': 'rgba(64, 158, 255, 0.2)',
   },
 };
 

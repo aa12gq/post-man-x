@@ -21,6 +21,9 @@ const catppuccinLatteTheme: Theme = {
     warning: "#df8e1d",
     danger: "#d20f39",
     info: "#209fb5",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -45,6 +48,9 @@ const rosePineTheme: Theme = {
     warning: "#ea9d34",
     danger: "#b4637a",
     info: "#286983",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -69,6 +75,9 @@ const everforestLightTheme: Theme = {
     warning: "#dfa000",
     danger: "#f85552",
     info: "#35a77c",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -93,6 +102,9 @@ const githubLightTheme: Theme = {
     warning: "#9a6700",
     danger: "#cf222e",
     info: "#0969da",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -117,6 +129,9 @@ const githubDarkTheme: Theme = {
     warning: "#d29922",
     danger: "#f85149",
     info: "#58a6ff",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -141,6 +156,9 @@ const oneDarkTheme: Theme = {
     warning: "#e5c07b",
     danger: "#e06c75",
     info: "#56b6c2",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -172,6 +190,9 @@ const rainbowTheme: Theme = {
     rainbow5: "#00ffff",
     rainbow6: "#0000ff",
     rainbow7: "#ff00ff",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -197,6 +218,9 @@ const highContrastTheme: Theme = {
     warning: "#ffff00",
     danger: "#ff0000",
     info: "#00ffff",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 
@@ -222,6 +246,9 @@ const eyeCareTheme: Theme = {
     warning: "#8c7355",
     danger: "#8c5a5a",
     info: "#557b8c",
+    selected: "var(--el-color-primary-light-9)",
+    "selected-hover": "var(--el-color-primary-light-8)",
+    "border-active": "var(--el-color-primary-light-5)",
   },
 };
 

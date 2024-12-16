@@ -22,6 +22,9 @@ export interface ThemeColors {
   rainbow5?: string;
   rainbow6?: string;
   rainbow7?: string;
+  selected: string;
+  'selected-hover': string;
+  'border-active': string;
 }
 
 export interface Theme {
