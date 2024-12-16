@@ -53,7 +53,7 @@
 ```vue
 <style scoped>
 .my-component {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   color: var(--text-color);
   border: 1px solid var(--border-color);
 }

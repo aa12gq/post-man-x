@@ -110,18 +110,35 @@ interface ThemeOption {
 }
 
 const themeOptions = computed<ThemeOption[]>(() => {
-  const options: ThemeOption[] = [
-    { label: '跟随系统', value: 'system' },
-    { label: '明亮', value: 'light' },
-    { label: '暗黑', value: 'dark' },
-  ];
+  const options: ThemeOption[] = [];
 
-  if (themeStore.allCustomThemes.length > 0) {
+  // 官方主题组
+  const officialThemes = themeStore.allCustomThemes.filter(theme => 
+    theme.id.startsWith('official_')
+  );
+  
+  if (officialThemes.length > 0) {
     options.push({
-      label: '自定义主题',
-      value: 'custom-group',
-      children: themeStore.allCustomThemes.map(theme => ({
-        label: theme.id.startsWith('official_') ? `${theme.name} (Official)` : theme.name,
+      label: "官方主题",
+      value: "official-themes",
+      children: officialThemes.map((theme) => ({
+        label: theme.name,
+        value: `custom:${theme.id}`,
+      })),
+    });
+  }
+
+  // 自定义主题组
+  const customThemes = themeStore.allCustomThemes.filter(theme => 
+    !theme.id.startsWith('official_')
+  );
+  
+  if (customThemes.length > 0) {
+    options.push({
+      label: "自定义主题", 
+      value: "custom-themes",
+      children: customThemes.map((theme) => ({
+        label: theme.name,
         value: `custom:${theme.id}`,
       })),
     });
@@ -131,20 +148,12 @@ const themeOptions = computed<ThemeOption[]>(() => {
 });
 
 const handleThemeChange = (value: string) => {
-  if (value.startsWith('custom:')) {
-    const themeId = value.split(':')[1];
-    themeStore.switchTheme('custom', themeId);
-  } else {
-    themeStore.switchTheme(value as ThemePreset);
-  }
+  const themeId = value.split(":")[1];
+  themeStore.switchTheme("custom", themeId);
 };
 
 const currentThemeValue = computed(() => {
-  const { themePreset, currentTheme } = themeStore;
-  if (themePreset === 'custom') {
-    return `custom:${currentTheme.id}`;
-  }
-  return themePreset;
+  return `custom:${themeStore.currentTheme.id}`;
 });
 </script>
 

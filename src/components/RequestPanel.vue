@@ -23,7 +23,7 @@
         :class="{
           'is-collapsed': layoutStore.settings.isCollapsed,
           'is-collapsible': layoutStore.settings.isCollapsible,
-          'position-right': layoutStore.settings.sidebarPosition === 'right'
+          'position-right': layoutStore.settings.sidebarPosition === 'right',
         }"
         :style="{
           width: layoutStore.settings.isCollapsed
@@ -113,7 +113,9 @@
           <div
             class="collections-sidebar"
             :class="{
-              'is-collapsed': layoutStore.settings.isCollapsed || activeView !== 'collections',
+              'is-collapsed':
+                layoutStore.settings.isCollapsed ||
+                activeView !== 'collections',
               'is-hidden': activeView !== 'collections',
             }"
           >
@@ -156,7 +158,8 @@
           <div
             class="collections-sidebar"
             :class="{
-              'is-collapsed': layoutStore.settings.isCollapsed || activeView !== 'apis',
+              'is-collapsed':
+                layoutStore.settings.isCollapsed || activeView !== 'apis',
               'is-hidden': activeView !== 'apis',
             }"
           >
@@ -177,7 +180,7 @@
         :class="{
           'tabs-left': layoutStore.settings.tabsPosition === 'left',
           'tabs-bottom': layoutStore.settings.tabsPosition === 'bottom',
-          'no-sidebar': !layoutStore.settings.showSidebar
+          'no-sidebar': !layoutStore.settings.showSidebar,
         }"
       >
         <!-- 标签页管理器 -->
@@ -363,7 +366,7 @@ const removeTab = async (targetId: string) => {
   // 如果关闭的是当前标签页,需要激活其他标签页
   if (activeTab.value === targetId) {
     if (tabs.value.length === 1) {
-      // 如果只有个标签页,清空存活标签页
+      // 如果只有个标签页,清空���活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
       // 如果闭的是最后一个标签页,激活前一个标签页
@@ -783,6 +786,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: var(--background);
+  border: 1px solid var(--border);
 }
 
 /* 经典布局 */
@@ -792,7 +797,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   }
 
   .left-section {
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--border);
   }
 
   .main-content {
@@ -809,7 +814,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   }
 
   .left-section {
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--border);
   }
 
   .main-content {
@@ -821,7 +826,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
       .tab-manager {
         width: 200px;
-        border-right: 1px solid var(--border-color);
+        border-right: 1px solid var(--border);
       }
 
       .request-response-wrapper {
@@ -867,7 +872,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
   .tab-manager {
     width: 200px;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--border);
   }
 }
 
@@ -888,8 +893,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
     position: absolute;
     z-index: 100;
     height: 100%;
-    background-color: var(--bg-color);
-    box-shadow: var(--shadow-base);
+    background-color: var(--background);
+    box-shadow: var(--shadow);
   }
 
   .layout-modern .tabs-left {
@@ -906,7 +911,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 /* 主要内容区域布局 */
@@ -923,8 +928,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   flex-direction: column;
   min-width: 48px; /* 最小宽度改为活栏宽度 */
-  border-right: 1px solid var(--border-color);
-  background-color: var(--bg-color);
+  border-right: 1px solid var(--border);
+  background-color: var(--background);
   flex-shrink: 0;
   transition: width 0.3s;
   transition: background-color 0.2s;
@@ -954,8 +959,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  background-color: var(--bg-color);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
 }
 
 .new-button {
@@ -966,11 +971,11 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--text-color);
+  color: var(--text);
   font-size: 13px;
 
   &:hover {
-    background-color: var(--hover-color);
+    background-color: var(--background-light);
   }
 
   .el-icon {
@@ -991,8 +996,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .activity-bar {
   width: 48px;
   height: 100%;
-  background-color: var(--header-bg);
-  border-right: 1px solid var(--border-color);
+  background-color: var(--header);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1009,7 +1014,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-color);
+  color: var(--text);
   position: relative;
 }
 
@@ -1038,8 +1043,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 /* Collections 边栏样式 */
 .collections-sidebar {
   position: relative;
-  background-color: var(--bg-color);
-  border-right: 1px solid var(--border-color);
+  background-color: var(--background);
+  border-right: 1px solid var(--border);
   transition: none;
   overflow: hidden;
   flex-shrink: 0;
@@ -1058,8 +1063,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
 .sidebar-header {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--header);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1111,8 +1116,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   transform: translateY(-50%);
   width: 24px;
   height: 48px;
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--background);
+  border: 1px solid var(--border);
   border-left: none;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
@@ -1140,8 +1145,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
 .tabs-container {
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
 }
 
 .request-response-wrapper {
@@ -1157,7 +1162,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-content {
@@ -1172,7 +1177,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-form.expanded {
@@ -1216,19 +1221,19 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 }
 
 :deep(.el-tabs--border-card) {
-  background-color: var(--bg-color);
-  border-color: var(--border-color);
+  background-color: var(--background);
+  border-color: var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header) {
-  background-color: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header);
+  border-bottom: 1px solid var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--bg-color);
-  border-right-color: var(--border-color);
-  border-left-color: var(--border-color);
+  background-color: var(--background);
+  border-right-color: var(--border);
+  border-left-color: var(--border);
 }
 
 .request-response-panel {
@@ -1243,8 +1248,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   flex-direction: column;
   min-height: 40px;
-  background-color: var(--bg-color);
-  border-top: 1px solid var(--border-color);
+  background-color: var(--background);
+  border-top: 1px solid var(--border);
   transition: none;
   position: relative;
   z-index: 1;
@@ -1257,7 +1262,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 /* 分线样式 */
 .resizer {
   height: 4px;
-  background-color: var(--border-color);
+  background-color: var(--border);
   cursor: row-resize;
   transition: background-color 0.2s;
   position: absolute;
@@ -1289,14 +1294,14 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
 .sidebar-header {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--header);
 }
 
 .sidebar-title {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--text);
 }
 
 .sidebar-content {
@@ -1321,29 +1326,29 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 }
 
 :deep(.el-icon) {
-  color: var(--text-color);
+  color: var(--text);
   font-size: 16px;
 }
 
 :deep(.el-tabs--border-card) {
-  background-color: var(--bg-color);
-  border-color: var(--border-color);
+  background-color: var(--background);
+  border-color: var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header) {
-  background-color: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header);
+  border-bottom: 1px solid var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--bg-color);
-  border-right-color: var(--border-color);
-  border-left-color: var(--border-color);
+  background-color: var(--background);
+  border-right-color: var(--border);
+  border-left-color: var(--border);
 }
 
 :deep(.el-tree) {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--background);
+  color: var(--text);
 }
 
 .sidebar-resizer {
@@ -1387,7 +1392,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .resize-handle-line {
   width: 100%;
   height: 2px;
-  background-color: var(--border-color);
+  background-color: var(--border);
   transition: background-color 0.2s;
 }
 
@@ -1399,12 +1404,12 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: var(--bg-color);
-  border: 2px solid var(--border-color);
+  background-color: var(--background);
+  border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-color);
+  color: var(--text);
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -1443,14 +1448,14 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item) {
   border: none;
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--border);
   height: 40px;
   line-height: 40px;
   font-size: 13px;
 }
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 2px solid var(--el-color-primary);
 }
 
@@ -1463,7 +1468,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .activity-divider {
   height: 1px;
   margin: 8px 0;
-  background-color: var(--border-color);
+  background-color: var(--border);
 }
 
 .request-type-dialog {
@@ -1486,8 +1491,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--background);
+  border: 1px solid var(--border);
 
   &:hover {
     background-color: var(--el-color-primary-light-9);
@@ -1511,7 +1516,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   padding: 20px;
 }
 
@@ -1548,7 +1553,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   width: 32px;
   height: 1px;
   margin: 8px auto;
-  background-color: var(--border-color);
+  background-color: var(--border);
 }
 
 /* 底部图靠下对齐 */
@@ -1574,7 +1579,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--header-bg);
+  background-color: var(--header);
 }
 
 .activity-item:first-child:hover {
@@ -1582,14 +1587,14 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 }
 
 .request-panel {
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--background);
+  border: 1px solid var(--border);
 }
 
 .panel-header {
-  background-color: var(--header-bg);
-  color: var(--text-color);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
 }
 
 .sidebar-resizer {
@@ -1630,8 +1635,8 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   transform: translateY(-50%);
   width: 24px;
   height: 48px;
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--background);
+  border: 1px solid var(--border);
   border-left: none;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
@@ -1665,7 +1670,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .left-section.position-right {
   order: 2;
   border-right: none;
-  border-left: 1px solid var(--border-color);
+  border-left: 1px solid var(--border);
 }
 
 /* 主内容区域在没有侧边栏时的样式 */
@@ -1692,7 +1697,7 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 
 /* 显示边框样式 */
 .show-borders {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 /* 显示阴影样式 */

@@ -179,7 +179,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 12px;
   border-radius: 4px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
 }
 
@@ -211,7 +211,7 @@ onUnmounted(() => {
 .current-keys {
   margin: 16px 0;
   padding: 8px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-family: monospace;

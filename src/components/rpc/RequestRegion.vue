@@ -124,7 +124,7 @@ import AuthorizationManager from "../auth/AuthorizationManager.vue";
 import MetadataEditor from "./MetadataEditor.vue";
 import ResponseViewer from "../response/ResponseViewer.vue";
 import { ArrowUp, Folder, Link, Document } from "@element-plus/icons-vue";
-import EditorConfig from '../editor/EditorConfig.vue';
+import EditorConfig from "../editor/EditorConfig.vue";
 
 const emit = defineEmits(["update:unsaved", "save", "name-change"]);
 
@@ -633,7 +633,7 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .content-layout {
@@ -648,8 +648,8 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   min-width: 48px;
-  border-right: 1px solid var(--border-color);
-  background-color: var(--bg-color);
+  border-right: 1px solid var(--border);
+  background-color: var(--background);
   flex-shrink: 0;
   transition: width 0.3s;
 }
@@ -667,7 +667,7 @@ const cancelEditing = () => {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -736,7 +736,7 @@ const cancelEditing = () => {
 
 .collections-sidebar {
   position: relative;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-right: 1px solid var(--border-color);
   overflow: hidden;
   flex-shrink: 0;
@@ -767,7 +767,7 @@ const cancelEditing = () => {
   z-index: 1000;
   width: 24px;
   height: 48px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   border-left: none;
   border-radius: 0 4px 4px 0;
@@ -788,7 +788,7 @@ const cancelEditing = () => {
 .tabs-container {
   flex-shrink: 0;
   border-bottom: 1px solid var(--border-color);
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-response-wrapper {
@@ -804,7 +804,7 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-section {
@@ -828,7 +828,7 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .request-response-panel {
@@ -871,19 +871,19 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tabs--border-card) {
-  background-color: var(--bg-color);
-  border-color: var(--border-color);
+  background-color: var(--background);
+  border-color: var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header) {
-  background-color: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header);
+  border-bottom: 1px solid var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--bg-color);
-  border-right-color: var(--border-color);
-  border-left-color: var(--border-color);
+  background-color: var(--background);
+  border-right-color: var(--border);
+  border-left-color: var(--border);
 }
 
 .response-container {
@@ -896,7 +896,7 @@ const cancelEditing = () => {
 
 .resizer {
   height: 4px;
-  background-color: var(--border-color);
+  background-color: var(--border);
   cursor: row-resize;
   transition: background-color 0.2s;
   position: absolute;
@@ -954,8 +954,8 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tree) {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--background);
+  color: var(--text);
 }
 
 .sidebar-resizer {
@@ -994,7 +994,7 @@ const cancelEditing = () => {
 .resize-handle-line {
   width: 100%;
   height: 2px;
-  background-color: var(--border-color);
+  background-color: var(--border);
   transition: background-color 0.2s;
 }
 
@@ -1006,12 +1006,12 @@ const cancelEditing = () => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: var(--bg-color);
-  border: 2px solid var(--border-color);
+  background-color: var(--background);
+  border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-color);
+  color: var(--text);
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -1060,7 +1060,7 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border-bottom: 2px solid var(--el-color-primary);
 }
 
@@ -1095,7 +1095,7 @@ const cancelEditing = () => {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   &:hover {
     background-color: var(--el-color-primary-light-9);
@@ -1109,7 +1109,7 @@ const cancelEditing = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   padding: 20px;
 }
 
@@ -1119,9 +1119,9 @@ const cancelEditing = () => {
 
 .breadcrumb-container {
   padding: 8px 16px;
-  background-color: var(--bg-color);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 :deep(.el-breadcrumb__item) {
@@ -1133,16 +1133,16 @@ const cancelEditing = () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--text-color);
+  color: var(--text);
 }
 
 :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: var(--text-color);
+  color: var(--text);
   font-weight: 500;
 }
 
 :deep(.el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner) {
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
 }
 
 :deep(.el-icon) {
@@ -1197,18 +1197,18 @@ const cancelEditing = () => {
 }
 
 .request-region {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--background);
+  color: var(--text);
 }
 
 .request-header {
-  background-color: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--header);
+  border-bottom: 1px solid var(--border);
 }
 
 .invoke-button {
-  background-color: var(--primary-color);
-  color: #fff;
+  background-color: var(--primary);
+  color: var(--background);
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
@@ -1221,33 +1221,33 @@ const cancelEditing = () => {
 }
 
 .invoke-button:disabled {
-  background-color: var(--text-color-disabled);
+  background-color: var(--text-secondary);
   cursor: not-allowed;
 }
 
 .request-body {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  background-color: var(--bg-color-light);
+  background-color: var(--background-light);
 }
 
 .response-panel {
-  background-color: var(--bg-color-light);
-  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  border: 1px solid var(--border);
   border-radius: 4px;
 }
 
 .response-header {
-  background-color: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-color);
+  background-color: var(--header);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
 }
 
 .status-success {
-  color: var(--success-color);
+  color: var(--success);
 }
 
 .status-error {
-  color: var(--danger-color);
+  color: var(--danger);
 }
 </style>

@@ -1,5 +1,5 @@
 /* Element Plus 暗色主题覆盖 */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --el-bg-color: var(--bg-color);
   --el-text-color-primary: var(--text-color);
   --el-border-color: var(--border-color);
@@ -14,7 +14,7 @@
 
   /* Select 下拉框 */
   .el-select-dropdown {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     border-color: var(--border-color);
   }
 
@@ -32,7 +32,7 @@
 
   /* Input 输入框 */
   .el-input__wrapper {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     border-color: var(--border-color);
   }
 
@@ -44,8 +44,10 @@
   }
 
   /* Button 按钮 */
-  .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(.el-button--danger) {
-    background-color: var(--bg-color);
+  .el-button:not(.el-button--primary):not(.el-button--success):not(
+      .el-button--warning
+    ):not(.el-button--danger) {
+    background-color: var(--background);
     border-color: var(--border-color);
     color: var(--text-color);
     &:hover {
@@ -55,7 +57,7 @@
 
   /* Tabs 标签页 */
   .el-tabs--border-card {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     border-color: var(--border-color);
   }
 
@@ -73,7 +75,7 @@
 
   /* Dialog 对话框 */
   .el-dialog {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     .el-dialog__header {
       background-color: var(--header-bg);
     }
@@ -87,7 +89,7 @@
 
   /* Drawer 抽屉 */
   .el-drawer {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     border-color: var(--border-color);
   }
 
@@ -97,7 +99,7 @@
   }
 
   .el-drawer__body {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     color: var(--text-color);
   }
 
@@ -108,7 +110,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    background-color: var(--bg-color);
+    background-color: var(--background);
   }
 
   ::-webkit-scrollbar-thumb {
@@ -118,4 +120,4 @@
       background-color: rgba(144, 147, 153, 0.5);
     }
   }
-} 
+}

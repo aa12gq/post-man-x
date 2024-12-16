@@ -5,9 +5,9 @@
     <!-- 主题预设选择 -->
     <div class="theme-presets">
       <el-radio-group v-model="currentPreset" @change="handlePresetChange">
-        <el-radio-button value="system">跟随系统</el-radio-button>
+        <!-- <el-radio-button value="system">跟随系统</el-radio-button>
         <el-radio-button value="light">明亮</el-radio-button>
-        <el-radio-button value="dark">暗黑</el-radio-button>
+        <el-radio-button value="dark">暗黑</el-radio-button> -->
         <el-radio-button
           value="custom"
           :disabled="!themeStore.allCustomThemes.length"

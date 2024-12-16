@@ -299,7 +299,7 @@ onMounted(() => {
 <style scoped>
 .rpc-toolbar {
   padding: 12px;
-  border-bottom: 1px solid var(--el-border-color-light);
+  border-bottom: 1px solid var(--border);
 }
 
 .toolbar-section {
@@ -378,15 +378,15 @@ onMounted(() => {
 .select-empty {
   padding: 8px;
   text-align: center;
-  color: var(--el-text-color-secondary);
+  color: var(--text-secondary);
 }
 
 .select-footer {
   padding: 8px;
-  border: 1px solid var(--el-border-color-light);
+  border: 1px solid var(--border);
   border-top: none;
   text-align: center;
-  background-color: var(--bg-color);
+  background-color: var(--background);
 }
 
 .refresh-icon.is-loading {
@@ -406,7 +406,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--el-text-color-primary);
+  color: var(--text);
 }
 
 .service-label .el-icon {
@@ -501,14 +501,14 @@ onMounted(() => {
   .select-empty {
     padding: 8px;
     text-align: center;
-    color: var(--el-text-color-secondary);
+    color: var(--text-secondary);
   }
 
   .select-footer {
     padding: 8px;
-    border-top: 1px solid var(--el-border-color-light);
+    border-top: 1px solid var(--border);
     text-align: center;
-    background-color: var(--bg-color);
+    background-color: var(--background);
   }
 
   .refresh-button {
@@ -528,7 +528,7 @@ onMounted(() => {
       position: relative;
       display: block;
       height: 40px;
-      border-top: 1px solid var(--el-border-color-light);
+      border-top: 1px solid var(--border);
     }
   }
 
@@ -538,8 +538,8 @@ onMounted(() => {
     left: 0;
     right: 0;
     padding: 8px;
-    background-color: var(--bg-color);
-    border-top: 1px solid var(--el-border-color-light);
+    background-color: var(--background);
+    border-top: 1px solid var(--border);
     text-align: center;
   }
 
@@ -562,8 +562,8 @@ onMounted(() => {
     left: 0;
     right: 0;
     padding: 8px;
-    background-color: var(--bg-color);
-    border-top: 1px solid var(--el-border-color-light);
+    background-color: var(--background);
+    border-top: 1px solid var(--border);
     text-align: center;
     z-index: 1;
   }
