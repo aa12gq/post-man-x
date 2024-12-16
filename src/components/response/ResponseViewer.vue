@@ -27,14 +27,6 @@
             <ArrowUp />
           </el-icon>
         </el-button>
-        <el-button size="small" @click="copyResponse">
-          <el-icon><DocumentCopy /></el-icon>
-          Copy
-        </el-button>
-        <el-button size="small" @click="$emit('clear')">
-          <el-icon><Delete /></el-icon>
-          Clear
-        </el-button>
       </div>
     </div>
 
@@ -75,11 +67,20 @@
         <!-- Metadata 选项卡 -->
         <el-tab-pane label="Metadata" name="headers">
           <div class="tab-content">
-            <div v-for="(values, key) in headers" :key="key" class="header-item">
+            <div
+              v-for="(values, key) in headers"
+              :key="key"
+              class="header-item"
+            >
               <span class="header-name">{{ key }}:</span>
-              <span class="header-value">{{ Array.isArray(values) ? values.join(', ') : values }}</span>
+              <span class="header-value">{{
+                Array.isArray(values) ? values.join(", ") : values
+              }}</span>
             </div>
-            <div v-if="Object.keys(headers).length === 0" class="empty-response">
+            <div
+              v-if="Object.keys(headers).length === 0"
+              class="empty-response"
+            >
               No metadata available
             </div>
           </div>
@@ -88,11 +89,20 @@
         <!-- Trailers 选项卡 -->
         <el-tab-pane label="Trailers" name="trailers">
           <div class="tab-content">
-            <div v-for="(values, key) in trailers" :key="key" class="header-item">
+            <div
+              v-for="(values, key) in trailers"
+              :key="key"
+              class="header-item"
+            >
               <span class="header-name">{{ key }}:</span>
-              <span class="header-value">{{ Array.isArray(values) ? values.join(', ') : values }}</span>
+              <span class="header-value">{{
+                Array.isArray(values) ? values.join(", ") : values
+              }}</span>
             </div>
-            <div v-if="Object.keys(trailers).length === 0" class="empty-response">
+            <div
+              v-if="Object.keys(trailers).length === 0"
+              class="empty-response"
+            >
               No trailers available
             </div>
           </div>
@@ -104,8 +114,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { DocumentCopy, Delete, ArrowUp } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import { ArrowUp } from "@element-plus/icons-vue";
 import CodeEditor from "../CodeEditor.vue";
 
 const props = defineProps<{
@@ -121,15 +130,6 @@ const props = defineProps<{
 const activeTab = ref(
   props.response ? "body" : props.debugLogs ? "debug" : "body"
 );
-
-const copyResponse = async () => {
-  try {
-    await navigator.clipboard.writeText(props.response);
-    ElMessage.success("Response copied to clipboard");
-  } catch (err) {
-    ElMessage.error("Failed to copy response");
-  }
-};
 
 const isSuccess = computed(() => {
   if (!props.status) return false;

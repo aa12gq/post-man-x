@@ -13,7 +13,9 @@
       <CodeEditor
         v-model="localMessage"
         language="json"
+        editor-id="message-editor"
         :read-only="false"
+        :hideToolbar="false"
         @change="handleChange"
       />
     </div>
@@ -21,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import CodeEditor from '../CodeEditor.vue';
 
 const props = defineProps<{
@@ -48,6 +50,24 @@ watch(() => props.message, (newValue) => {
     : newValue || '';
 }, { deep: true });
 
+// 确保初始数据正确格式化
+onMounted(() => {
+  try {
+    if (typeof props.message === 'object') {
+      localMessage.value = JSON.stringify(props.message, null, 2);
+    } else if (props.message) {
+      // 尝试解析并格式化 JSON 字符串
+      const parsed = JSON.parse(props.message);
+      localMessage.value = JSON.stringify(parsed, null, 2);
+    } else {
+      localMessage.value = '{\n  \n}';
+    }
+  } catch (error) {
+    console.warn('Failed to parse message:', error);
+    localMessage.value = props.message || '{\n  \n}';
+  }
+});
+
 const handleChange = (value: string) => {
   try {
     const parsed = JSON.parse(value);
@@ -72,6 +92,8 @@ const handleChange = (value: string) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
 }
 
 .editor-toolbar {
@@ -82,7 +104,18 @@ const handleChange = (value: string) => {
   border-bottom: 1px solid var(--border-color);
 }
 
+:deep(.code-editor-wrapper) {
+  height: 100%;
+  min-height: 200px;
+}
+
+:deep(.monaco-editor-container) {
+  height: 100% !important;
+  min-height: 200px;
+}
+
 :deep(.monaco-editor) {
+  height: 100% !important;
   flex: 1;
 }
 </style>

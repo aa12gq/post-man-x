@@ -168,6 +168,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { List, Operation, Cpu, Link, Loading } from "@element-plus/icons-vue";
 import type { RpcService } from "../../services/RpcService";
+import type { CascaderValue } from 'element-plus';
 
 const props = defineProps<{
   url: string;
@@ -228,8 +229,8 @@ const handleMethodChange = (value: string) => {
   emit("method-change", value);
 };
 
-const handleCascaderChange = (value: string[]) => {
-  if (value.length === 2) {
+const handleCascaderChange = (value: CascaderValue) => {
+  if (Array.isArray(value) && value.length === 2) {
     const fullMethodName = `${value[0]}.${value[1]}`;
     selectedMethod.value = fullMethodName;
     emit("method-change", fullMethodName);

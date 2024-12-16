@@ -1,48 +1,80 @@
 <template>
-  <el-dropdown trigger="click" @command="handleSettingCommand">
-    <el-button text>
-      <el-icon :size="18"><Setting /></el-icon>
+  <el-dropdown trigger="click" @command="handleCommand">
+    <el-button class="toolbar-btn">
+      <el-icon><Setting /></el-icon>
+      <span class="btn-text">Settings</span>
     </el-button>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item command="preferences">
-          <el-icon><Tools /></el-icon>
-          Preferences
-        </el-dropdown-item>
-        <el-dropdown-item command="keyboard">
-          <el-icon><Position /></el-icon>
-          Keyboard Shortcuts
-        </el-dropdown-item>
-        <el-dropdown-item command="appearance">
+        <el-dropdown-item command="theme">
           <el-icon><Brush /></el-icon>
-          Appearance
+          Theme
         </el-dropdown-item>
-        <el-dropdown-item divided command="about">
+        <el-dropdown-item command="layout">
+          <el-icon><Grid /></el-icon>
+          Layout
+        </el-dropdown-item>
+        <el-dropdown-item command="general">
+          <el-icon><Setting /></el-icon>
+          General
+        </el-dropdown-item>
+        <el-dropdown-item command="shortcuts">
+          <el-icon><Operation /></el-icon>
+          Shortcuts
+        </el-dropdown-item>
+        <el-dropdown-item command="about" divided>
           <el-icon><InfoFilled /></el-icon>
           About
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+
+  <el-dialog
+    v-model="showSettings"
+    title="Settings"
+    width="800px"
+    :close-on-click-modal="false"
+    class="settings-dialog"
+  >
+    <SettingsPanel :active-tab="activeTab" />
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { Setting, Tools, Position, Brush, InfoFilled } from '@element-plus/icons-vue'
+import { ref } from 'vue';
+import { 
+  Setting, 
+  Brush, 
+  Operation, 
+  InfoFilled,
+  Grid 
+} from '@element-plus/icons-vue';
+import SettingsPanel from '../../components/settings/SettingsPanel.vue';
 
-const handleSettingCommand = (command: string) => {
-  switch (command) {
-    case 'preferences':
-      // 处理偏好设置
-      break
-    case 'keyboard':
-      // 处理快捷键设置
-      break
-    case 'appearance':
-      // 处理外观设置
-      break
-    case 'about':
-      // 处理关于信息
-      break
+const showSettings = ref(false);
+const activeTab = ref('theme');
+
+const openSettings = (tab: string) => {
+  activeTab.value = tab;
+  showSettings.value = true;
+};
+
+const handleCommand = (command: string) => {
+  activeTab.value = command;
+  showSettings.value = true;
+};
+
+// 暴露方法给父组件
+defineExpose({
+  openSettings
+});
+</script>
+
+<style scoped>
+.settings-dialog {
+  :deep(.el-dialog__body) {
+    padding: 0;
   }
 }
-</script> 
+</style> 

@@ -1,5 +1,9 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
+import {
+  createRouter,
+  createWebHashHistory,
+  RouteRecordRaw,
+  RouteLocationNormalized,
+} from "vue-router";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -28,7 +32,6 @@ const router = createRouter({
 // 路由标题
 router.beforeEach(
   (to: RouteLocationNormalized, _from: any, next: () => void) => {
-    // 使用可选链操作符来安全访问 title
     document.title = `${to.meta?.title || "RPC Master"} - RPC Master`;
     next();
   }
