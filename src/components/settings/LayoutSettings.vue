@@ -50,32 +50,42 @@
                 </div>
               </div>
               <!-- 主内容区域 -->
-              <div class="preview-main">
-                <!-- 标签页 -->
-                <div
-                  class="preview-tabs"
-                  :class="{
-                    hidden: !previewSettings.showTabs,
-                    [previewSettings.tabsPosition]: true,
-                  }"
-                >
-                  <div class="preview-tab"></div>
-                  <div class="preview-tab active"></div>
-                  <div class="preview-tab"></div>
-                </div>
-                <!-- 内容区域 -->
-                <div class="preview-content">
-                  <!-- 工具栏 -->
-                  <div
-                    class="preview-toolbar"
-                    :class="{
-                      hidden: !previewSettings.showToolbar,
-                      [previewSettings.toolbarPosition]: true,
-                    }"
-                  ></div>
-                  <!-- 编辑器区域 -->
-                  <div class="preview-editor"></div>
-                </div>
+              <div
+                class="preview-main"
+                :class="{
+                  'layout-modern': previewSettings.currentLayout === 'modern',
+                  'layout-classic': previewSettings.currentLayout === 'classic'
+                }"
+              >
+                <!-- 经典布局的标签页 -->
+                <template v-if="previewSettings.currentLayout === 'classic'">
+                  <div class="preview-tabs">
+                    <div class="preview-tab active"></div>
+                    <div class="preview-tab"></div>
+                    <div class="preview-tab"></div>
+                  </div>
+                  <div class="preview-content">
+                    <div class="preview-toolbar"></div>
+                    <div class="preview-editor"></div>
+                  </div>
+                </template>
+
+                <!-- 现代布局的标签页和内容 -->
+                <template v-else>
+                  <div class="preview-tabs-container">
+                    <div class="preview-tabs">
+                      <div class="preview-tab active"></div>
+                      <div class="preview-tab"></div>
+                      <div class="preview-tab"></div>
+                    </div>
+                  </div>
+                  <div class="preview-content-container">
+                    <div class="preview-toolbar"></div>
+                    <div class="preview-content">
+                      <div class="preview-editor"></div>
+                    </div>
+                  </div>
+                </template>
               </div>
             </div>
           </div>
@@ -484,15 +494,17 @@ const optimizeGrid = () => {
 
 // 方法
 const selectLayout = (layoutId: string, event?: Event) => {
-  // 首先阻止事件冒泡
-  event?.preventDefault();
-  event?.stopPropagation();
+  // 阻止事件冒泡
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   const preset = layoutPresets.find((p) => p.id === layoutId);
   if (preset) {
     // 创建新的预览设置对象
     const newSettings = {
-      ...previewSettings.value, // 保留现有设置
+      ...previewSettings.value,
       currentLayout: layoutId,
       toolbarPosition: preset.preview.toolbar?.position || "top",
       sidebarPosition: preset.preview.sidebar?.position || "left",
@@ -547,7 +559,16 @@ const updatePreview = () => {
 
 // 应用设置
 const applySettings = () => {
-  layoutStore.applyPreview();
+  // 确保包含所有设置
+  const newSettings = {
+    ...previewSettings.value,
+    sidebarPosition: previewSettings.value.sidebarPosition,
+    isCollapsed: previewSettings.value.isCollapsed,
+    sidebarWidth: previewSettings.value.sidebarWidth,
+  };
+
+  // 更新布局存储
+  layoutStore.updateSettings(newSettings);
   ElMessage.success("布局设置已应用");
 };
 
@@ -623,7 +644,7 @@ const handleClose = () => {
       emit("close");
     })
     .catch(() => {
-      // 用户取消关闭，不做任何操作
+      // 用户取消关闭，不做何操作
     });
 };
 
@@ -668,6 +689,8 @@ onBeforeUnmount(() => {
   border-radius: 4px;
   overflow: hidden;
   background-color: var(--background);
+  display: flex;
+  flex-direction: column;
 }
 
 /* 预览区域的样式 */
@@ -694,8 +717,10 @@ onBeforeUnmount(() => {
 }
 
 .preview-body {
+  flex: 1;
   display: flex;
   height: calc(100% - 32px);
+  min-height: 0;
 }
 
 .preview-sidebar {
@@ -768,6 +793,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   background-color: var(--bg-color-light);
+  min-height: 0;
 }
 
 .preview-toolbar {
@@ -788,6 +814,7 @@ onBeforeUnmount(() => {
   margin: 8px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
+  min-height: 0;
 }
 
 /* 控制面板样式 */
@@ -931,5 +958,159 @@ onBeforeUnmount(() => {
 .preview-toolbar,
 .preview-tabs {
   transition: all 0.3s ease;
+}
+
+/* 经典布局预览样式 */
+.layout-classic {
+  .preview-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-tabs {
+    height: 36px !important;
+    width: 100% !important;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    padding: 4px 8px 0;
+    gap: 2px;
+    flex-direction: row !important;
+  }
+
+  .preview-tab {
+    width: 120px !important;
+    height: 32px;
+    background-color: var(--bg-color-light);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    margin: 0 2px;
+
+    &.active {
+      background-color: var(--background);
+      border-bottom: 2px solid var(--el-color-primary);
+    }
+  }
+
+  .preview-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .preview-toolbar {
+    height: 40px;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .preview-editor {
+    flex: 1;
+    margin: 8px;
+    background-color: var(--background);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+  }
+}
+
+/* 现代布局预览样式 */
+.layout-modern {
+  .preview-body {
+    display: flex;
+    height: 100%;
+  }
+
+  .preview-main {
+    flex: 1;
+    display: flex;
+    flex-direction: row; /* 保持水平布局 */
+    min-width: 0;
+  }
+
+  /* 标签页容器 */
+  .preview-tabs-container {
+    width: 200px;
+    border-right: 1px solid var(--border-color);
+    background-color: var(--background);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .preview-tabs {
+    display: flex;
+    flex-direction: column !important;
+    padding: 8px 0;
+    height: auto !important;
+    border-bottom: none;
+  }
+
+  .preview-tab {
+    width: auto !important;
+    height: 32px;
+    margin: 0 8px 4px;
+    background-color: var(--bg-color-light);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+
+    &.active {
+      background-color: var(--el-color-primary-light-9);
+      border-color: var(--el-color-primary);
+    }
+  }
+
+  /* 内容区域 */
+  .preview-content-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .preview-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 8px;
+  }
+
+  /* 右侧布局时的样式 */
+  .preview-sidebar.right {
+    order: 2;
+    border-left: 1px solid var(--border-color);
+    border-right: none;
+  }
+
+  .preview-main {
+    order: 1;
+  }
+}
+
+/* 预览内容样式 */
+.preview-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color-light);
+  min-height: 0;
+}
+
+.preview-toolbar {
+  height: 40px;
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.preview-editor {
+  flex: 1;
+  background-color: var(--background);
+  margin: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  min-height: 0;
 }
 </style>

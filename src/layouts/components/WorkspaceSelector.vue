@@ -73,7 +73,6 @@
 <style scoped>
 	.workspace-selector {
 		background-color: var(--background);
-		border: 1px solid var(--border-color);
 		color: var(--text-color);
 	}
 

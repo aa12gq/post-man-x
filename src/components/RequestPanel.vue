@@ -2,257 +2,406 @@
   <div
     class="request-panel"
     :class="{
-      [`layout-${layoutStore.settings.currentLayout}`]: true,
-      'sidebar-collapsed': layoutStore.settings.isCollapsed,
-      [`toolbar-${layoutStore.settings.toolbarPosition}`]: true,
-      [`tabs-${layoutStore.settings.tabsPosition}`]: true,
-      'hide-sidebar': !layoutStore.settings.showSidebar,
-      'hide-toolbar': !layoutStore.settings.showToolbar,
-      'hide-tabs': !layoutStore.settings.showTabs,
-      'compact-mode': layoutStore.settings.compactMode,
-      'show-borders': layoutStore.settings.showBorders,
-      'show-shadows': layoutStore.settings.showShadows,
+      [`layout-${settings.currentLayout}`]: true,
+      'sidebar-collapsed': settings.isCollapsed,
+      [`toolbar-${settings.toolbarPosition}`]: true,
+      [`tabs-${settings.tabsPosition}`]: true,
+      'hide-sidebar': !settings.showSidebar,
+      'hide-toolbar': !settings.showToolbar,
+      'hide-tabs': !settings.showTabs,
+      'compact-mode': settings.compactMode,
+      'show-borders': settings.showBorders,
+      'show-shadows': settings.showShadows,
     }"
   >
-    <!-- 主要内容区域 -->
     <div class="content-layout">
-      <!-- 左侧区域 -->
-      <div
-        v-if="layoutStore.settings.showSidebar"
-        class="left-section"
-        :class="{
-          'is-collapsed': layoutStore.settings.isCollapsed,
-          'is-collapsible': layoutStore.settings.isCollapsible,
-          'position-right': layoutStore.settings.sidebarPosition === 'right',
-        }"
-        :style="{
-          width: layoutStore.settings.isCollapsed
-            ? '48px'
-            : `${layoutStore.settings.sidebarWidth}px`,
-        }"
-      >
-        <!-- New 按钮区域 -->
-        <div class="new-area">
-          <div class="new-button" @click="showNewRequestDialog">
-            <el-icon><Plus /></el-icon>
-            <span>New</span>
-          </div>
-        </div>
-
-        <!-- 活动栏和边栏容器 -->
-        <div class="sidebar-container"> 
-          <!-- 活动栏 -->
-          <div class="activity-bar">
-            <div
-              class="activity-item"
-              :class="{ active: activeView === 'collections' }"
-              @click="toggleView('collections')"
-            >
-              <el-tooltip content="Collections" placement="right">
-                <el-icon><Collection /></el-icon>
-              </el-tooltip>
-            </div>
-            <div
-              class="activity-item"
-              :class="{ active: activeView === 'apis' }"
-              @click="toggleView('apis')"
-            >
-              <el-tooltip content="APIs" placement="right">
-                <el-icon><Connection /></el-icon>
-              </el-tooltip>
-            </div>
-
-            <!-- 历史记录视图 -->
-            <div
-              class="activity-item"
-              :class="{ active: activeView === 'history' }"
-              @click="toggleView('history')"
-            >
-              <el-tooltip content="History" placement="right">
-                <el-icon><Timer /></el-icon>
-              </el-tooltip>
-            </div>
-
-            <!-- 环境变量管理 -->
-            <div
-              class="activity-item"
-              :class="{ active: activeView === 'environments' }"
-              @click="toggleView('environments')"
-            >
-              <el-tooltip content="Environments" placement="right">
-                <el-icon><Monitor /></el-icon>
-              </el-tooltip>
-            </div>
-
-            <div class="activity-divider"></div>
-
-            <!-- 导入导出功能 -->
-            <div
-              class="activity-item"
-              :class="{ active: activeView === 'import-export' }"
-              @click="toggleView('import-export')"
-            >
-              <el-tooltip content="Import/Export" placement="right">
-                <el-icon><Upload /></el-icon>
-              </el-tooltip>
-            </div>
-
-            <!-- 全局设置 -->
-            <div
-              class="activity-item"
-              :class="{ active: activeView === 'settings' }"
-              @click="toggleView('settings')"
-            >
-              <el-tooltip content="Settings" placement="right">
-                <el-icon><Tools /></el-icon>
-              </el-tooltip>
+      <template v-if="settings.sidebarPosition === 'left'">
+        <!-- 左侧区域 -->
+        <div
+          v-if="settings.showSidebar"
+          class="left-section"
+          :class="{
+            'is-collapsed': settings.isCollapsed,
+            'is-collapsible': settings.isCollapsible,
+          }"
+          :style="{
+            width: settings.isCollapsed ? '48px' : `${settings.sidebarWidth}px`,
+          }"
+        >
+          <!-- New 按钮区域 -->
+          <div class="new-area">
+            <div class="new-button" @click="showNewRequestDialog">
+              <el-icon><Plus /></el-icon>
+              <span>New</span>
             </div>
           </div>
 
-          <!-- Collections 边栏 -->
-          <div
-            class="collections-sidebar"
-            :class="{
-              'is-collapsed':
-                layoutStore.settings.isCollapsed ||
-                activeView !== 'collections',
-              'is-hidden': activeView !== 'collections',
-            }"
-          >
-            <!-- 动条和折叠按钮 -->
-            <div class="sidebar-controls">
+          <!-- 活动栏和边栏容器 -->
+          <div class="sidebar-container">
+            <!-- 活动栏 -->
+            <div class="activity-bar">
               <div
-                class="sidebar-resizer"
-                @mousedown="startSidebarResize"
-              ></div>
-              <div class="sidebar-toggle" @click="toggleSidebar">
-                <el-icon
-                  :class="{ 'is-collapsed': layoutStore.settings.isCollapsed }"
-                >
-                  <CaretLeft />
-                </el-icon>
+                class="activity-item"
+                :class="{ active: activeView === 'collections' }"
+                @click="toggleView('collections')"
+              >
+                <el-tooltip content="Collections" placement="right">
+                  <el-icon><Collection /></el-icon>
+                </el-tooltip>
               </div>
-            </div>
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'apis' }"
+                @click="toggleView('apis')"
+              >
+                <el-tooltip content="APIs" placement="right">
+                  <el-icon><Connection /></el-icon>
+                </el-tooltip>
+              </div>
 
-            <!-- 内容区域 -->
-            <div class="sidebar-header">
-              <span class="sidebar-title">Collections</span>
-              <div class="header-actions">
-                <el-tooltip content="New Folder" placement="top">
-                  <el-button link size="small" @click="handleAddFolder">
-                    <el-icon><Plus /></el-icon>
-                  </el-button>
+              <!-- 历史记录视图 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'history' }"
+                @click="toggleView('history')"
+              >
+                <el-tooltip content="History" placement="right">
+                  <el-icon><Timer /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <!-- 环境变量管理 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'environments' }"
+                @click="toggleView('environments')"
+              >
+                <el-tooltip content="Environments" placement="right">
+                  <el-icon><Monitor /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <div class="activity-divider"></div>
+
+              <!-- 导入导出功能 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'import-export' }"
+                @click="toggleView('import-export')"
+              >
+                <el-tooltip content="Import/Export" placement="right">
+                  <el-icon><Upload /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <!-- 全局设置 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'settings' }"
+                @click="toggleView('settings')"
+              >
+                <el-tooltip content="Settings" placement="right">
+                  <el-icon><Tools /></el-icon>
                 </el-tooltip>
               </div>
             </div>
-            <div class="sidebar-content">
-              <FolderManager
-                @create-request="handleCreateRequest"
-                @open-request="handleOpenRequest"
-                @delete-request="handleDeleteRequest"
-              />
-            </div>
-          </div>
 
-          <!-- APIs 边栏 -->
-          <div
-            class="collections-sidebar"
-            :class="{
-              'is-collapsed':
-                layoutStore.settings.isCollapsed || activeView !== 'apis',
-              'is-hidden': activeView !== 'apis',
-            }"
-          >
-            <!-- APIs 内容 -->
-            <div class="sidebar-header">
-              <span class="sidebar-title">APIs</span>
-            </div>
-            <div class="sidebar-content">
-              <!-- APIs 相关内容 -->
+            <!-- Collections 边栏 -->
+            <div
+              class="collections-sidebar"
+              :class="{
+                'is-collapsed': settings.isCollapsed || activeView !== 'collections',
+                'is-hidden': activeView !== 'collections',
+              }"
+            >
+              <!-- 动条和折叠按钮 -->
+              <div class="sidebar-controls">
+                <div
+                  class="sidebar-resizer"
+                  @mousedown="startSidebarResize"
+                ></div>
+                <div class="sidebar-toggle" @click="toggleSidebar">
+                  <el-icon
+                    :class="{ 'is-collapsed': settings.isCollapsed }"
+                  >
+                    <CaretLeft />
+                  </el-icon>
+                </div>
+              </div>
+
+              <!-- 内容区域 -->
+              <div class="sidebar-header">
+                <span class="sidebar-title">Collections</span>
+                <div class="header-actions">
+                  <el-tooltip content="New Folder" placement="top">
+                    <el-button link size="small" @click="handleAddFolder">
+                      <el-icon><Plus /></el-icon>
+                    </el-button>
+                  </el-tooltip>
+                </div>
+              </div>
+              <div class="sidebar-content">
+                <FolderManager
+                  @create-request="handleCreateRequest"
+                  @open-request="handleOpenRequest"
+                  @delete-request="handleDeleteRequest"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 右侧主内容 -->
-      <div
-        class="main-content"
-        :class="{
-          'tabs-left': layoutStore.settings.tabsPosition === 'left',
-          'tabs-bottom': layoutStore.settings.tabsPosition === 'bottom',
-          'no-sidebar': !layoutStore.settings.showSidebar,
-        }"
-      >
-        <!-- 标签页管理器 -->
-        <TabManager
-          v-model="activeTab"
-          :tabs="tabs"
-          :unsaved-tabs="unsavedTabsSet"
-          :position="layoutStore.settings.tabsPosition"
-          @add="addTab"
-          @remove="removeTab"
-        />
+        <!-- 右侧主内容 -->
+        <div class="main-content">
+          <!-- 标签页管理器 -->
+          <TabManager
+            v-model="activeTab"
+            :tabs="tabs"
+            :unsaved-tabs="unsavedTabsSet"
+            :position="settings.tabsPosition"
+            @add="addTab"
+            @remove="removeTab"
+          />
 
-        <!-- 请求和响应区域包装器 -->
+          <!-- 请求和响应区域包装器 -->
+          <div class="request-response-wrapper">
+            <template v-if="tabs.length === 0">
+              <!-- 空状态提示 -->
+              <div class="empty-state">
+                <el-empty description="No request yet">
+                  <el-button type="primary" @click="showNewRequestDialog">
+                    Create New Request
+                  </el-button>
+                </el-empty>
+              </div>
+            </template>
+            <template v-else-if="currentTab && currentTab.type === 'rpc'">
+              <div class="request-workspace">
+                <keep-alive>
+                  <RpcRequestRegion
+                    :key="currentTab.id"
+                    :tab-id="currentTab.id"
+                    :request-type="currentTab.type"
+                    @update:unsaved="
+                      (value) =>
+                        currentTab?.id &&
+                        handleUnsavedChange(currentTab.id, value)
+                    "
+                    @save="saveRequest"
+                    @name-change="handleNameChange"
+                  />
+                </keep-alive>
+              </div>
+            </template>
+            <template v-else-if="currentTab && currentTab.type === 'http'">
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="main-content">
+          <!-- 标签页管理器 -->
+          <TabManager
+            v-model="activeTab"
+            :tabs="tabs"
+            :unsaved-tabs="unsavedTabsSet"
+            :position="settings.tabsPosition"
+            @add="addTab"
+            @remove="removeTab"
+          />
+
+          <!-- 请求和响应区域包装器 -->
+          <div class="request-response-wrapper">
+            <template v-if="tabs.length === 0">
+              <!-- 空状态提示 -->
+              <div class="empty-state">
+                <el-empty description="No request yet">
+                  <el-button type="primary" @click="showNewRequestDialog">
+                    Create New Request
+                  </el-button>
+                </el-empty>
+              </div>
+            </template>
+            <template v-else-if="currentTab && currentTab.type === 'rpc'">
+              <div class="request-workspace">
+                <keep-alive>
+                  <RpcRequestRegion
+                    :key="currentTab.id"
+                    :tab-id="currentTab.id"
+                    :request-type="currentTab.type"
+                    @update:unsaved="
+                      (value) =>
+                        currentTab?.id &&
+                        handleUnsavedChange(currentTab.id, value)
+                    "
+                    @save="saveRequest"
+                    @name-change="handleNameChange"
+                  />
+                </keep-alive>
+              </div>
+            </template>
+            <template v-else-if="currentTab && currentTab.type === 'http'">
+            </template>
+          </div>
+        </div>
+
+        <!-- 右侧区域 -->
         <div
-          class="request-response-wrapper"
+          v-if="settings.showSidebar"
+          class="left-section position-right"
           :class="{
-            'toolbar-bottom': layoutStore.settings.toolbarPosition === 'bottom',
+            'is-collapsed': settings.isCollapsed,
+            'is-collapsible': settings.isCollapsible,
+          }"
+          :style="{
+            width: settings.isCollapsed ? '48px' : `${settings.sidebarWidth}px`,
           }"
         >
-          <template v-if="tabs.length === 0">
-            <!-- 空状态提示 -->
-            <div class="empty-state">
-              <el-empty description="No request yet">
-                <el-button type="primary" @click="showNewRequestDialog">
-                  Create New Request
-                </el-button>
-              </el-empty>
+          <!-- New 按钮区域 -->
+          <div class="new-area">
+            <div class="new-button" @click="showNewRequestDialog">
+              <el-icon><Plus /></el-icon>
+              <span>New</span>
             </div>
-          </template>
-          <template v-else-if="currentTab && currentTab.type === 'rpc'">
-            <div class="request-workspace">
-              <keep-alive>
-                <RpcRequestRegion
-                  :key="currentTab.id"
-                  :tab-id="currentTab.id"
-                  :request-type="currentTab.type"
-                  @update:unsaved="
-                    (value) =>
-                      currentTab?.id &&
-                      handleUnsavedChange(currentTab.id, value)
-                  "
-                  @save="saveRequest"
-                  @name-change="handleNameChange"
+          </div>
+
+          <!-- 活动栏和边栏容器 -->
+          <div class="sidebar-container">
+            <!-- 活动栏 -->
+            <div class="activity-bar">
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'collections' }"
+                @click="toggleView('collections')"
+              >
+                <el-tooltip content="Collections" placement="right">
+                  <el-icon><Collection /></el-icon>
+                </el-tooltip>
+              </div>
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'apis' }"
+                @click="toggleView('apis')"
+              >
+                <el-tooltip content="APIs" placement="right">
+                  <el-icon><Connection /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <!-- 历史记录视图 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'history' }"
+                @click="toggleView('history')"
+              >
+                <el-tooltip content="History" placement="right">
+                  <el-icon><Timer /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <!-- 环境变量管理 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'environments' }"
+                @click="toggleView('environments')"
+              >
+                <el-tooltip content="Environments" placement="right">
+                  <el-icon><Monitor /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <div class="activity-divider"></div>
+
+              <!-- 导入导出功能 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'import-export' }"
+                @click="toggleView('import-export')"
+              >
+                <el-tooltip content="Import/Export" placement="right">
+                  <el-icon><Upload /></el-icon>
+                </el-tooltip>
+              </div>
+
+              <!-- 全局设置 -->
+              <div
+                class="activity-item"
+                :class="{ active: activeView === 'settings' }"
+                @click="toggleView('settings')"
+              >
+                <el-tooltip content="Settings" placement="right">
+                  <el-icon><Tools /></el-icon>
+                </el-tooltip>
+              </div>
+            </div>
+
+            <!-- Collections 边栏 -->
+            <div
+              class="collections-sidebar"
+              :class="{
+                'is-collapsed': settings.isCollapsed || activeView !== 'collections',
+                'is-hidden': activeView !== 'collections',
+              }"
+            >
+              <!-- 动条和折叠按钮 -->
+              <div class="sidebar-controls">
+                <div
+                  class="sidebar-resizer"
+                  @mousedown="startSidebarResize"
+                ></div>
+                <div class="sidebar-toggle" @click="toggleSidebar">
+                  <el-icon
+                    :class="{ 'is-collapsed': settings.isCollapsed }"
+                  >
+                    <CaretLeft />
+                  </el-icon>
+                </div>
+              </div>
+
+              <!-- 内容区域 -->
+              <div class="sidebar-header">
+                <span class="sidebar-title">Collections</span>
+                <div class="header-actions">
+                  <el-tooltip content="New Folder" placement="top">
+                    <el-button link size="small" @click="handleAddFolder">
+                      <el-icon><Plus /></el-icon>
+                    </el-button>
+                  </el-tooltip>
+                </div>
+              </div>
+              <div class="sidebar-content">
+                <FolderManager
+                  @create-request="handleCreateRequest"
+                  @open-request="handleOpenRequest"
+                  @delete-request="handleDeleteRequest"
                 />
-              </keep-alive>
+              </div>
             </div>
-          </template>
-          <template v-else-if="currentTab && currentTab.type === 'http'">
-          </template>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- 请求类型选择对话框 -->
+    <el-dialog
+      v-model="showRequestTypeDialog"
+      title="New Request"
+      width="300px"
+      :show-close="false"
+      custom-class="request-type-dialog"
+    >
+      <div class="request-type-options">
+        <div class="request-type-option" @click="createNewRequest('http')">
+          <el-icon><Document /></el-icon>
+          <span>HTTP Request</span>
+        </div>
+        <div class="request-type-option" @click="createNewRequest('rpc')">
+          <el-icon><Connection /></el-icon>
+          <span>gRPC Request</span>
         </div>
       </div>
-
-      <!-- 请求类型选择话框 -->
-      <el-dialog
-        v-model="showRequestTypeDialog"
-        title="New Request"
-        width="300px"
-        :show-close="false"
-        custom-class="request-type-dialog"
-      >
-        <div class="request-type-options">
-          <div class="request-type-option" @click="createNewRequest('http')">
-            <el-icon><Document /></el-icon>
-            <span>HTTP Request</span>
-          </div>
-          <div class="request-type-option" @click="createNewRequest('rpc')">
-            <el-icon><Connection /></el-icon>
-            <span>gRPC Request</span>
-          </div>
-        </div>
-      </el-dialog>
-    </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -284,8 +433,10 @@ import { useRequestHistory } from "../composables/useRequestHistory";
 import { storage } from "../services/storage";
 import { HistoryItem } from "../types";
 import { useLayoutStore } from "../stores/layout";
+import { storeToRefs } from 'pinia';
 
 const layoutStore = useLayoutStore();
+const { settings } = storeToRefs(layoutStore);
 
 // 基础状态
 const isSidebarCollapsed = ref(
@@ -310,7 +461,7 @@ const currentTab = computed(() => {
 
 // 方法定义
 const toggleSidebar = () => {
-  if (layoutStore.settings.isCollapsible) {
+  if (settings.value.isCollapsible) {
     layoutStore.toggleSidebar();
   }
 };
@@ -348,7 +499,7 @@ const removeTab = async (targetId: string) => {
         }
       );
       // 用户选择保存
-      // TODO: 实现保存逻辑
+      // TODO: 实现存逻辑
       console.log("Save changes");
     } catch (action) {
       if (action === "close") {
@@ -366,7 +517,7 @@ const removeTab = async (targetId: string) => {
   // 如果关闭的是当前标签页,需要激活其他标签页
   if (activeTab.value === targetId) {
     if (tabs.value.length === 1) {
-      // 如果只有个标签页,清空���活标签页
+      // 如果只有个标签页,清空活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
       // 如果闭的是最后一个标签页,激活前一个标签页
@@ -426,11 +577,11 @@ const activeView = ref<
 //  toggleView 函数
 const toggleView = (view: string) => {
   if (activeView.value === view) {
-    // 如果点击当前活动的视图，切换边栏的展开/收起状态
+    // 如果点击当前活动的视图，切换边栏的展开/收状态
     layoutStore.toggleSidebar();
   } else {
     // 如果切换到新的视图，展开边栏并更新活动视图
-    if (layoutStore.settings.isCollapsed) {
+    if (settings.value.isCollapsed) {
       layoutStore.updateSettings({ isCollapsed: false });
     }
     activeView.value = view as
@@ -446,7 +597,7 @@ const toggleView = (view: string) => {
   localStorage.setItem("activeView", activeView.value || "");
 };
 
-const minWidth = 200; // 最小宽度
+const minWidth = 200; // 最小度
 const maxWidth = 600; // 最大宽度
 let startX = 0;
 let startWidth = 0;
@@ -488,15 +639,15 @@ const handleSidebarResize = (e: MouseEvent) => {
 const startSidebarResize = (e: MouseEvent) => {
   e.preventDefault();
   const startX = e.clientX;
-  const startWidth = layoutStore.settings.sidebarWidth;
+  const startWidth = settings.value.sidebarWidth;
 
   const handleMouseMove = (e: MouseEvent) => {
     const deltaX = e.clientX - startX;
     const newWidth = startWidth + deltaX;
 
-    // 使用 layoutStore 中的最小和最大宽度限制
-    const minWidth = layoutStore.settings.minSidebarWidth;
-    const maxWidth = layoutStore.settings.maxSidebarWidth;
+    // 使用 settings 中的最小和最大宽度限制
+    const minWidth = settings.value.minSidebarWidth;
+    const maxWidth = settings.value.maxSidebarWidth;
 
     // 当宽度接近收起阈值时添加视觉提示
     const leftSection = document.querySelector(".left-section") as HTMLElement;
@@ -507,7 +658,7 @@ const startSidebarResize = (e: MouseEvent) => {
     }
 
     // 如果宽度小于最小宽度且允许折叠，则自动折叠
-    if (newWidth < minWidth && layoutStore.settings.isCollapsible) {
+    if (newWidth < minWidth && settings.value.isCollapsible) {
       leftSection?.classList.remove("near-collapse");
       layoutStore.updateSettings({ isCollapsed: true });
       document.removeEventListener("mousemove", handleMouseMove);
@@ -658,7 +809,7 @@ const handleAddFolder = async () => {
   }
 };
 
-// 处理在文件夹中创建新请求
+// 处理在件夹中创建新请
 const handleCreateRequest = (folderId: string) => {
   showRequestTypeDialog.value = true;
   // 存储当前选的文件夹ID，用于新建请求时设置文件夹
@@ -689,7 +840,7 @@ const handleOpenRequest = (request: any) => {
   }
 };
 
-// 将 Map 转换为 Set 以便于模板使用
+// 将 Map 转为 Set 以便于模板使用
 const unsavedTabsSet = ref(new Set<string>());
 
 // 标记未保存的方法
@@ -725,7 +876,7 @@ watch(
   { deep: true }
 );
 
-// 处理保存状态变化
+// 处理保存状态化
 const handleUnsavedChange = (tabId: string, isUnsaved: boolean) => {
   console.log("Handling unsaved change:", tabId, isUnsaved);
   if (isUnsaved) {
@@ -755,7 +906,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
 // 处理请求删除
 const handleDeleteRequest = (requestId: string) => {
-  // 关闭对应的标签页
+  // 关对应的标签页
   removeTab(requestId);
 };
 
@@ -778,143 +929,28 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
     history.value = [...history.value];
   }
 };
+
+// 监听布局变化
+watch(() => settings.value, (newSettings) => {
+  // 保存到本地存储
+  localStorage.setItem('layoutSettings', JSON.stringify(newSettings));
+  
+  // 应用布局相关的 CSS 变量
+  document.documentElement.style.setProperty('--sidebar-width', `${newSettings.sidebarWidth}px`);
+  document.documentElement.style.setProperty('--header-height', newSettings.compactMode ? '40px' : '48px');
+  document.documentElement.style.setProperty('--toolbar-height', newSettings.compactMode ? '36px' : '40px');
+}, { deep: true });
 </script>
 <style scoped>
-/* 基础布局样式 */
+/* 原有的基础样式 */
 .request-panel {
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background-color: var(--background);
-  border: 1px solid var(--border);
 }
 
-/* 经典布局 */
-.layout-classic {
-  .content-layout {
-    display: flex;
-  }
-
-  .left-section {
-    border-right: 1px solid var(--border);
-  }
-
-  .main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-/* 现代布局 */
-.layout-modern {
-  .content-layout {
-    display: flex;
-  }
-
-  .left-section {
-    border-right: 1px solid var(--border);
-  }
-
-  .main-content {
-    flex: 1;
-    display: flex;
-
-    &.tabs-left {
-      flex-direction: row;
-
-      .tab-manager {
-        width: 200px;
-        border-right: 1px solid var(--border);
-      }
-
-      .request-response-wrapper {
-        flex: 1;
-      }
-    }
-  }
-}
-
-/* 紧凑布局 */
-.layout-compact {
-  .content-layout {
-    display: flex;
-  }
-
-  .left-section {
-    width: 180px;
-  }
-
-  .main-content {
-    flex: 1;
-  }
-
-  .toolbar-bottom {
-    flex-direction: column-reverse;
-  }
-}
-
-/* 简约布局 */
-.layout-minimal {
-  .left-section {
-    display: none;
-  }
-
-  .main-content {
-    flex: 1;
-  }
-}
-
-/* 标签页位置样式 */
-.tabs-left {
-  flex-direction: row;
-
-  .tab-manager {
-    width: 200px;
-    border-right: 1px solid var(--border);
-  }
-}
-
-.tabs-bottom {
-  flex-direction: column-reverse;
-}
-
-/* 工具栏位样式 */
-.toolbar-bottom {
-  .request-toolbar {
-    order: 1;
-  }
-}
-
-/* 响应式布局 */
-@media (max-width: 768px) {
-  .left-section:not(.is-collapsed) {
-    position: absolute;
-    z-index: 100;
-    height: 100%;
-    background-color: var(--background);
-    box-shadow: var(--shadow);
-  }
-
-  .layout-modern .tabs-left {
-    flex-direction: column;
-
-    .tab-manager {
-      width: 100%;
-      height: auto;
-    }
-  }
-}
-
-.main-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: var(--background);
-}
-
-/* 主要内容区域布局 */
 .content-layout {
   flex: 1;
   display: flex;
@@ -927,30 +963,36 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 .left-section {
   display: flex;
   flex-direction: column;
-  min-width: 48px; /* 最小宽度改为活栏宽度 */
-  border-right: 1px solid var(--border);
+  min-width: 48px;
   background-color: var(--background);
   flex-shrink: 0;
-  transition: width 0.3s;
-  transition: background-color 0.2s;
+  transition: all 0.3s;
 }
 
-.left-section.is-collapsed {
-  width: 48px !important;
-
-  /* 当折叠时隐藏 New 按钮区域和边栏 */
-  .new-area,
-  .collections-sidebar {
-    display: none;
-  }
-
-  .activity-bar {
-    border-right: none;
-  }
+/* 左侧边栏样式 */
+.left-section:not(.position-right) {
+  border-right: 1px solid var(--border);
 }
 
-.left-section.near-collapse {
-  background-color: var(--el-color-danger-light-9);
+/* 右侧边栏样式 */
+.left-section.position-right {
+  border-left: 1px solid var(--border);
+  border-right: none;
+}
+
+/* 确保主内容区域正确响应侧边栏位置 */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 动画过渡 */
+.content-layout > * {
+  transition: all 0.3s ease;
 }
 
 /* New 按钮区域样式 */
@@ -973,14 +1015,10 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   transition: all 0.2s;
   color: var(--text);
   font-size: 13px;
+}
 
-  &:hover {
-    background-color: var(--background-light);
-  }
-
-  .el-icon {
-    font-size: 16px;
-  }
+.new-button:hover {
+  background-color: var(--background-light);
 }
 
 /* 活动栏和边栏容器 */
@@ -1134,349 +1172,17 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   transform: rotate(180deg);
 }
 
-/* 右侧内容区域 */
+/* 主内容区域样式 */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-}
-
-.tabs-container {
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--background);
-}
-
-.request-response-wrapper {
-  flex: 1;
-  overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
-.request-workspace {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background-color: var(--background);
-}
-
-.request-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-
-.request-form {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  background-color: var(--background);
-}
-
-.request-form.expanded {
-  flex: 1;
-}
-
-.request-response-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-top: 16px;
-  overflow: hidden;
-}
-
-:deep(.el-tabs) {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-:deep(.el-tabs__content) {
-  flex: 1;
-  overflow: hidden;
-  padding: 10px;
-  height: 100%;
-}
-
-:deep(.el-tab-pane) {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 确保 tab-content 也能正确扩展 */
-.tab-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-:deep(.el-tabs--border-card) {
-  background-color: var(--background);
-  border-color: var(--border);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header) {
-  background-color: var(--header);
-  border-bottom: 1px solid var(--border);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--background);
-  border-right-color: var(--border);
-  border-left-color: var(--border);
-}
-
-.request-response-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* 响应域器 */
-.response-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 40px;
-  background-color: var(--background);
-  border-top: 1px solid var(--border);
-  transition: none;
-  position: relative;
-  z-index: 1;
-  height: 100%;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-/* 分线样式 */
-.resizer {
-  height: 4px;
-  background-color: var(--border);
-  cursor: row-resize;
-  transition: background-color 0.2s;
-  position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  z-index: 2;
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: -4px;
-    bottom: -4px;
-    left: 0;
-    right: 0;
-  }
-}
-
-.resizer:hover {
-  background-color: var(--el-color-primary);
-}
-
-/* 响应查看器样式 */
-:deep(.response-viewer) {
-  flex: 1;
-  overflow: hidden;
-  margin-top: 4px;
-}
-
-.sidebar-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--header);
-}
-
-.sidebar-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.sidebar-content {
-  padding: 8px;
-  height: calc(100% - 41px); /* 41px is header height */
-  overflow: auto;
-}
-
-.custom-tree-node {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-}
-
-:deep(.el-tree-node__content) {
-  height: 32px;
-}
-
-:deep(.el-tree-node__content:hover) {
-  background-color: var(--hover-color);
-}
-
-:deep(.el-icon) {
-  color: var(--text);
-  font-size: 16px;
-}
-
-:deep(.el-tabs--border-card) {
-  background-color: var(--background);
-  border-color: var(--border);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header) {
-  background-color: var(--header);
-  border-bottom: 1px solid var(--border);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--background);
-  border-right-color: var(--border);
-  border-left-color: var(--border);
-}
-
-:deep(.el-tree) {
-  background-color: var(--background);
-  color: var(--text);
-}
-
-.sidebar-resizer {
-  position: absolute;
-  top: 0;
-  right: -3px;
-  width: 6px;
-  height: 100%;
-  cursor: col-resize;
-  z-index: 100;
-  background-color: transparent;
-  transition: background-color 0.2s;
-}
-
-.sidebar-resizer:hover,
-.sidebar-resizer:active {
-  background-color: var(--el-color-primary);
-}
-
-.resize-handle {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: transparent;
-  cursor: row-resize;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(-3px);
-  bottom: 0;
-  margin-bottom: 0;
-}
-
-.resize-handle:hover .resize-handle-line {
-  background-color: var(--el-color-primary);
-}
-
-.resize-handle-line {
-  width: 100%;
-  height: 2px;
-  background-color: var(--border);
-  transition: background-color 0.2s;
-}
-
-.resize-handle-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: var(--background);
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.resize-handle:hover .resize-handle-icon {
-  opacity: 1;
-}
-
-/* 动时的样式 */
-.is-resizing {
-  user-select: none;
-  cursor: row-resize;
-}
-
-.is-resizing .resize-handle-line {
-  background-color: var(--el-color-primary);
-}
-
-.is-resizing .resize-handle-icon {
-  opacity: 1;
-}
-
-/* TabManager 组样式调整 */
-:deep(.el-tabs--card) {
-  margin: 0;
-}
-
-:deep(.el-tabs--card > .el-tabs__header) {
-  margin: 0;
-  border-bottom: none;
-}
-
-:deep(.el-tabs--card > .el-tabs__header .el-tabs__nav) {
-  border: none;
-}
-
-:deep(.el-tabs--card > .el-tabs__header .el-tabs__item) {
-  border: none;
-  border-right: 1px solid var(--border);
-  height: 40px;
-  line-height: 40px;
-  font-size: 13px;
-}
-
-:deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--background);
-  border-bottom: 2px solid var(--el-color-primary);
-}
-
-/* 添加新的样式 */
-.new-request {
-  margin-bottom: 8px;
-  color: var(--el-color-primary);
-}
-
-.activity-divider {
-  height: 1px;
-  margin: 8px 0;
-  background-color: var(--border);
-}
-
-.request-type-dialog {
-  :deep(.el-dialog__body) {
-    padding: 20px;
-  }
-}
-
+/* 请求类型对话框样式 */
 .request-type-options {
   display: flex;
   flex-direction: column;
@@ -1493,62 +1199,102 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   transition: all 0.3s;
   background-color: var(--background);
   border: 1px solid var(--border);
-
-  &:hover {
-    background-color: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary);
-    color: var(--el-color-primary);
-  }
-
-  .el-icon {
-    font-size: 20px;
-  }
-
-  span {
-    font-size: 14px;
-    font-weight: 500;
-  }
 }
 
-/* 添加空状态样式 */
+.request-type-option:hover {
+  background-color: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary);
+  color: var(--el-color-primary);
+}
+
+/* 请求响应区域样式 */
+.request-response-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+  background-color: var(--background);
+}
+
+/* 空状态���式 */
 .empty-state {
-  height: 100%;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--background);
-  padding: 20px;
 }
 
+/* 空状态内容样式 */
 :deep(.el-empty) {
   padding: 40px;
+  margin-bottom: 40px; /* 添加一些底部边距，让内容视觉上更居中 */
 }
 
-/* 添加新样式 */
-.header-actions {
-  display: flex;
-  gap: 8px;
+:deep(.el-empty__image) {
+  width: 120px;
+  height: 120px;
 }
 
-.collections-sidebar {
+:deep(.el-empty__description) {
+  margin-top: 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+:deep(.el-empty__bottom) {
+  margin-top: 20px;
+}
+
+/* 工作区样式 */
+.request-workspace {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   height: 100%;
 }
 
-.sidebar-content {
-  flex: 1;
-  overflow: auto;
+/* 布局相关的新样式 */
+.main-content.tabs-left {
+  flex-direction: row;
 }
 
-.sidebar-resizer {
-  transition: background-color 0.2s;
+.main-content.tabs-bottom {
+  flex-direction: column-reverse;
 }
 
-.near-collapse .sidebar-resizer {
-  background-color: var(--el-color-danger);
+.compact-mode {
+  .new-area {
+    height: 40px;
+  }
+  
+  .activity-item {
+    height: 40px;
+  }
+  
+  .tab-manager {
+    height: 36px;
+  }
+  
+  .toolbar {
+    height: 36px;
+  }
 }
 
+/* 阴影和边框样式 */
+.show-shadows {
+  box-shadow: var(--shadow-base);
+}
+
+.show-borders {
+  border: 1px solid var(--border);
+}
+
+/* 分隔线样式 */
 .activity-divider {
   width: 32px;
   height: 1px;
@@ -1556,160 +1302,146 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
   background-color: var(--border);
 }
 
-/* 底部图靠下对齐 */
-.activity-bar {
-  display: flex;
-  flex-direction: column;
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .left-section:not(.is-collapsed) {
+    position: absolute;
+    height: 100%;
+    z-index: 100;
+  }
+  
+  .main-content.tabs-left {
+    flex-direction: column;
+    
+    .tab-manager {
+      width: 100%;
+      height: auto;
+    }
+  }
 }
 
-.activity-bar > :last-child {
-  margin-top: auto;
-  margin-bottom: 16px;
+/* 动画过渡 */
+.left-section,
+.main-content,
+.tab-manager,
+.toolbar {
+  transition: all 0.3s ease;
 }
 
-/* 调整活动栏样式确保 Home 图标位置正确 */
-.activity-bar {
-  display: flex;
-  flex-direction: column;
-  padding-top: 0; /* 移除顶部padding */
-}
-
-.activity-item:first-child {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--header);
-}
-
-.activity-item:first-child:hover {
-  background-color: var(--hover-color);
-}
-
-.request-panel {
-  background-color: var(--background);
-  border: 1px solid var(--border);
-}
-
-.panel-header {
-  background-color: var(--header);
-  color: var(--text);
-  border-bottom: 1px solid var(--border);
-}
-
-.sidebar-resizer {
-  position: absolute;
-  top: 0;
-  right: -3px;
-  width: 6px;
-  height: 100%;
-  cursor: col-resize;
-  z-index: 100;
-  background-color: transparent;
-  transition: background-color 0.2s;
-}
-
-.sidebar-resizer:hover,
-.sidebar-resizer:active {
-  background-color: var(--el-color-primary);
-}
-
-.left-section.is-collapsible .sidebar-resizer {
-  display: block;
-}
-
-.left-section:not(.is-collapsible) .sidebar-resizer {
-  display: none;
-}
-
-.left-section.near-collapse {
-  background-color: var(--el-color-danger-light-9);
-}
-
-/* 折叠按钮样式 */
-.sidebar-toggle {
-  display: none;
-  position: absolute;
-  right: -24px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 48px;
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-left: none;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  z-index: 99;
-}
-
-.left-section.is-collapsible .sidebar-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar-toggle .el-icon {
-  transition: transform 0.3s;
-}
-
-.sidebar-toggle .el-icon.is-collapsed {
-  transform: rotate(180deg);
-}
-
-/* 隐藏侧边栏时的样式 */
-.hide-sidebar .left-section {
-  display: none;
-}
-
-.hide-sidebar .main-content {
-  margin-left: 0;
-}
-
-/* 侧边栏位置样式 */
-.left-section.position-right {
+/* 右侧布局时的样式调整 */
+.position-right {
   order: 2;
-  border-right: none;
-  border-left: 1px solid var(--border);
 }
 
-/* 主内容区域在没有侧边栏时的样式 */
-.main-content.no-sidebar {
-  margin-left: 0;
-  margin-right: 0;
+.content-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
-/* 隐藏工具栏和标签页时的样式 */
-.hide-toolbar .toolbar {
-  display: none;
+/* 布局相关的样式 */
+/* 经典布局 */
+.layout-classic {
+  .content-layout {
+    display: flex;
+  }
+
+  .left-section {
+    border-right: 1px solid var(--border);
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* 标签页在顶部 */
+  :deep(.tab-manager) {
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .request-response-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
 }
 
-.hide-tabs .tab-manager {
-  display: none;
+/* 现代布局 */
+.layout-modern {
+  .content-layout {
+    display: flex;
+    height: 100%;
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+    position: static;
+    overflow: visible;
+  }
+
+  /* 标签页在左侧 */
+  :deep(.tab-manager) {
+    width: 200px;
+    height: 100% !important;
+    border-right: 1px solid var(--border);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .request-response-wrapper {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 当侧边栏在右侧时的样式 */
+  .left-section.position-right {
+    order: 2;
+    border-left: 1px solid var(--border);
+    border-right: none;
+  }
+
+  .main-content {
+    order: 1;
+  }
 }
 
-/* 紧凑模式样式 */
-.compact-mode {
-  --header-height: 40px;
-  --toolbar-height: 36px;
-  --tabs-height: 32px;
+/* 紧凑布局 */
+.layout-compact {
+  .content-layout {
+    display: flex;
+  }
+
+  .left-section {
+    width: 180px;
+  }
+
+  .main-content {
+    flex: 1;
+  }
 }
 
-/* 显示边框样式 */
-.show-borders {
-  border: 1px solid var(--border);
-}
+/* 简约布局 */
+.layout-minimal {
+  .left-section {
+    display: none;
+  }
 
-/* 显示阴影样式 */
-.show-shadows {
-  box-shadow: var(--shadow-base);
-}
-
-.show-shadows .left-section {
-  box-shadow: 2px 0 4px var(--shadow-color);
-}
-
-.show-shadows .main-content {
-  box-shadow: 0 2px 4px var(--shadow-color);
+  .main-content {
+    flex: 1;
+  }
 }
 </style>

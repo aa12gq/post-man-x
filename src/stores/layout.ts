@@ -35,8 +35,9 @@ interface LayoutSettings {
 }
 
 export const useLayoutStore = defineStore('layout', {
-  state: () => ({
-    settings: {
+  state: () => {
+    const savedSettings = localStorage.getItem('layoutSettings');
+    const defaultSettings = {
       toolbarPosition: 'top',
       isCollapsed: false,
       sidebarWidth: 240,
@@ -50,15 +51,20 @@ export const useLayoutStore = defineStore('layout', {
       showBorders: true,
       showShadows: true,
       currentLayout: 'classic',
-      sidebarPosition: 'left',
+      sidebarPosition: localStorage.getItem('sidebarPosition') || 'left',
       tabsPosition: 'top'
-    } as LayoutSettings,
-    previewSettings: null as LayoutSettings | null
-  }),
+    } as LayoutSettings;
+
+    return {
+      settings: savedSettings ? { ...defaultSettings, ...JSON.parse(savedSettings) } : defaultSettings,
+      previewSettings: null as LayoutSettings | null
+    };
+  },
 
   actions: {
     updateSettings(newSettings: Partial<LayoutSettings>) {
       this.settings = { ...this.settings, ...newSettings };
+      localStorage.setItem('layoutSettings', JSON.stringify(this.settings));
     },
 
     previewLayout(settings: Partial<LayoutSettings>) {
@@ -70,11 +76,7 @@ export const useLayoutStore = defineStore('layout', {
 
     applyPreview() {
       if (this.previewSettings) {
-        this.settings = {
-          ...this.settings,
-          ...this.previewSettings,
-          isCollapsed: this.previewSettings.showSidebar ? this.previewSettings.isCollapsed : true,
-        };
+        this.updateSettings(this.previewSettings);
         this.previewSettings = null;
       }
     },
@@ -84,7 +86,7 @@ export const useLayoutStore = defineStore('layout', {
     },
 
     toggleSidebar() {
-      this.settings.isCollapsed = !this.settings.isCollapsed;
+      this.updateSettings({ isCollapsed: !this.settings.isCollapsed });
     }
   },
 
