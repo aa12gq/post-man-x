@@ -2,29 +2,29 @@
   <el-dropdown trigger="click" @command="handleCommand">
     <el-button class="toolbar-btn">
       <el-icon><Setting /></el-icon>
-      <span class="btn-text">Settings</span>
+      <span class="btn-text">{{ $t("header.settings.title") }}</span>
     </el-button>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item command="theme">
           <el-icon><Brush /></el-icon>
-          Theme
+          {{ $t("header.theme.title") }}
         </el-dropdown-item>
         <el-dropdown-item command="layout">
           <el-icon><Grid /></el-icon>
-          Layout
+          {{ $t("header.settings.layout") }}
         </el-dropdown-item>
         <el-dropdown-item command="general">
           <el-icon><Setting /></el-icon>
-          General
+          {{ $t("header.settings.general") }}
         </el-dropdown-item>
         <el-dropdown-item command="shortcuts">
           <el-icon><Operation /></el-icon>
-          Shortcuts
+          {{ $t("header.settings.shortcuts") }}
         </el-dropdown-item>
         <el-dropdown-item command="about" divided>
           <el-icon><InfoFilled /></el-icon>
-          About
+          {{ $t("header.settings.about") }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>

@@ -1,92 +1,111 @@
 <template>
   <div class="general-settings">
-    <h3>General Settings</h3>
+    <h3>{{ t('settings.general.title') }}</h3>
 
     <el-form label-width="180px">
-      <el-form-item label="Default Request Type">
+      <el-form-item :label="t('settings.general.defaultRequestType')">
         <el-select v-model="settings.defaultRequestType">
           <el-option label="gRPC" value="rpc" />
           <el-option label="HTTP" value="http" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Auto Save">
+      <el-form-item :label="t('settings.general.autoSave')">
         <el-switch v-model="settings.autoSave" active-text="Enable auto save" />
       </el-form-item>
 
-      <el-form-item label="Auto Save Interval" v-if="settings.autoSave">
+      <el-form-item :label="t('settings.general.autoSaveInterval')" v-if="settings.autoSave">
         <el-input-number
           v-model="settings.autoSaveInterval"
           :min="1"
           :max="60"
           :step="1"
         />
-        <span class="unit-text">minutes</span>
+        <span class="unit-text">{{ t('settings.general.minutes') }}</span>
       </el-form-item>
 
-      <el-form-item label="Request History">
+      <el-form-item :label="t('settings.general.requestHistory')">
         <el-input-number
           v-model="settings.maxHistoryItems"
           :min="10"
           :max="1000"
           :step="10"
         />
-        <span class="unit-text">items</span>
+        <span class="unit-text">{{ t('settings.general.items') }}</span>
       </el-form-item>
 
-      <el-form-item label="Response Size Limit">
+      <el-form-item :label="t('settings.general.responseSizeLimit')">
         <el-input-number
           v-model="settings.responseSizeLimit"
           :min="1"
           :max="100"
           :step="1"
         />
-        <span class="unit-text">MB</span>
+        <span class="unit-text">{{ t('settings.general.mb') }}</span>
       </el-form-item>
 
-      <el-form-item label="Font Size">
+      <el-form-item :label="t('settings.general.fontSize')">
         <el-select v-model="settings.fontSize">
-          <el-option label="Small" value="12" />
-          <el-option label="Medium" value="14" />
-          <el-option label="Large" value="16" />
+          <el-option 
+            :label="t('settings.general.sizes.small')" 
+            value="12" 
+          />
+          <el-option 
+            :label="t('settings.general.sizes.medium')" 
+            value="14" 
+          />
+          <el-option 
+            :label="t('settings.general.sizes.large')" 
+            value="16" 
+          />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Font Family">
+      <el-form-item :label="t('settings.general.fontFamily')">
         <el-select v-model="settings.fontFamily">
-          <el-option label="System Default" value="system-ui" />
-          <el-option label="Monaco" value="Monaco" />
-          <el-option label="Consolas" value="Consolas" />
-          <el-option label="Menlo" value="Menlo" />
+          <el-option 
+            :label="t('settings.general.fonts.systemDefault')" 
+            value="system-ui" 
+          />
+          <el-option 
+            :label="t('settings.general.fonts.monaco')" 
+            value="Monaco" 
+          />
+          <el-option 
+            :label="t('settings.general.fonts.consolas')" 
+            value="Consolas" 
+          />
+          <el-option 
+            :label="t('settings.general.fonts.menlo')" 
+            value="Menlo" 
+          />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Tab Size">
+      <el-form-item :label="t('settings.general.tabSize')">
         <el-input-number
           v-model="settings.tabSize"
           :min="2"
           :max="8"
           :step="2"
         />
-        <span class="unit-text">spaces</span>
       </el-form-item>
 
-      <el-form-item label="Word Wrap">
-        <el-switch v-model="settings.wordWrap" active-text="Enable word wrap" />
+      <el-form-item :label="t('settings.general.wordWrap')">
+        <el-switch v-model="settings.wordWrap" />
       </el-form-item>
 
-      <el-form-item label="Show Line Numbers">
-        <el-switch
-          v-model="settings.showLineNumbers"
-          active-text="Show line numbers"
-        />
+      <el-form-item :label="t('settings.general.showLineNumbers')">
+        <el-switch v-model="settings.showLineNumbers" />
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="saveSettings"
-          >Save Settings</el-button
-        >
-        <el-button @click="resetSettings">Reset to Default</el-button>
+        <el-button type="primary" @click="saveSettings">
+          {{ t('settings.general.saveSettings') }}
+        </el-button>
+        <el-button @click="resetSettings">
+          {{ t('settings.general.resetSettings') }}
+        </el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -96,8 +115,10 @@
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useSettings } from "../../stores/settings";
+import { useI18n } from "vue-i18n";
 
 const settingsStore = useSettings();
+const { t } = useI18n();
 
 // 使用 store 中的设置
 const settings = ref({
@@ -116,20 +137,19 @@ const settings = ref({
 // 保存设置
 function saveSettings() {
   settingsStore.updateSettings("general", settings.value);
-  ElMessage.success("Settings saved successfully");
+  ElMessage.success(t('settings.general.saveSuccess'));
 }
 
 // 重置设置
 async function resetSettings() {
   try {
     await ElMessageBox.confirm(
-      "Are you sure you want to reset all settings to default?",
-      "Reset Settings"
+      t('settings.general.resetConfirm'),
+      t('settings.general.resetSettings')
     );
     settingsStore.resetSettings("general");
-    // 更新本地设置
     settings.value = { ...settingsStore.settings.general };
-    ElMessage.success("Settings reset successfully");
+    ElMessage.success(t('settings.general.resetSuccess'));
   } catch {}
 }
 

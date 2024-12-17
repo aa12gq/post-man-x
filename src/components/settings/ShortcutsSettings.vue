@@ -1,8 +1,8 @@
 <template>
   <div class="shortcuts-settings">
     <div class="shortcuts-header">
-      <h3>Keyboard Shortcuts</h3>
-      <el-button @click="resetAll">Reset All</el-button>
+      <h3>{{ t('settings.shortcuts.title') }}</h3>
+      <el-button @click="resetAll">{{ t('settings.shortcuts.resetAll') }}</el-button>
     </div>
 
     <div class="shortcuts-list">
@@ -11,7 +11,7 @@
         :key="category.id"
         class="shortcut-category"
       >
-        <h4>{{ category.name }}</h4>
+        <h4>{{ t(`settings.shortcuts.category.${category.id}`) }}</h4>
         <div class="shortcut-items">
           <div
             v-for="shortcut in category.shortcuts"
@@ -34,18 +34,18 @@
                   <el-button>{{ shortcut.key || "Click to set" }}</el-button>
                 </template>
                 <div class="shortcut-editor">
-                  <p>Press the keys you want to use for this shortcut</p>
+                  <p>{{ t('settings.shortcuts.pressKeys') }}</p>
                   <div class="current-keys">
-                    {{ recordingKeys || "Listening..." }}
+                    {{ recordingKeys || t('settings.shortcuts.listening') }}
                   </div>
                   <div class="editor-actions">
-                    <el-button @click="cancelEdit">Cancel</el-button>
+                    <el-button @click="cancelEdit">{{ t('common.cancel') }}</el-button>
                     <el-button
                       type="primary"
                       @click="saveShortcut(category.id, shortcut.id)"
                       :disabled="!recordingKeys"
                     >
-                      Save
+                      {{ t('common.save') }}
                     </el-button>
                   </div>
                 </div>
@@ -56,7 +56,7 @@
                 @click="resetShortcut(category.id, shortcut.id)"
                 :disabled="shortcut.key === shortcut.defaultKey"
               >
-                Reset
+                {{ t('settings.shortcuts.reset') }}
               </el-button>
             </div>
           </div>
@@ -70,12 +70,15 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useShortcuts } from "../../composables/useShortcuts";
 import { ElMessageBox } from "element-plus";
+import { useI18n } from "vue-i18n";
 
 const {
   shortcuts,
   updateShortcut,
   resetShortcut: resetShortcutKey,
 } = useShortcuts();
+
+const { t } = useI18n();
 
 const editingShortcut = ref<Record<string, boolean>>({});
 const recordingKeys = ref("");
@@ -113,8 +116,8 @@ const saveShortcut = (categoryId: string, shortcutId: string) => {
 const resetShortcut = async (categoryId: string, shortcutId: string) => {
   try {
     await ElMessageBox.confirm(
-      "Are you sure you want to reset this shortcut to its default value?",
-      "Reset Shortcut"
+      t('settings.shortcuts.resetShortcut'),
+      t('settings.shortcuts.reset')
     );
     resetShortcutKey(categoryId, shortcutId);
   } catch {}
@@ -123,8 +126,8 @@ const resetShortcut = async (categoryId: string, shortcutId: string) => {
 const resetAll = async () => {
   try {
     await ElMessageBox.confirm(
-      "Are you sure you want to reset all shortcuts to their default values?",
-      "Reset All Shortcuts"
+      t('settings.shortcuts.resetConfirm'),
+      t('settings.shortcuts.title')
     );
     shortcuts.value.forEach((category) => {
       category.shortcuts.forEach((shortcut) => {

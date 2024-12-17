@@ -1,0 +1,463 @@
+{
+  "home": {
+    "title": "RPC Master",
+    "subtitle": "现代化的 gRPC 和 HTTP API 测试工具",
+    "getStarted": "开始测试",
+    "learnMore": "了解更多",
+    "features": {
+      "list": {
+        "grpcFirst": {
+          "title": "gRPC 优先",
+          "desc": "专为 gRPC 设计，完整支持 Protocol Buffer"
+        },
+        "workspaces": {
+          "title": "工作空间",
+          "desc": "支持多工作空间协作"
+        },
+        "collections": {
+          "title": "智能收藏",
+          "desc": "支持嵌套文件夹的智能请求组织"
+        },
+        "protoExplorer": {
+          "title": "Proto 探索器",
+          "desc": "可视化的协议缓冲区探索和方法发现"
+        },
+        "debugTools": {
+          "title": "调试工具",
+          "desc": "内置的 gRPC 通信调试工具"
+        },
+        "httpSupport": {
+          "title": "HTTP 支持",
+          "desc": "同时支持 RESTful API 实现全栈测试"
+        }
+      }
+    }
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "search": "搜索",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "confirm": "确定",
+    "success": "操作成功",
+    "error": "操作失败",
+    "warning": "警告",
+    "info": "提示",
+    "validation": {
+      "required": "此项不能为空"
+    }
+  },
+  "request": {
+    "panel": {
+      "emptyState": {
+        "title": "未选择请求",
+        "description": "从侧边栏选择一个请求或创建新请求",
+        "createNew": "创建新请求"
+      },
+      "requestType": {
+        "title": "选择请求类型",
+        "grpc": {
+          "title": "gRPC 请求",
+          "description": "创建支持 Protocol Buffer 的 gRPC 请求"
+        },
+        "http": {
+          "title": "HTTP 请求",
+          "description": "创建 RESTful HTTP 请求"
+        }
+      },
+      "sidebar": {
+        "toggle": "切换侧边栏",
+        "collapse": "收起侧栏",
+        "expand": "展开侧边栏",
+        "collections": {
+          "title": "集合",
+          "newFolder": "新建文件夹",
+          "newRequest": "新建请求",
+          "addFolder": "添加文件夹",
+          "empty": "暂无集合",
+          "search": "搜索集合...",
+          "createFolder": {
+            "title": "新建文件夹",
+            "placeholder": "输入文件夹名称",
+            "validation": "文件夹名称不能为空"
+          }
+        },
+        "apis": "接口",
+        "history": "历史记录",
+        "environments": "环境变量",
+        "importExport": "导入导出",
+        "settings": "设置"
+      }
+    },
+    "rpc": {
+      "toolbar": {
+        "serverUrl": "输入服务器 URL",
+        "selectMethod": "选择方法",
+        "loadMethods": "加载方法...",
+        "useReflection": "使用服务器反射",
+        "invoke": "发送请求",
+        "viewModes": {
+          "dropdown": "下拉视图",
+          "cascade": "级联视图"
+        }
+      },
+      "messages": {
+        "enterUrl": "输入服务器 URL 以加载可用方法",
+        "loadingServices": "正在加载服务...",
+        "noMethods": "未找到方法。尝试使用服务器反射。",
+        "unsavedChanges": "有未保存的更改。是否在关闭前保存？",
+        "failedLoadMethods": "加载方法失败",
+        "failedLoadServices": "加载服务失败",
+        "failedGenerateExample": "生成示例失败"
+      },
+      "editor": {
+        "generateExample": "生成示例",
+        "message": "消息",
+        "authorization": "授权",
+        "metadata": "元数据"
+      },
+      "response": {
+        "status": {
+          "success": "请求成功",
+          "error": "请求失败"
+        },
+        "clear": "清除响应",
+        "copy": "复制响应",
+        "download": "下载响应",
+        "empty": "暂无响应",
+        "time": "响应时间：{time}毫秒",
+        "size": "大小：{size}",
+        "headers": "响应头",
+        "debugInfo": "调试信息",
+        "debugCommand": "调试命令",
+        "collapse": "收起",
+        "expand": "展开",
+        "tabs": {
+          "payload": "响应数据",
+          "debug": "调试信息",
+          "metadata": "元数据",
+          "trailers": "尾部数据"
+        },
+        "empty": "暂无响应数据",
+        "noDebugInfo": "暂无调试信息",
+        "noMetadata": "暂无元数据",
+        "noTrailers": "暂无尾部数据",
+        "debugCommand": "调试命令",
+        "debugInfo": "gRPC 日志"
+      }
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "layout": {
+      "title": "布局设置",
+      "customize": "自定义布局",
+      "currentLayout": "当前布局",
+      "components": {
+        "title": "组件",
+        "header": "顶栏",
+        "sidebar": "侧边栏",
+        "tabs": "标签页",
+        "toolbar": "工具栏",
+        "visibility": {
+          "show": "显示",
+          "hide": "隐藏"
+        },
+        "editor": "编辑区域"
+      },
+      "sidebarSettings": {
+        "title": "侧边栏设置",
+        "position": {
+          "title": "位置",
+          "left": "左侧",
+          "right": "右侧"
+        },
+        "collapsible": "可折叠",
+        "width": "宽度",
+        "widthControl": {
+          "label": "宽度",
+          "min": "最小",
+          "default": "默认",
+          "max": "最大",
+          "unit": "像素"
+        }
+      },
+      "other": {
+        "title": "其他选项",
+        "showBorders": "显示边框",
+        "compactMode": "紧凑模式",
+        "showShadows": "显示阴影"
+      },
+      "presets": {
+        "title": "布局预设",
+        "names": {
+          "classic": "经典布局",
+          "modern": "现代布局",
+          "compact": "紧凑布局",
+          "wide": "宽屏布局",
+          "minimal": "极简布局",
+          "custom": "自定义布局"
+        }
+      },
+      "confirm": {
+        "cancel": {
+          "title": "取消布局设置",
+          "message": "确定要取消吗？未保存的更改将会丢失。",
+          "confirm": "确定",
+          "cancel": "取消"
+        }
+      },
+      "preview": {
+        "title": "布局预览",
+        "header": "顶栏",
+        "sidebar": "侧边栏",
+        "tabs": "标签页",
+        "toolbar": "工具栏",
+        "editor": "编辑器",
+        "content": "内容区",
+        "dots": {
+          "minimize": "最小化",
+          "maximize": "最大化",
+          "close": "关闭"
+        },
+        "layouts": {
+          "classic": {
+            "title": "经典布局",
+            "description": "传统的固定位置布局"
+          },
+          "modern": {
+            "title": "现代布局",
+            "description": "灵活的现代设计布局"
+          }
+        },
+        "components": {
+          "header": "顶栏区域",
+          "sidebar": "侧边导航",
+          "tabs": "标签栏",
+          "toolbar": "工具栏",
+          "editor": "编辑区",
+          "content": "内容区"
+        }
+      },
+      "actions": {
+        "apply": "应用布局",
+        "reset": "重置布局",
+        "save": "保存布局",
+        "cancel": "取消",
+        "confirm": "确定"
+      },
+      "messages": {
+        "applySuccess": "布局应用成功",
+        "applyError": "布局应用失败",
+        "saveSuccess": "布局保存成功",
+        "saveError": "布局保存失败",
+        "resetConfirm": "确定要重置布局吗？",
+        "resetSuccess": "布局重置成功",
+        "unsavedChanges": "有未保存的更改。是否要在关闭前保存？"
+      },
+      "tabsPosition": {
+        "title": "标签页位置",
+        "top": "顶部",
+        "left": "左侧",
+        "bottom": "底部"
+      },
+      "toolbarPosition": {
+        "title": "工具栏位置",
+        "top": "顶部",
+        "bottom": "底部"
+      },
+      "advanced": {
+        "title": "高级设置",
+        "layoutMode": {
+          "title": "布局模式",
+          "fixed": "固定",
+          "fluid": "流动",
+          "custom": "自定义"
+        },
+        "ratios": {
+          "title": "内容比例",
+          "tooltip": "调整不同内容区域的大小比例",
+          "mainContent": "主内容区",
+          "sidebar": "侧边栏",
+          "editor": "编辑器",
+          "response": "响应区"
+        },
+        "grid": {
+          "title": "网格布局",
+          "reset": "重置网格",
+          "optimize": "优化网格"
+        },
+        "responsive": {
+          "title": "响应设置"
+        },
+        "animations": {
+          "enabled": {
+            "title": "动画效果",
+            "label": "启用动画",
+            "tooltip": "启用/禁用布局过渡动画"
+          },
+          "type": {
+            "slide": "滑动",
+            "fade": "淡入淡出"
+          },
+          "duration": {
+            "label": "持续时间",
+            "tooltip": "动画持续时间（毫秒）"
+          },
+          "durationUnit": "毫秒"
+        }
+      },
+      "grid": {
+        "preview": {
+          "title": "网格布局预览",
+          "empty": "未定义网格区域"
+        },
+        "areas": {
+          "header": "顶栏",
+          "sidebar": "侧边栏",
+          "content": "内容区",
+          "editor": "编辑器",
+          "response": "响应区"
+        }
+      },
+      "breakpoints": {
+        "label": {
+          "mobile": "移动端",
+          "tablet": "平板",
+          "desktop": "桌面"
+        },
+        "unit": "像素"
+      },
+      "ratios": {
+        "sliderMarks": {
+          "min": "{value}%",
+          "default": "{value}%",
+          "max": "{value}%"
+        }
+      },
+      "preview": {
+        "dragAndDrop": {
+          "tip": "拖拽重新排列网格区域"
+        }
+      }
+    },
+    "theme": {
+      "title": "主题设置",
+      "officialThemes": "官方主题",
+      "customThemes": "自定义主题",
+      "createTheme": "创建主题",
+      "editTheme": "编辑主题",
+      "deleteTheme": "删除主题",
+      "duplicateTheme": "复制主题",
+      "importTheme": "导入主题",
+      "exportTheme": "导出主题",
+      "exportSuccess": "主题导出成功",
+      "exportError": "主题导出失败",
+      "importSuccess": "主题导入成功",
+      "importError": "主题导入失败",
+      "deleteConfirm": "确定要删除这个主题吗？",
+      "deleteSuccess": "主题删除成功",
+      "selectFile": "请选择主题文件",
+      "light": "浅色",
+      "dark": "深色",
+      "editor": {
+        "name": "主题名称",
+        "type": "主题类型",
+        "colors": "颜色配置",
+        "preview": "预览",
+        "previewHeader": "预览标题",
+        "previewCardTitle": "卡片标题",
+        "previewCardContent": "这是主题效果的预览内容。",
+        "save": "保存主题",
+        "nameRequired": "主题名称不能为空"
+      }
+    },
+    "general": {
+      "title": "常规设置",
+      "defaultRequestType": "默认请求类型",
+      "autoSave": "自动保存",
+      "autoSaveInterval": "自动保存间隔",
+      "requestHistory": "请求历史",
+      "responseSizeLimit": "响应大小限制",
+      "fontSize": "字体大小",
+      "fontFamily": "字体",
+      "tabSize": "缩进大小",
+      "wordWrap": "自动换行",
+      "showLineNumbers": "显示行号",
+      "saveSettings": "保存设置",
+      "resetSettings": "重置设置",
+      "resetConfirm": "确定要将所有设置重置为默认值吗？",
+      "saveSuccess": "设置保存成功",
+      "resetSuccess": "设置重置成功",
+      "minutes": "分钟",
+      "items": "条",
+      "mb": "MB",
+      "fonts": {
+        "systemDefault": "系统默认",
+        "monaco": "Monaco",
+        "consolas": "Consolas",
+        "menlo": "Menlo"
+      },
+      "sizes": {
+        "small": "小",
+        "medium": "中",
+        "large": "大"
+      }
+    },
+    "shortcuts": {
+      "title": "快捷键设置"
+    },
+    "about": {
+      "title": "关于",
+      "version": "版本",
+      "checkUpdates": "检查更新",
+      "description": "现代化的 gRPC 和 HTTP API 测试工具",
+      "techStack": "技术栈",
+      "techStackDesc": "使用 Vue 3、TypeScript 和 Element Plus 构建"
+    }
+  },
+  "header": {
+    "language": {
+      "title": "语言",
+      "en": "英文",
+      "zh": "中文",
+      "zh-CN": "简体中文",
+      "en-US": "English"
+    },
+    "theme": {
+      "title": "主题",
+      "light": "浅色",
+      "dark": "深色",
+      "system": "跟随系统",
+      "custom": "自定义",
+      "create": "创建主题",
+      "import": "导入主题",
+      "export": "导出主题",
+      "manage": "管理主题"
+    },
+    "settings": {
+      "title": "设置",
+      "general": "通用",
+      "appearance": "外观",
+      "keyboard": "键盘",
+      "data": "数据",
+      "about": "关于",
+      "layout": "布局",
+      "shortcuts": "快捷键",
+      "items": {
+        "preferences": "偏好设置",
+        "keyboardShortcuts": "键盘快捷键",
+        "importExport": "导入/导出",
+        "clearData": "清空数据",
+        "checkUpdates": "检查更新",
+        "documentation": "文档",
+        "reportIssue": "报告问题",
+        "about": "关于"
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@
       </div>
 
       <div class="header-left">
-        <span class="header-title">Response</span>
+        <span class="header-title"></span>
         <div
           v-if="props.status"
           class="response-status"
@@ -33,7 +33,10 @@
     <div class="response-content">
       <el-tabs v-model="activeTab" type="border-card">
         <!-- Payload 选项卡 -->
-        <el-tab-pane label="Payload" name="body">
+        <el-tab-pane
+          :label="t('request.rpc.response.tabs.payload')"
+          name="body"
+        >
           <div class="tab-content">
             <CodeEditor
               style="height: 100%"
@@ -46,26 +49,29 @@
         </el-tab-pane>
 
         <!-- Debug Info 选项卡 -->
-        <el-tab-pane label="Debug Info" name="debug">
+        <el-tab-pane :label="t('request.rpc.response.tabs.debug')" name="debug">
           <div class="tab-content">
             <template v-if="debugCommand || debugLogs">
               <div v-if="debugCommand" class="command-section">
-                <h4>Command</h4>
+                <h4>{{ t("request.rpc.response.debugCommand") }}</h4>
                 <pre>{{ debugCommand }}</pre>
               </div>
               <div v-if="debugLogs" class="logs-section">
-                <h4>gRPC Logs</h4>
+                <h4>{{ t("request.rpc.response.debugInfo") }}</h4>
                 <pre>{{ debugLogs }}</pre>
               </div>
             </template>
             <div v-else class="empty-response">
-              No debug information available
+              {{ t("request.rpc.response.noDebugInfo") }}
             </div>
           </div>
         </el-tab-pane>
 
         <!-- Metadata 选项卡 -->
-        <el-tab-pane label="Metadata" name="headers">
+        <el-tab-pane
+          :label="t('request.rpc.response.tabs.metadata')"
+          name="headers"
+        >
           <div class="tab-content">
             <div
               v-for="(values, key) in headers"
@@ -81,13 +87,16 @@
               v-if="Object.keys(headers).length === 0"
               class="empty-response"
             >
-              No metadata available
+              {{ t("request.rpc.response.noMetadata") }}
             </div>
           </div>
         </el-tab-pane>
 
         <!-- Trailers 选项卡 -->
-        <el-tab-pane label="Trailers" name="trailers">
+        <el-tab-pane
+          :label="t('request.rpc.response.tabs.trailers')"
+          name="trailers"
+        >
           <div class="tab-content">
             <div
               v-for="(values, key) in trailers"
@@ -103,7 +112,7 @@
               v-if="Object.keys(trailers).length === 0"
               class="empty-response"
             >
-              No trailers available
+              {{ t("request.rpc.response.noTrailers") }}
             </div>
           </div>
         </el-tab-pane>
@@ -116,6 +125,9 @@
 import { ref, computed } from "vue";
 import { ArrowUp } from "@element-plus/icons-vue";
 import CodeEditor from "../CodeEditor.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   response: string;

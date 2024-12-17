@@ -32,7 +32,9 @@
           <div class="new-area">
             <div class="new-button" @click="showNewRequestDialog">
               <el-icon><Plus /></el-icon>
-              <span>New</span>
+              <span>{{
+                t("request.panel.sidebar.collections.newRequest")
+              }}</span>
             </div>
           </div>
 
@@ -45,7 +47,10 @@
                 :class="{ active: activeView === 'collections' }"
                 @click="toggleView('collections')"
               >
-                <el-tooltip content="Collections" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.collections.title')"
+                  placement="right"
+                >
                   <el-icon><Collection /></el-icon>
                 </el-tooltip>
               </div>
@@ -54,7 +59,10 @@
                 :class="{ active: activeView === 'apis' }"
                 @click="toggleView('apis')"
               >
-                <el-tooltip content="APIs" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.apis')"
+                  placement="right"
+                >
                   <el-icon><Connection /></el-icon>
                 </el-tooltip>
               </div>
@@ -65,7 +73,10 @@
                 :class="{ active: activeView === 'history' }"
                 @click="toggleView('history')"
               >
-                <el-tooltip content="History" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.history')"
+                  placement="right"
+                >
                   <el-icon><Timer /></el-icon>
                 </el-tooltip>
               </div>
@@ -76,7 +87,10 @@
                 :class="{ active: activeView === 'environments' }"
                 @click="toggleView('environments')"
               >
-                <el-tooltip content="Environments" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.environments')"
+                  placement="right"
+                >
                   <el-icon><Monitor /></el-icon>
                 </el-tooltip>
               </div>
@@ -89,7 +103,10 @@
                 :class="{ active: activeView === 'import-export' }"
                 @click="toggleView('import-export')"
               >
-                <el-tooltip content="Import/Export" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.importExport')"
+                  placement="right"
+                >
                   <el-icon><Upload /></el-icon>
                 </el-tooltip>
               </div>
@@ -100,7 +117,10 @@
                 :class="{ active: activeView === 'settings' }"
                 @click="toggleView('settings')"
               >
-                <el-tooltip content="Settings" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.settings')"
+                  placement="right"
+                >
                   <el-icon><Tools /></el-icon>
                 </el-tooltip>
               </div>
@@ -110,7 +130,8 @@
             <div
               class="collections-sidebar"
               :class="{
-                'is-collapsed': settings.isCollapsed || activeView !== 'collections',
+                'is-collapsed':
+                  settings.isCollapsed || activeView !== 'collections',
                 'is-hidden': activeView !== 'collections',
               }"
             >
@@ -121,9 +142,7 @@
                   @mousedown="startSidebarResize"
                 ></div>
                 <div class="sidebar-toggle" @click="toggleSidebar">
-                  <el-icon
-                    :class="{ 'is-collapsed': settings.isCollapsed }"
-                  >
+                  <el-icon :class="{ 'is-collapsed': settings.isCollapsed }">
                     <CaretLeft />
                   </el-icon>
                 </div>
@@ -131,9 +150,14 @@
 
               <!-- 内容区域 -->
               <div class="sidebar-header">
-                <span class="sidebar-title">Collections</span>
+                <span class="sidebar-title">{{
+                  t("request.panel.sidebar.collections.title")
+                }}</span>
                 <div class="header-actions">
-                  <el-tooltip content="New Folder" placement="top">
+                  <el-tooltip
+                    :content="t('request.panel.sidebar.collections.newFolder')"
+                    placement="top"
+                  >
                     <el-button link size="small" @click="handleAddFolder">
                       <el-icon><Plus /></el-icon>
                     </el-button>
@@ -168,10 +192,16 @@
             <template v-if="tabs.length === 0">
               <!-- 空状态提示 -->
               <div class="empty-state">
-                <el-empty description="No request yet">
-                  <el-button type="primary" @click="showNewRequestDialog">
-                    Create New Request
-                  </el-button>
+                <el-empty>
+                  <template #description>
+                    <h3>{{ t("request.panel.emptyState.title") }}</h3>
+                    <p>{{ t("request.panel.emptyState.description") }}</p>
+                  </template>
+                  <template #default>
+                    <el-button type="primary" @click="createNewRequest">
+                      {{ t("request.panel.emptyState.createNew") }}
+                    </el-button>
+                  </template>
                 </el-empty>
               </div>
             </template>
@@ -216,10 +246,16 @@
             <template v-if="tabs.length === 0">
               <!-- 空状态提示 -->
               <div class="empty-state">
-                <el-empty description="No request yet">
-                  <el-button type="primary" @click="showNewRequestDialog">
-                    Create New Request
-                  </el-button>
+                <el-empty>
+                  <template #description>
+                    <h3>{{ t("request.panel.emptyState.title") }}</h3>
+                    <p>{{ t("request.panel.emptyState.description") }}</p>
+                  </template>
+                  <template #default>
+                    <el-button type="primary" @click="createNewRequest">
+                      {{ t("request.panel.emptyState.createNew") }}
+                    </el-button>
+                  </template>
                 </el-empty>
               </div>
             </template>
@@ -262,7 +298,9 @@
           <div class="new-area">
             <div class="new-button" @click="showNewRequestDialog">
               <el-icon><Plus /></el-icon>
-              <span>New</span>
+              <span>{{
+                t("request.panel.sidebar.collections.newRequest")
+              }}</span>
             </div>
           </div>
 
@@ -275,7 +313,10 @@
                 :class="{ active: activeView === 'collections' }"
                 @click="toggleView('collections')"
               >
-                <el-tooltip content="Collections" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.collections.title')"
+                  placement="right"
+                >
                   <el-icon><Collection /></el-icon>
                 </el-tooltip>
               </div>
@@ -284,7 +325,10 @@
                 :class="{ active: activeView === 'apis' }"
                 @click="toggleView('apis')"
               >
-                <el-tooltip content="APIs" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.apis')"
+                  placement="right"
+                >
                   <el-icon><Connection /></el-icon>
                 </el-tooltip>
               </div>
@@ -295,7 +339,10 @@
                 :class="{ active: activeView === 'history' }"
                 @click="toggleView('history')"
               >
-                <el-tooltip content="History" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.history')"
+                  placement="right"
+                >
                   <el-icon><Timer /></el-icon>
                 </el-tooltip>
               </div>
@@ -306,7 +353,10 @@
                 :class="{ active: activeView === 'environments' }"
                 @click="toggleView('environments')"
               >
-                <el-tooltip content="Environments" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.environments')"
+                  placement="right"
+                >
                   <el-icon><Monitor /></el-icon>
                 </el-tooltip>
               </div>
@@ -319,7 +369,10 @@
                 :class="{ active: activeView === 'import-export' }"
                 @click="toggleView('import-export')"
               >
-                <el-tooltip content="Import/Export" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.importExport')"
+                  placement="right"
+                >
                   <el-icon><Upload /></el-icon>
                 </el-tooltip>
               </div>
@@ -330,7 +383,10 @@
                 :class="{ active: activeView === 'settings' }"
                 @click="toggleView('settings')"
               >
-                <el-tooltip content="Settings" placement="right">
+                <el-tooltip
+                  :content="t('request.panel.sidebar.settings')"
+                  placement="right"
+                >
                   <el-icon><Tools /></el-icon>
                 </el-tooltip>
               </div>
@@ -340,7 +396,8 @@
             <div
               class="collections-sidebar"
               :class="{
-                'is-collapsed': settings.isCollapsed || activeView !== 'collections',
+                'is-collapsed':
+                  settings.isCollapsed || activeView !== 'collections',
                 'is-hidden': activeView !== 'collections',
               }"
             >
@@ -351,9 +408,7 @@
                   @mousedown="startSidebarResize"
                 ></div>
                 <div class="sidebar-toggle" @click="toggleSidebar">
-                  <el-icon
-                    :class="{ 'is-collapsed': settings.isCollapsed }"
-                  >
+                  <el-icon :class="{ 'is-collapsed': settings.isCollapsed }">
                     <CaretLeft />
                   </el-icon>
                 </div>
@@ -361,9 +416,14 @@
 
               <!-- 内容区域 -->
               <div class="sidebar-header">
-                <span class="sidebar-title">Collections</span>
+                <span class="sidebar-title">{{
+                  t("request.panel.sidebar.collections.title")
+                }}</span>
                 <div class="header-actions">
-                  <el-tooltip content="New Folder" placement="top">
+                  <el-tooltip
+                    :content="t('request.panel.sidebar.collections.newFolder')"
+                    placement="top"
+                  >
                     <el-button link size="small" @click="handleAddFolder">
                       <el-icon><Plus /></el-icon>
                     </el-button>
@@ -383,22 +443,26 @@
       </template>
     </div>
 
-    <!-- 请求类型选择对话框 -->
+    <!-- 请类型选择对话框 -->
     <el-dialog
       v-model="showRequestTypeDialog"
-      title="New Request"
-      width="300px"
-      :show-close="false"
-      custom-class="request-type-dialog"
+      :title="t('request.panel.requestType.title')"
+      width="500px"
     >
       <div class="request-type-options">
-        <div class="request-type-option" @click="createNewRequest('http')">
-          <el-icon><Document /></el-icon>
-          <span>HTTP Request</span>
-        </div>
-        <div class="request-type-option" @click="createNewRequest('rpc')">
+        <div class="request-type-option" @click="selectRequestType('grpc')">
           <el-icon><Connection /></el-icon>
-          <span>gRPC Request</span>
+          <div class="option-content">
+            <h4>{{ t("request.panel.requestType.grpc.title") }}</h4>
+            <p>{{ t("request.panel.requestType.grpc.description") }}</p>
+          </div>
+        </div>
+        <div class="request-type-option" @click="selectRequestType('http')">
+          <el-icon><Link /></el-icon>
+          <div class="option-content">
+            <h4>{{ t("request.panel.requestType.http.title") }}</h4>
+            <p>{{ t("request.panel.requestType.http.description") }}</p>
+          </div>
         </div>
       </div>
     </el-dialog>
@@ -419,11 +483,11 @@ import {
   Collection,
   Connection,
   Plus,
-  Document,
   Timer,
   Monitor,
   Upload,
   Tools,
+  Link,
 } from "@element-plus/icons-vue";
 import TabManager from "./tabs/TabManager.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
@@ -433,7 +497,10 @@ import { useRequestHistory } from "../composables/useRequestHistory";
 import { storage } from "../services/storage";
 import { HistoryItem } from "../types";
 import { useLayoutStore } from "../stores/layout";
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from "pinia";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const layoutStore = useLayoutStore();
 const { settings } = storeToRefs(layoutStore);
@@ -484,7 +551,7 @@ const removeTab = async (targetId: string) => {
   const tab = tabs.value.find((tab) => tab.id === targetId);
   if (!tab) return;
 
-  // 检查是否未保存的更改
+  // 检查否未保存的更改
   if (hasUnsavedChanges.value.get(targetId)) {
     try {
       await ElMessageBox.confirm(
@@ -533,7 +600,7 @@ const removeTab = async (targetId: string) => {
   // 清理未保存状态
   hasUnsavedChanges.value.delete(targetId);
 
-  // 除签页后，清理相关状态
+  // 除签页，清理相关状态
   localStorage.removeItem(`request-state-${targetId}`);
   hasUnsavedChanges.value.delete(targetId);
 };
@@ -577,10 +644,10 @@ const activeView = ref<
 //  toggleView 函数
 const toggleView = (view: string) => {
   if (activeView.value === view) {
-    // 如果点击当前活动的视图，切换边栏的展开/收状态
+    // 如果点击当前活跃的视图，切换边栏的展开/折叠状态
     layoutStore.toggleSidebar();
   } else {
-    // 如果切换到新的视图，展开边栏并更新活动视图
+    // 如果切换到新的视图，展开边栏并新活动视图
     if (settings.value.isCollapsed) {
       layoutStore.updateSettings({ isCollapsed: false });
     }
@@ -624,7 +691,7 @@ const handleSidebarResize = (e: MouseEvent) => {
       }, 500);
     }
   } else {
-    // 如宽度度阈值，清除计时器
+    // 如宽度度值，清除计时器
     if (collapseTimer) {
       clearTimeout(collapseTimer);
       collapseTimer = null;
@@ -657,7 +724,7 @@ const startSidebarResize = (e: MouseEvent) => {
       leftSection?.classList.remove("near-collapse");
     }
 
-    // 如果宽度小于最小宽度且允许折叠，则自动折叠
+    // 如果宽度小于最小宽度且允许折叠，则自折叠
     if (newWidth < minWidth && settings.value.isCollapsible) {
       leftSection?.classList.remove("near-collapse");
       layoutStore.updateSettings({ isCollapsed: true });
@@ -667,7 +734,7 @@ const startSidebarResize = (e: MouseEvent) => {
       return;
     }
 
-    // 限制宽度在最小和最大值之间
+    // 限制宽度在小和最大值之间
     const clampedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
     layoutStore.updateSettings({ sidebarWidth: clampedWidth });
   };
@@ -701,16 +768,19 @@ const stopSidebarResize = () => {
 // 添加新的响应式变量
 const showRequestTypeDialog = ref(false);
 
-// 添加新的方法
 const showNewRequestDialog = () => {
   showRequestTypeDialog.value = true;
 };
 
-const createNewRequest = (type: "http" | "rpc") => {
+const createNewRequest = () => {
+  showRequestTypeDialog.value = true;
+};
+
+const selectRequestType = (type: "http" | "grpc") => {
   const newId = String(Date.now());
   const newRequest: HistoryItem = {
     id: newId,
-    type: type,
+    type: type === "grpc" ? "rpc" : "http", // 保持类型一致
     url: "",
     method: type === "http" ? "GET" : "",
     name: `New ${type.toUpperCase()} Request`,
@@ -726,7 +796,7 @@ const createNewRequest = (type: "http" | "rpc") => {
     folderId: selectedFolderId.value || undefined,
   };
 
-  // 果有选中文件夹，设置请求的文件夹ID
+  // 如果有选中文件夹，设置请求的文件夹ID
   if (selectedFolderId.value) {
     storage.saveRequestFolder(newId, selectedFolderId.value);
     selectedFolderId.value = null;
@@ -736,13 +806,14 @@ const createNewRequest = (type: "http" | "rpc") => {
   addHistoryItem(newRequest);
 
   // 添加到标签页
-  tabs.value.push({
+  const newTab = {
     id: newId,
-    name: newRequest.name,
-    title: newRequest.name,
-    type: type,
-  });
+    name: `New ${type.toUpperCase()} Request`,
+    title: `New ${type.toUpperCase()} Request`,
+    type: type === "grpc" ? "rpc" : "http",
+  };
 
+  tabs.value.push(newTab as Tab);
   activeTab.value = newId;
   showRequestTypeDialog.value = false;
   hasUnsavedChanges.value.set(newId, false);
@@ -782,14 +853,14 @@ watch(
 const handleAddFolder = async () => {
   try {
     const { value: folderName } = await ElMessageBox.prompt(
-      "Enter folder name",
-      "New Folder",
+      t("request.panel.sidebar.collections.newFolder"),
+      t("request.panel.sidebar.collections.addFolder"),
       {
-        confirmButtonText: "Create",
-        cancelButtonText: "Cancel",
+        confirmButtonText: t("common.confirm"),
+        cancelButtonText: t("common.cancel"),
         inputValidator: (value) => {
           if (!value) {
-            return "Folder name cannot be empty";
+            return t("common.validation.required");
           }
           return true;
         },
@@ -798,13 +869,13 @@ const handleAddFolder = async () => {
 
     if (folderName) {
       const folder = addFolder(folderName.trim());
-      console.log("Folder created:", folder); // 添加志
-      ElMessage.success(`Folder "${folderName}" created successfully`);
+      console.log("Folder created:", folder);
+      ElMessage.success(t("common.success"));
     }
   } catch (error) {
-    console.error("Error creating folder:", error); // 加误日志
+    console.error("Error creating folder:", error);
     if (error !== "cancel") {
-      ElMessage.error("Failed to create folder");
+      ElMessage.error(t("common.error"));
     }
   }
 };
@@ -821,20 +892,17 @@ const selectedFolderId = ref<string | null>(null);
 
 // 处理打开请求
 const handleOpenRequest = (request: any) => {
-  // 检查标签页是否已经存在
   const existingTab = tabs.value.find((tab) => tab.id === request.id);
   if (existingTab) {
-    // 如果标签页已存在，更新名称并激活它
     existingTab.name = request.name || request.url;
     existingTab.title = request.name || request.url;
     activeTab.value = request.id;
   } else {
-    // 如果标签页不在，创建新标签页
     tabs.value.push({
       id: request.id,
       name: request.name || request.url,
       title: request.name || request.url,
-      type: request.type,
+      type: request.type, // 直接使用请求的类型，因为历史记录中已经是正确的 'rpc' 或 'http' 类型
     });
     activeTab.value = request.id;
   }
@@ -886,7 +954,7 @@ const handleUnsavedChange = (tabId: string, isUnsaved: boolean) => {
   }
 };
 
-// 添加保存请求的方法
+// 添加存请求的方法
 const saveRequest = () => {
   if (currentTab.value) {
     // 保存当前请求的逻辑
@@ -931,15 +999,28 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 };
 
 // 监听布局变化
-watch(() => settings.value, (newSettings) => {
-  // 保存到本地存储
-  localStorage.setItem('layoutSettings', JSON.stringify(newSettings));
-  
-  // 应用布局相关的 CSS 变量
-  document.documentElement.style.setProperty('--sidebar-width', `${newSettings.sidebarWidth}px`);
-  document.documentElement.style.setProperty('--header-height', newSettings.compactMode ? '40px' : '48px');
-  document.documentElement.style.setProperty('--toolbar-height', newSettings.compactMode ? '36px' : '40px');
-}, { deep: true });
+watch(
+  () => settings.value,
+  (newSettings) => {
+    // 保存到本地存储
+    localStorage.setItem("layoutSettings", JSON.stringify(newSettings));
+
+    // 应用布相关的 CSS 变量
+    document.documentElement.style.setProperty(
+      "--sidebar-width",
+      `${newSettings.sidebarWidth}px`
+    );
+    document.documentElement.style.setProperty(
+      "--header-height",
+      newSettings.compactMode ? "40px" : "48px"
+    );
+    document.documentElement.style.setProperty(
+      "--toolbar-height",
+      newSettings.compactMode ? "36px" : "40px"
+    );
+  },
+  { deep: true }
+);
 </script>
 <style scoped>
 /* 原有的基础样式 */
@@ -1217,7 +1298,7 @@ watch(() => settings.value, (newSettings) => {
   background-color: var(--background);
 }
 
-/* 空状态���式 */
+/* 空状态样式 */
 .empty-state {
   position: absolute;
   inset: 0;
@@ -1271,15 +1352,15 @@ watch(() => settings.value, (newSettings) => {
   .new-area {
     height: 40px;
   }
-  
+
   .activity-item {
     height: 40px;
   }
-  
+
   .tab-manager {
     height: 36px;
   }
-  
+
   .toolbar {
     height: 36px;
   }
@@ -1309,10 +1390,10 @@ watch(() => settings.value, (newSettings) => {
     height: 100%;
     z-index: 100;
   }
-  
+
   .main-content.tabs-left {
     flex-direction: column;
-    
+
     .tab-manager {
       width: 100%;
       height: auto;
@@ -1407,7 +1488,7 @@ watch(() => settings.value, (newSettings) => {
     flex-direction: column;
   }
 
-  /* 当侧边栏在右侧时的样式 */
+  /* 当侧栏在右侧时的样式 */
   .left-section.position-right {
     order: 2;
     border-left: 1px solid var(--border);

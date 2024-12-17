@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="布局设置"
+    :title="t('settings.layout.title')"
     width="80%"
     :before-close="handleClose"
     :close-on-click-modal="false"
@@ -10,6 +10,7 @@
     <div class="layout-settings">
       <!-- 布局预览区域 -->
       <div class="layout-preview-section">
+        <h4>{{ t("settings.layout.title") }}</h4>
         <div class="preview-container">
           <div
             class="layout-preview"
@@ -24,8 +25,17 @@
               :class="{ hidden: !previewSettings.showHeader }"
             >
               <div class="preview-dots">
-                <span></span><span></span><span></span>
+                <span
+                  :title="t('settings.layout.preview.dots.minimize')"
+                ></span>
+                <span
+                  :title="t('settings.layout.preview.dots.maximize')"
+                ></span>
+                <span :title="t('settings.layout.preview.dots.close')"></span>
               </div>
+              <span class="preview-title">
+                {{ t("settings.layout.components.header") }}
+              </span>
             </div>
             <!-- 预览主体 -->
             <div class="preview-body">
@@ -44,6 +54,9 @@
                 }"
               >
                 <div class="preview-sidebar-content">
+                  <div class="preview-title">
+                    {{ t("settings.layout.components.sidebar") }}
+                  </div>
                   <div class="preview-item"></div>
                   <div class="preview-item"></div>
                   <div class="preview-item"></div>
@@ -54,19 +67,29 @@
                 class="preview-main"
                 :class="{
                   'layout-modern': previewSettings.currentLayout === 'modern',
-                  'layout-classic': previewSettings.currentLayout === 'classic'
+                  'layout-classic': previewSettings.currentLayout === 'classic',
                 }"
               >
                 <!-- 经典布局的标签页 -->
                 <template v-if="previewSettings.currentLayout === 'classic'">
                   <div class="preview-tabs">
+                    <div class="preview-title">
+                      {{ t("settings.layout.components.tabs") }}
+                    </div>
                     <div class="preview-tab active"></div>
-                    <div class="preview-tab"></div>
                     <div class="preview-tab"></div>
                   </div>
                   <div class="preview-content">
-                    <div class="preview-toolbar"></div>
-                    <div class="preview-editor"></div>
+                    <div class="preview-toolbar">
+                      <div class="preview-title">
+                        {{ t("settings.layout.components.toolbar") }}
+                      </div>
+                    </div>
+                    <div class="preview-editor">
+                      <div class="preview-title">
+                        {{ t("settings.layout.components.editor") }}
+                      </div>
+                    </div>
                   </div>
                 </template>
 
@@ -74,15 +97,26 @@
                 <template v-else>
                   <div class="preview-tabs-container">
                     <div class="preview-tabs">
+                      <div class="preview-title">
+                        {{ t("settings.layout.components.tabs") }}
+                      </div>
                       <div class="preview-tab active"></div>
                       <div class="preview-tab"></div>
                       <div class="preview-tab"></div>
                     </div>
                   </div>
                   <div class="preview-content-container">
-                    <div class="preview-toolbar"></div>
+                    <div class="preview-toolbar">
+                      <div class="preview-title">
+                        {{ t("settings.layout.components.toolbar") }}
+                      </div>
+                    </div>
                     <div class="preview-content">
-                      <div class="preview-editor"></div>
+                      <div class="preview-editor">
+                        <div class="preview-title">
+                          {{ t("settings.layout.components.editor") }}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </template>
@@ -95,7 +129,7 @@
       <!-- 布局控制面板 -->
       <div class="layout-controls">
         <!-- 布局预设 -->
-        <el-form-item label="布局预设">
+        <el-form-item :label="t('settings.layout.presets.title')">
           <div class="preset-buttons">
             <el-button-group>
               <el-button
@@ -107,51 +141,69 @@
                 @click.stop="(event) => selectLayout(preset.id, event)"
               >
                 <el-icon><component :is="preset.icon" /></el-icon>
-                {{ preset.name }}
+                {{ t(`settings.layout.presets.names.${preset.id}`) }}
               </el-button>
             </el-button-group>
           </div>
         </el-form-item>
 
         <!-- 组件显示控制 -->
-        <el-form-item label="显示组件">
+        <el-form-item :label="t('settings.layout.components.title')">
           <div class="component-toggles">
-            <el-checkbox v-model="previewSettings.showHeader">顶栏</el-checkbox>
-            <el-checkbox v-model="previewSettings.showSidebar"
-              >侧边栏</el-checkbox
-            >
-            <el-checkbox v-model="previewSettings.showTabs">标签页</el-checkbox>
-            <el-checkbox v-model="previewSettings.showToolbar"
-              >工具栏</el-checkbox
-            >
+            <el-checkbox v-model="previewSettings.showHeader">
+              {{ t("settings.layout.components.header") }}
+            </el-checkbox>
+            <el-checkbox v-model="previewSettings.showSidebar">
+              {{ t("settings.layout.components.sidebar") }}
+            </el-checkbox>
+            <el-checkbox v-model="previewSettings.showTabs">
+              {{ t("settings.layout.components.tabs") }}
+            </el-checkbox>
+            <el-checkbox v-model="previewSettings.showToolbar">
+              {{ t("settings.layout.components.toolbar") }}
+            </el-checkbox>
           </div>
         </el-form-item>
 
         <!-- 侧边栏设置 -->
         <template v-if="previewSettings.showSidebar">
-          <el-form-item label="侧边栏">
+          <el-form-item :label="t('settings.layout.sidebarSettings.title')">
             <div class="sidebar-settings">
               <el-radio-group
                 v-model="previewSettings.sidebarPosition"
                 size="small"
               >
-                <el-radio-button :value="'left'">左侧</el-radio-button>
-                <el-radio-button :value="'right'">右侧</el-radio-button>
+                <el-radio-button :value="'left'">
+                  {{ t("settings.layout.sidebarSettings.position.left") }}
+                </el-radio-button>
+                <el-radio-button :value="'right'">
+                  {{ t("settings.layout.sidebarSettings.position.right") }}
+                </el-radio-button>
               </el-radio-group>
-              <el-checkbox v-model="previewSettings.isCollapsible"
-                >可折叠</el-checkbox
-              >
+              <el-checkbox v-model="previewSettings.isCollapsible">
+                {{ t("settings.layout.sidebarSettings.collapsible") }}
+              </el-checkbox>
               <div class="width-control">
-                <span>宽度:</span>
+                <span
+                  >{{
+                    t("settings.layout.sidebarSettings.widthControl.label")
+                  }}:</span
+                >
                 <el-slider
                   v-model="previewSettings.sidebarWidth"
                   :min="180"
                   :max="500"
                   :step="10"
                   :marks="{
-                    180: '最小',
-                    300: '默认',
-                    500: '最大',
+                    180: `180${t(
+                      'settings.layout.sidebarSettings.widthControl.unit'
+                    )}`,
+                    300: `300${t(
+                      'settings.layout.sidebarSettings.widthControl.unit'
+                    )}`,
+                    500: `500${t(
+                      'settings.layout.sidebarSettings.widthControl.unit'
+                    )}`,
                   }"
                 />
               </div>
@@ -161,75 +213,117 @@
 
         <!-- 标签页设置 -->
         <template v-if="previewSettings.showTabs">
-          <el-form-item label="标签页位置">
+          <el-form-item :label="t('settings.layout.tabsPosition.title')">
             <el-radio-group v-model="previewSettings.tabsPosition" size="small">
-              <el-radio-button :value="'top'">顶部</el-radio-button>
-              <el-radio-button :value="'left'">左侧</el-radio-button>
-              <el-radio-button :value="'bottom'">底部</el-radio-button>
+              <el-radio-button :value="'top'">{{
+                t("settings.layout.tabsPosition.top")
+              }}</el-radio-button>
+              <el-radio-button :value="'left'">{{
+                t("settings.layout.tabsPosition.left")
+              }}</el-radio-button>
+              <el-radio-button :value="'bottom'">{{
+                t("settings.layout.tabsPosition.bottom")
+              }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
         </template>
 
         <!-- 工具栏设置 -->
         <template v-if="previewSettings.showToolbar">
-          <el-form-item label="工具栏位置">
+          <el-form-item :label="t('settings.layout.toolbarPosition.title')">
             <el-radio-group
               v-model="previewSettings.toolbarPosition"
               size="small"
             >
-              <el-radio-button :value="'top'">顶部</el-radio-button>
-              <el-radio-button :value="'bottom'">底部</el-radio-button>
+              <el-radio-button :value="'top'">{{
+                t("settings.layout.toolbarPosition.top")
+              }}</el-radio-button>
+              <el-radio-button :value="'bottom'">{{
+                t("settings.layout.toolbarPosition.bottom")
+              }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
         </template>
 
         <!-- 其他布局选项 -->
-        <el-form-item label="其他选项">
+        <el-form-item :label="t('settings.layout.other.title')">
           <div class="other-options">
-            <el-checkbox v-model="previewSettings.showBorders"
-              >显示边框</el-checkbox
-            >
-            <el-checkbox v-model="previewSettings.compactMode"
-              >紧凑模式</el-checkbox
-            >
-            <el-checkbox v-model="previewSettings.showShadows"
-              >显示阴影</el-checkbox
-            >
+            <el-checkbox v-model="previewSettings.showBorders">{{
+              t("settings.layout.other.showBorders")
+            }}</el-checkbox>
+            <el-checkbox v-model="previewSettings.compactMode">{{
+              t("settings.layout.other.compactMode")
+            }}</el-checkbox>
+            <el-checkbox v-model="previewSettings.showShadows">{{
+              t("settings.layout.other.showShadows")
+            }}</el-checkbox>
           </div>
         </el-form-item>
 
         <!-- 高级布局选项 -->
         <el-collapse>
-          <el-collapse-item title="高级布局选项" name="advanced">
+          <el-collapse-item
+            :title="t('settings.layout.advanced.title')"
+            name="advanced"
+          >
             <!-- 布局模式 -->
-            <el-form-item label="布局模式">
+            <el-form-item
+              :label="t('settings.layout.advanced.layoutMode.title')"
+            >
               <el-radio-group v-model="previewSettings.layoutMode" size="small">
-                <el-radio-button :value="'fixed'">固定布局</el-radio-button>
-                <el-radio-button :value="'fluid'">流式布局</el-radio-button>
-                <el-radio-button :value="'custom'">自定义布局</el-radio-button>
+                <el-radio-button :value="'fixed'">{{
+                  t("settings.layout.advanced.layoutMode.fixed")
+                }}</el-radio-button>
+                <el-radio-button :value="'fluid'">{{
+                  t("settings.layout.advanced.layoutMode.fluid")
+                }}</el-radio-button>
+                <el-radio-button :value="'custom'">{{
+                  t("settings.layout.advanced.layoutMode.custom")
+                }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
             <!-- 区域比例控制 -->
             <template v-if="previewSettings.layoutMode === 'custom'">
-              <el-form-item label="区域比例">
+              <el-form-item :label="t('settings.layout.advanced.ratios.title')">
                 <div class="ratio-controls">
+                  <div class="ratio-header">
+                    <el-tooltip
+                      :content="t('settings.layout.advanced.ratios.tooltip')"
+                      placement="top"
+                    >
+                      <el-icon><InfoFilled /></el-icon>
+                    </el-tooltip>
+                    <span class="ratio-title">{{
+                      t("settings.layout.advanced.ratios.title")
+                    }}</span>
+                  </div>
                   <div class="ratio-item">
-                    <span>主内容区域</span>
+                    <span>{{
+                      t("settings.layout.advanced.ratios.mainContent")
+                    }}</span>
                     <el-slider
                       v-model="previewSettings.mainContentRatio"
                       :min="30"
                       :max="70"
                       :step="5"
                       :marks="{
-                        30: '30%',
-                        50: '50%',
-                        70: '70%',
+                        30: t('settings.layout.ratios.sliderMarks.min', {
+                          value: 30,
+                        }),
+                        50: t('settings.layout.ratios.sliderMarks.default', {
+                          value: 50,
+                        }),
+                        70: t('settings.layout.ratios.sliderMarks.max', {
+                          value: 70,
+                        }),
                       }"
                     />
                   </div>
                   <div class="ratio-item">
-                    <span>侧边栏</span>
+                    <span>{{
+                      t("settings.layout.advanced.ratios.sidebar")
+                    }}</span>
                     <el-slider
                       v-model="previewSettings.sidebarRatio"
                       :min="10"
@@ -238,7 +332,9 @@
                     />
                   </div>
                   <div class="ratio-item">
-                    <span>编辑器</span>
+                    <span>{{
+                      t("settings.layout.advanced.ratios.editor")
+                    }}</span>
                     <el-slider
                       v-model="previewSettings.editorRatio"
                       :min="30"
@@ -247,7 +343,9 @@
                     />
                   </div>
                   <div class="ratio-item">
-                    <span>响应区域</span>
+                    <span>{{
+                      t("settings.layout.advanced.ratios.response")
+                    }}</span>
                     <el-slider
                       v-model="previewSettings.responseRatio"
                       :min="20"
@@ -259,90 +357,163 @@
               </el-form-item>
 
               <!-- Grid 布局编辑器 -->
-              <el-form-item label="Grid 布局">
+              <el-form-item :label="t('settings.layout.advanced.grid.title')">
                 <div class="grid-editor">
                   <div class="grid-preview" :style="gridStyle">
-                    <!-- 可拖拽的网格区域 -->
-                    <div
-                      v-for="area in gridAreas"
-                      :key="area.id"
-                      class="grid-area"
-                      :class="area.type"
-                      draggable="true"
-                      @dragstart="handleDragStart($event, area)"
-                      @dragend="handleDragEnd"
-                      @drop="handleDrop($event, area)"
-                      @dragover.prevent
-                    >
-                      {{ area.name }}
+                    <div class="grid-title">
+                      <span>{{ t("settings.layout.grid.preview.title") }}</span>
+                      <el-tooltip
+                        :content="t('settings.layout.preview.dragAndDrop.tip')"
+                        placement="top"
+                      >
+                        <el-icon><InfoFilled /></el-icon>
+                      </el-tooltip>
+                    </div>
+                    <template v-if="gridAreas.length">
+                      <!-- 可拖拽的网格区域 -->
+                      <div
+                        v-for="area in gridAreas"
+                        :key="area.id"
+                        class="grid-area"
+                        :class="area.type"
+                        draggable="true"
+                        @dragstart="handleDragStart($event, area)"
+                        @dragend="handleDragEnd"
+                        @drop="handleDrop($event, area)"
+                        @dragover.prevent
+                      >
+                        {{ t(`settings.layout.grid.areas.${area.type}`) }}
+                      </div>
+                    </template>
+                    <div v-else class="grid-empty">
+                      {{ t("settings.layout.grid.preview.empty") }}
                     </div>
                   </div>
                   <div class="grid-controls">
-                    <el-button size="small" @click="resetGrid"
-                      >重置网格</el-button
-                    >
-                    <el-button size="small" @click="optimizeGrid"
-                      >优化布局</el-button
-                    >
+                    <el-button size="small" @click="resetGrid">
+                      {{ t("settings.layout.advanced.grid.reset") }}
+                    </el-button>
+                    <el-button size="small" @click="optimizeGrid">
+                      {{ t("settings.layout.advanced.grid.optimize") }}
+                    </el-button>
                   </div>
                 </div>
               </el-form-item>
             </template>
 
             <!-- 响应式设置 -->
-            <el-form-item label="响应式断点">
+            <el-form-item
+              :label="t('settings.layout.advanced.responsive.title')"
+            >
               <div class="breakpoint-controls">
                 <div class="breakpoint-item">
-                  <span>移动端 (&lt;)</span>
+                  <span>{{
+                    t("settings.layout.breakpoints.label.mobile")
+                  }}</span>
                   <el-input-number
                     v-model="previewSettings.responsiveBreakpoints.mobile"
                     :min="320"
                     :max="767"
                     :step="1"
-                  />
+                  >
+                    <template #suffix>{{
+                      t("settings.layout.breakpoints.unit")
+                    }}</template>
+                  </el-input-number>
                 </div>
                 <div class="breakpoint-item">
-                  <span>平板 (&lt;)</span>
+                  <span>{{
+                    t("settings.layout.breakpoints.label.tablet")
+                  }}</span>
                   <el-input-number
                     v-model="previewSettings.responsiveBreakpoints.tablet"
                     :min="768"
                     :max="1023"
                     :step="1"
-                  />
+                  >
+                    <template #suffix>{{
+                      t("settings.layout.breakpoints.unit")
+                    }}</template>
+                  </el-input-number>
                 </div>
                 <div class="breakpoint-item">
-                  <span>桌面端 (&gt;=)</span>
+                  <span>{{
+                    t("settings.layout.breakpoints.label.desktop")
+                  }}</span>
                   <el-input-number
                     v-model="previewSettings.responsiveBreakpoints.desktop"
                     :min="1024"
                     :max="1920"
                     :step="1"
-                  />
+                  >
+                    <template #suffix>{{
+                      t("settings.layout.breakpoints.unit")
+                    }}</template>
+                  </el-input-number>
                 </div>
               </div>
             </el-form-item>
 
             <!-- 动画设置 -->
-            <el-form-item label="过渡动画">
+            <el-form-item
+              :label="t('settings.layout.advanced.animations.enabled.title')"
+            >
               <div class="animation-controls">
-                <el-switch v-model="previewSettings.animations.enabled" />
+                <el-tooltip
+                  :content="
+                    t('settings.layout.advanced.animations.enabled.tooltip')
+                  "
+                  placement="top"
+                >
+                  <el-switch
+                    v-model="previewSettings.animations.enabled"
+                    :active-text="
+                      t('settings.layout.advanced.animations.enabled.label')
+                    "
+                  />
+                </el-tooltip>
                 <template v-if="previewSettings.animations.enabled">
                   <el-select
                     v-model="previewSettings.animations.type"
                     size="small"
                   >
-                    <el-option label="滑动" value="slide" />
-                    <el-option label="淡入淡出" value="fade" />
+                    <el-option
+                      :label="
+                        t('settings.layout.advanced.animations.type.slide')
+                      "
+                      value="slide"
+                    />
+                    <el-option
+                      :label="
+                        t('settings.layout.advanced.animations.type.fade')
+                      "
+                      value="fade"
+                    />
                   </el-select>
-                  <el-input-number
-                    v-model="previewSettings.animations.duration"
-                    :min="100"
-                    :max="1000"
-                    :step="50"
-                    size="small"
+                  <el-tooltip
+                    :content="
+                      t('settings.layout.advanced.animations.duration.tooltip')
+                    "
+                    placement="top"
                   >
-                    <template #suffix>ms</template>
-                  </el-input-number>
+                    <div class="duration-input">
+                      <span class="duration-label">{{
+                        t("settings.layout.advanced.animations.duration.label")
+                      }}</span>
+                      <el-input-number
+                        v-model="previewSettings.animations.duration"
+                        :min="100"
+                        :max="1000"
+                        :step="50"
+                        size="small"
+                        controls-position="right"
+                      >
+                        <template #suffix>{{
+                          t("settings.layout.advanced.animations.durationUnit")
+                        }}</template>
+                      </el-input-number>
+                    </div>
+                  </el-tooltip>
                 </template>
               </div>
             </el-form-item>
@@ -350,13 +521,17 @@
         </el-collapse>
       </div>
     </div>
-
-    <!-- 使用 dialog 的 footer 插槽 -->
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
-        <el-button @click="resetLayout">恢复默认</el-button>
-        <el-button type="primary" @click="handleApply">应用布局</el-button>
+        <el-button @click="handleClose">{{
+          t("settings.layout.actions.cancel")
+        }}</el-button>
+        <el-button @click="resetLayout">{{
+          t("settings.layout.actions.reset")
+        }}</el-button>
+        <el-button type="primary" @click="handleApply">{{
+          t("settings.layout.actions.apply")
+        }}</el-button>
       </div>
     </template>
   </el-dialog>
@@ -367,8 +542,10 @@ import { ref, computed, onBeforeUnmount } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useLayoutStore } from "../../stores/layout";
 import { layoutPresets } from "../../constants/layoutPresets";
+import { useI18n } from "vue-i18n";
+import { InfoFilled } from "@element-plus/icons-vue";
 
-// 添加 props 和 emit
+const { t } = useI18n();
 const props = defineProps<{
   modelValue: boolean;
 }>();
@@ -378,7 +555,9 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-// 控制弹窗显示
+// 跟踪是否有未保存的更改
+const hasUnsavedChanges = ref(false);
+
 const visible = computed({
   get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value),
@@ -386,7 +565,7 @@ const visible = computed({
 
 const layoutStore = useLayoutStore();
 
-// 创建预览设置的副本时，确保包含所有必要的属性
+// 创建预览设置的副本时确保包含所有必要的属性
 const previewSettings = ref({
   ...layoutStore.settings,
   showHeader: true,
@@ -445,9 +624,9 @@ const responseRatio = computed({
 
 // Grid 布局相关
 const gridAreas = ref([
-  { id: 1, name: "侧边栏", type: "sidebar" },
-  { id: 2, name: "编辑器", type: "editor" },
-  { id: 3, name: "响应区域", type: "response" },
+  { id: 1, type: "sidebar" },
+  { id: 2, type: "editor" },
+  { id: 3, type: "response" },
 ]);
 
 const gridStyle = computed(() => ({
@@ -457,7 +636,7 @@ const gridStyle = computed(() => ({
   gap: "4px",
 }));
 
-// Grid 拖拽相关方法
+// Grid 拽方法
 const handleDragStart = (e: DragEvent, area: any) => {
   if (e.dataTransfer) {
     e.dataTransfer.setData("text/plain", area.id.toString());
@@ -569,7 +748,7 @@ const applySettings = () => {
 
   // 更新布局存储
   layoutStore.updateSettings(newSettings);
-  ElMessage.success("布局设置已应用");
+  ElMessage.success(t("settings.layout.advanced.messages.applySuccess"));
 };
 
 // 取消预览
@@ -591,61 +770,76 @@ const cancelPreview = () => {
   };
 };
 
-// 重置布局 - 使用完整的默认设置
-const resetLayout = () => {
-  previewSettings.value = {
-    ...layoutStore.settings, // 先保留基础设置
-    showHeader: true,
-    isCollapsed: false,
-    sidebarWidth: 240,
-    minSidebarWidth: 200,
-    maxSidebarWidth: 600,
-    isCollapsible: true,
-    showSidebar: true,
-    showToolbar: true,
-    showTabs: true,
-    compactMode: false,
-    showBorders: true,
-    showShadows: true,
-    currentLayout: "classic",
-    sidebarPosition: "left",
-    tabsPosition: "top",
-    layoutMode: "fixed" as const,
-    mainContentRatio: 0.5,
-    sidebarRatio: 0.2,
-    editorRatio: 0.5,
-    responseRatio: 0.3,
-    responsiveBreakpoints: {
-      mobile: 576,
-      tablet: 768,
-      desktop: 1024,
-    },
-    animations: {
-      enabled: true,
-      type: "slide" as const,
-      duration: 300,
-    },
-  };
-  updatePreview();
+// 重置布局 - 使用完的默认设置
+const resetLayout = async () => {
+  try {
+    await ElMessageBox.confirm(
+      t("settings.layout.advanced.messages.resetConfirm"),
+      t("settings.layout.title")
+    );
+    previewSettings.value = {
+      ...layoutStore.settings, // 先保留基础设置
+      showHeader: true,
+      isCollapsed: false,
+      sidebarWidth: 240,
+      minSidebarWidth: 200,
+      maxSidebarWidth: 600,
+      isCollapsible: true,
+      showSidebar: true,
+      showToolbar: true,
+      showTabs: true,
+      compactMode: false,
+      showBorders: true,
+      showShadows: true,
+      currentLayout: "classic",
+      sidebarPosition: "left",
+      tabsPosition: "top",
+      layoutMode: "fixed" as const,
+      mainContentRatio: 0.5,
+      sidebarRatio: 0.2,
+      editorRatio: 0.5,
+      responseRatio: 0.3,
+      responsiveBreakpoints: {
+        mobile: 576,
+        tablet: 768,
+        desktop: 1024,
+      },
+      animations: {
+        enabled: true,
+        type: "slide" as const,
+        duration: 300,
+      },
+    };
+    updatePreview();
+    ElMessage.success(t("settings.layout.advanced.messages.resetSuccess"));
+  } catch {}
 };
 
 // 关闭处理方法
-const handleClose = () => {
-  // 出确认对话框
-  ElMessageBox.confirm("确定要取消布局设置吗？未保存的更改将会丢失。", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(() => {
-      // 用户确认关闭
-      cancelPreview();
+const handleClose = async () => {
+  if (hasUnsavedChanges.value) {
+    try {
+      await ElMessageBox.confirm(
+        t("settings.layout.messages.unsavedChanges"),
+        t("settings.layout.actions.confirm"),
+        {
+          confirmButtonText: t("settings.layout.actions.save"),
+          cancelButtonText: t("settings.layout.actions.cancel"),
+          type: "warning",
+        }
+      );
+      // 用户选择保存
+      await applySettings();
       visible.value = false;
       emit("close");
-    })
-    .catch(() => {
-      // 用户取消关闭，不做何操作
-    });
+    } catch {
+      // 用户取消保存，不做任何操作
+    }
+  } else {
+    // 没有未保存的更改，直接关闭
+    visible.value = false;
+    emit("close");
+  }
 };
 
 // 应用布局方法
@@ -1112,5 +1306,75 @@ onBeforeUnmount(() => {
   border-radius: 4px;
   border: 1px solid var(--border-color);
   min-height: 0;
+}
+
+.animation-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duration-label {
+  font-size: 13px;
+  color: var(--text-color);
+}
+
+.ratio-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ratio-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.ratio-header .el-icon {
+  font-size: 16px;
+  color: var(--text-color-secondary);
+}
+
+.preview-title {
+  font-size: 12px;
+  color: var(--text-color-secondary);
+  padding: 4px 8px;
+  opacity: 0.7;
+  user-select: none;
+}
+
+.preview-sidebar-content .preview-title,
+.preview-tabs .preview-title,
+.preview-toolbar .preview-title,
+.preview-editor .preview-title {
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color-light);
+  margin-bottom: 4px;
+}
+
+.grid-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color-light);
+}
+
+.grid-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-color-secondary);
+  font-size: 14px;
 }
 </style>

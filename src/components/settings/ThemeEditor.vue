@@ -1,20 +1,20 @@
 <template>
   <div class="theme-editor">
     <el-form :model="themeForm" label-width="120px">
-      <el-form-item label="Theme Name">
+      <el-form-item :label="t('settings.theme.editor.name')">
         <el-input v-model="themeForm.name" placeholder="Enter theme name" />
       </el-form-item>
 
-      <el-form-item label="Theme Type">
+      <el-form-item :label="t('settings.theme.editor.type')">
         <el-switch
           v-model="themeForm.isDark"
-          active-text="Dark"
-          inactive-text="Light"
+          :active-text="t('settings.theme.dark')"
+          :inactive-text="t('settings.theme.light')"
         />
       </el-form-item>
 
       <div class="colors-section">
-        <h3>Colors</h3>
+        <h3>{{ t('settings.theme.editor.colors') }}</h3>
         <div class="color-grid">
           <div v-for="(_value, key) in themeForm.colors" :key="key" class="color-item">
             <span class="color-label">{{ formatColorLabel(key) }}</span>
@@ -31,19 +31,19 @@
       </div>
 
       <div class="preview-section">
-        <h3>Preview</h3>
+        <h3>{{ t('settings.theme.editor.preview') }}</h3>
         <div 
           class="preview-content"
           :style="previewStyles"
         >
           <div class="preview-header">
-            <span>Header</span>
+            <span>{{ t('settings.theme.editor.previewHeader') }}</span>
             <el-button type="primary" size="small">Button</el-button>
           </div>
           <div class="preview-body">
             <div class="preview-card">
-              <h4>Card Title</h4>
-              <p>Sample text content</p>
+              <h4>{{ t('settings.theme.editor.previewCardTitle') }}</h4>
+              <p>{{ t('settings.theme.editor.previewCardContent') }}</p>
               <el-button type="success" size="small">Success</el-button>
               <el-button type="warning" size="small">Warning</el-button>
               <el-button type="danger" size="small">Danger</el-button>
@@ -53,8 +53,8 @@
       </div>
 
       <div class="dialog-footer">
-        <el-button @click="$emit('cancel')">Cancel</el-button>
-        <el-button type="primary" @click="handleSave">Save Theme</el-button>
+        <el-button @click="$emit('cancel')">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSave">{{ t('settings.theme.editor.save') }}</el-button>
       </div>
     </el-form>
   </div>
@@ -64,6 +64,9 @@
 import { ref, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { Theme } from '../../types/theme';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   initialTheme?: Partial<Theme> | null;
@@ -129,7 +132,7 @@ const previewStyles = computed(() => {
 
 const handleSave = () => {
   if (!themeForm.value.name) {
-    ElMessage.warning('Please enter a theme name');
+    ElMessage.warning(t('settings.theme.editor.nameRequired'));
     return;
   }
   emit('save', {

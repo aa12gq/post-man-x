@@ -1,10 +1,10 @@
 <template>
   <div class="theme-settings">
-    <h2>Theme Settings</h2>
+    <h2>{{ t('settings.theme.title') }}</h2>
 
     <!-- 主题类型选择标签页 -->
     <el-tabs v-model="activeTab">
-      <el-tab-pane label="Official Themes" name="official">
+      <el-tab-pane :label="t('settings.theme.officialThemes')" name="official">
         <div class="theme-list">
           <div
             v-for="theme in themeStore.officialCustomThemes"
@@ -20,28 +20,28 @@
               <div class="theme-info">
                 <span class="theme-name">{{ theme.name }}</span>
                 <span class="theme-type">{{
-                  theme.isDark ? "Dark" : "Light"
+                  theme.isDark ? t('settings.theme.dark') : t('settings.theme.light')
                 }}</span>
               </div>
             </div>
             <div class="theme-actions">
               <el-button type="primary" link @click="handleExport(theme)">
                 <el-icon><Download /></el-icon>
-                Export
+                {{ t('settings.theme.exportTheme') }}
               </el-button>
               <el-button type="primary" link @click="handleDuplicate(theme)">
                 <el-icon><CopyDocument /></el-icon>
-                Duplicate
+                {{ t('settings.theme.duplicateTheme') }}
               </el-button>
             </div>
           </div>
         </div>
       </el-tab-pane>
 
-      <el-tab-pane label="Custom Themes" name="custom">
+      <el-tab-pane :label="t('settings.theme.customThemes')" name="custom">
         <div class="themes-header">
           <el-button type="primary" @click="showThemeEditor = true">
-            Create Theme
+            {{ t('settings.theme.createTheme') }}
           </el-button>
         </div>
         <div class="theme-list">
@@ -56,22 +56,22 @@
               <div class="theme-info">
                 <span class="theme-name">{{ theme.name }}</span>
                 <span class="theme-type">{{
-                  theme.isDark ? "Dark" : "Light"
+                  theme.isDark ? t('settings.theme.dark') : t('settings.theme.light')
                 }}</span>
               </div>
             </div>
             <div class="theme-actions">
               <el-button type="primary" link @click="editTheme(theme)">
                 <el-icon><Edit /></el-icon>
-                Edit
+                {{ t('settings.theme.editTheme') }}
               </el-button>
               <el-button type="primary" link @click="handleExport(theme)">
                 <el-icon><Download /></el-icon>
-                Export
+                {{ t('settings.theme.exportTheme') }}
               </el-button>
               <el-button type="danger" link @click="handleDelete(theme)">
                 <el-icon><Delete /></el-icon>
-                Delete
+                {{ t('settings.theme.deleteTheme') }}
               </el-button>
             </div>
           </div>
@@ -84,7 +84,7 @@
             :show-file-list="false"
             :on-change="handleImport"
           >
-            <el-button>Import Theme</el-button>
+            <el-button>{{ t('settings.theme.importTheme') }}</el-button>
           </el-upload>
         </div>
       </el-tab-pane>
@@ -93,7 +93,7 @@
     <!-- 主题编辑器对话框 -->
     <el-dialog
       v-model="showThemeEditor"
-      :title="editingTheme ? 'Edit Theme' : 'Create Theme'"
+      :title="editingTheme ? t('settings.theme.editTheme') : t('settings.theme.createTheme')"
       width="800px"
     >
       <ThemeEditor
@@ -114,8 +114,10 @@ import type { Theme } from "../../types/theme";
 import ThemeEditor from "./ThemeEditor.vue";
 import type { UploadFile } from "element-plus";
 import ThemePreviewCard from "../common/ThemePreviewCard.vue";
+import { useI18n } from "vue-i18n";
 
 const themeStore = useThemeStore();
+const { t } = useI18n();
 const showThemeEditor = ref(false);
 const editingTheme = ref<Theme | null>(null);
 const activeTab = computed(() => {
@@ -138,20 +140,20 @@ const applyCustomTheme = (theme: Theme) => {
 const handleExport = (theme: Theme) => {
   try {
     themeStore.exportTheme(theme);
-    ElMessage.success("Theme exported successfully");
+    ElMessage.success(t('settings.theme.exportSuccess'));
   } catch (error) {
-    ElMessage.error("Failed to export theme");
+    ElMessage.error(t('settings.theme.exportError'));
   }
 };
 
 const handleDelete = async (theme: Theme) => {
   try {
     await ElMessageBox.confirm(
-      "Are you sure you want to delete this theme?",
-      "Delete Theme"
+      t('settings.theme.deleteConfirm'),
+      t('settings.theme.deleteTheme')
     );
     themeStore.removeCustomTheme(theme.id);
-    ElMessage.success("Theme deleted successfully");
+    ElMessage.success(t('settings.theme.deleteSuccess'));
 
     // 如果删除后没有自定义主题了，自动切换到 light 主题
     if (
@@ -165,7 +167,7 @@ const handleDelete = async (theme: Theme) => {
 
 const handleImport = async (uploadFile: UploadFile) => {
   if (!uploadFile.raw) {
-    ElMessage.error("Please select a file");
+    ElMessage.error(t('settings.theme.selectFile'));
     return;
   }
 
@@ -173,9 +175,9 @@ const handleImport = async (uploadFile: UploadFile) => {
     const themeData = await themeStore.importTheme(uploadFile.raw);
     const newTheme = themeStore.addCustomTheme(themeData);
     themeStore.switchTheme("custom", newTheme.id);
-    ElMessage.success("Theme imported successfully");
+    ElMessage.success(t('settings.theme.importSuccess'));
   } catch (error) {
-    ElMessage.error("Failed to import theme: Invalid theme file");
+    ElMessage.error(t('settings.theme.importError'));
   }
 };
 
@@ -185,10 +187,10 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
       ...theme,
       id: editingTheme.value.id,
     });
-    ElMessage.success("Theme updated successfully");
+    ElMessage.success(t('settings.theme.updateSuccess'));
   } else {
     themeStore.addCustomTheme(theme);
-    ElMessage.success("Theme created successfully");
+    ElMessage.success(t('settings.theme.createSuccess'));
   }
   closeEditor();
 };
@@ -208,11 +210,11 @@ const handleDuplicate = (theme: Theme) => {
   const { id, ...themeWithoutId } = theme;
   const newTheme = {
     ...themeWithoutId,
-    name: `${theme.name} Copy`,
+    name: `${theme.name} ${t('settings.theme.copy')}`,
   };
   const addedTheme = themeStore.addCustomTheme(newTheme);
   themeStore.switchTheme("custom", addedTheme.id);
-  ElMessage.success("Theme duplicated successfully");
+  ElMessage.success(t('settings.theme.duplicateSuccess'));
 };
 </script>
 

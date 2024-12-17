@@ -6,14 +6,14 @@
           :model-value="url"
           @update:model-value="$emit('update:url', $event)"
           :fetch-suggestions="handleFetchSuggestions"
-          placeholder="Enter Server URL"
+          :placeholder="t('request.rpc.toolbar.serverUrl')"
           class="server-url"
           clearable
           @clear="handleUrlClear"
         />
       </div>
       <el-button-group class="view-toggle">
-        <el-tooltip content="Dropdown View" placement="top">
+        <el-tooltip :content="t('request.rpc.toolbar.viewModes.dropdown')" placement="top">
           <el-button
             :type="viewMode === 'dropdown' ? 'primary' : ''"
             @click="viewMode = 'dropdown'"
@@ -22,7 +22,7 @@
             <el-icon><List /></el-icon>
           </el-button>
         </el-tooltip>
-        <el-tooltip content="Cascade View" placement="top">
+        <el-tooltip :content="t('request.rpc.toolbar.viewModes.cascade')" placement="top">
           <el-button
             :type="viewMode === 'cascade' ? 'primary' : ''"
             @click="viewMode = 'cascade'"
@@ -35,7 +35,7 @@
       <div v-if="viewMode === 'dropdown'" class="method-section">
         <el-select
           v-model="selectedMethod"
-          placeholder="Select Method"
+          :placeholder="t('request.rpc.toolbar.selectMethod')"
           class="method-select"
           :loading="loadingMethods"
           filterable
@@ -82,10 +82,10 @@
           <template #empty>
             <div class="select-empty">
               <p v-if="!props.url">
-                Enter a server URL to load available methods
+                {{ t('request.rpc.messages.enterUrl') }}
               </p>
-              <p v-else-if="loadingServices">Loading services...</p>
-              <p v-else>No methods found. Try using server reflection.</p>
+              <p v-else-if="loadingServices">{{ t('request.rpc.messages.loadingServices') }}</p>
+              <p v-else>{{ t('request.rpc.messages.noMethods') }}</p>
             </div>
           </template>
 
@@ -144,10 +144,10 @@
           <template #empty>
             <div class="select-empty">
               <p v-if="!props.url">
-                Enter a server URL to load available methods
+                {{ t('request.rpc.messages.enterUrl') }}
               </p>
-              <p v-else-if="loadingServices">Loading services...</p>
-              <p v-else>No methods found. Try using server reflection.</p>
+              <p v-else-if="loadingServices">{{ t('request.rpc.messages.loadingServices') }}</p>
+              <p v-else>{{ t('request.rpc.messages.noMethods') }}</p>
             </div>
           </template>
         </el-cascader>
@@ -158,7 +158,7 @@
         :loading="loading"
         :disabled="!canSend"
       >
-        Invoke
+        {{ t('request.rpc.toolbar.invoke') }}
       </el-button>
     </div>
   </div>
@@ -169,6 +169,9 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { List, Operation, Cpu, Link, Loading } from "@element-plus/icons-vue";
 import type { RpcService } from "../../services/RpcService";
 import type { CascaderValue } from 'element-plus';
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   url: string;

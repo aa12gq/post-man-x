@@ -15,20 +15,21 @@
             <span class="lang-flag">{{
               locale === "zh-CN" ? "🇨🇳" : "🇺🇸"
             }}</span>
-            <span class="btn-text">{{ currentLanguageLabel }}</span>
+            <span class="btn-text">{{
+              $t(`header.language.${locale === "zh-CN" ? "zh" : "en"}`)
+            }}</span>
             <el-icon class="arrow-icon"><ArrowDown /></el-icon>
           </div>
         </button>
         <template #dropdown>
           <el-dropdown-menu class="lang-dropdown">
-            <el-dropdown-item command="en">
+            <el-dropdown-item command="en-US">
               <span class="lang-item">
                 <span class="lang-flag">🇺🇸</span>
                 <span class="lang-label">
-                  <span class="lang-name">English</span>
-                  <span class="lang-native">English</span>
+                  <span class="lang-name">{{ $t("header.language.en-US") }}</span>
                 </span>
-                <el-icon v-if="locale === 'en'" class="check-icon"
+                <el-icon v-if="locale === 'en-US'" class="check-icon"
                   ><Check
                 /></el-icon>
               </span>
@@ -37,8 +38,7 @@
               <span class="lang-item">
                 <span class="lang-flag">🇨🇳</span>
                 <span class="lang-label">
-                  <span class="lang-name">Chinese</span>
-                  <span class="lang-native">简体中文</span>
+                  <span class="lang-name">{{ $t("header.language.zh-CN") }}</span>
                 </span>
                 <el-icon v-if="locale === 'zh-CN'" class="check-icon"
                   ><Check
@@ -56,11 +56,12 @@
             class="color-block"
             :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
           ></div>
-          <span class="theme-name">{{ currentThemeDisplay }}</span>
+          <span class="theme-name">{{ $t("header.theme.title") }}</span>
           <el-icon class="arrow-icon"><ArrowDown /></el-icon>
         </div>
       </button>
 
+      <!-- 设置按钮 -->
       <SettingsDropdown ref="settingsDropdownRef" />
       <UserAvatar />
     </div>
@@ -69,13 +70,13 @@
   <!-- 主题选择抽屉 -->
   <el-drawer
     v-model="showThemeDrawer"
-    title="选择主题"
+    :title="t('header.theme.title')"
     size="400px"
     :with-header="true"
   >
     <div class="theme-drawer-content">
       <div class="theme-section">
-        <h3 class="section-title">官方主题</h3>
+        <h3 class="section-title">{{ t('settings.theme.officialThemes') }}</h3>
         <div class="theme-list">
           <div
             v-for="theme in themeStore.officialCustomThemes"
@@ -87,7 +88,7 @@
             <ThemePreviewCard :theme="theme" />
             <div class="theme-info">
               <span class="theme-name">{{ theme.name }}</span>
-              <span class="theme-type">{{ getThemeStyle(theme) }}</span>
+              <span class="theme-type">{{ t(`settings.theme.${theme.isDark ? 'dark' : 'light'}`) }}</span>
             </div>
           </div>
         </div>
@@ -95,10 +96,10 @@
 
       <div class="theme-section">
         <div class="section-header">
-          <h3 class="section-title">自定义主题</h3>
+          <h3 class="section-title">{{ t('settings.theme.customThemes') }}</h3>
           <el-button type="primary" link @click="showThemeEditor = true">
             <el-icon><Plus /></el-icon>
-            创建新主题
+            {{ t('settings.theme.createTheme') }}
           </el-button>
         </div>
         <div class="theme-list">
@@ -135,7 +136,7 @@ import LogoIcon from "../../components/icons/LogoIcon.vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
 import UserAvatar from "./UserAvatar.vue";
 import { useRouter, useRoute } from "vue-router";
-import { ref, computed } from "vue";
+import { ref, nextTick } from "vue";
 import { Plus, ArrowDown, Check } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
@@ -143,7 +144,7 @@ import { Theme } from "../../types/theme";
 import ThemePreviewCard from "../../components/common/ThemePreviewCard.vue";
 import WorkspaceSelector from "./WorkspaceSelector.vue";
 import { useI18n } from "vue-i18n";
-import { setLanguage } from "../../i18n";
+import { LanguageType, setLanguage } from "../../i18n";
 
 const router = useRouter();
 const route = useRoute();
@@ -151,7 +152,7 @@ const themeStore = useThemeStore();
 const settingsDropdownRef = ref();
 const showThemeEditor = ref(false);
 const showThemeDrawer = ref(false);
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
 const goHome = () => {
   if (route.path !== "/") {
@@ -177,12 +178,6 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
   themeStore.switchTheme("custom", newTheme.id);
   showThemeEditor.value = false;
 };
-
-// 当前主题显示计算属性
-const currentThemeDisplay = computed(() => {
-  const theme = themeStore.currentTheme;
-  return theme.name;
-});
 
 // 获取主题风格描述
 const getThemeStyle = (theme: Theme) => {
@@ -223,7 +218,7 @@ const getThemeStyle = (theme: Theme) => {
     return customThemeNames[index];
   }
 
-  // 返回映射中的名称，如果没有找到则返回主题原名
+  // 返回映射中的名称如果没找到则返回主题原名
   return styleMap[theme.id] || theme.name;
 };
 
@@ -238,12 +233,16 @@ const hashCode = (str: string) => {
   return hash;
 };
 
-const currentLanguageLabel = computed(() => {
-  return locale.value === "zh-CN" ? "简体中文" : "English";
-});
-
-const handleLanguageChange = (lang: string) => {
-  setLanguage(lang);
+const handleLanguageChange = (lang: LanguageType) => {
+  try {
+    setLanguage(lang);
+    // 强制刷新组件
+    nextTick(() => {
+      window.location.reload();
+    });
+  } catch (error) {
+    console.error("Failed to change language:", error);
+  }
 };
 </script>
 
@@ -499,7 +498,7 @@ const handleLanguageChange = (lang: string) => {
   color: var(--text-secondary);
 }
 
-/* 添加语言切换相关样式 */
+/* 添加言切换相关样式 */
 .lang-item {
   display: flex;
   align-items: center;
@@ -575,14 +574,4 @@ const handleLanguageChange = (lang: string) => {
     display: none;
   }
 }
-
-/* 删除重复的样式 */
-- .theme-switch { }
-- .theme-switch:hover { }
-- .theme-indicator { }
-- .color-block { }
-- .theme-switch:hover .color-block { }
-- .theme-name { }
-- .arrow-icon { }
-- .theme-switch:hover .arrow-icon { }
 </style>

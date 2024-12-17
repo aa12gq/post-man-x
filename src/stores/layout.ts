@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
 interface LayoutSettings {
-  toolbarPosition: 'top' | 'bottom';
+  toolbarPosition: "top" | "bottom";
   isCollapsed: boolean;
   sidebarWidth: number;
   minSidebarWidth: number;
@@ -14,10 +14,10 @@ interface LayoutSettings {
   showBorders: boolean;
   showShadows: boolean;
   currentLayout: string;
-  sidebarPosition: 'left' | 'right';
-  tabsPosition: 'top' | 'left' | 'bottom';
+  sidebarPosition: "left" | "right";
+  tabsPosition: "top" | "left" | "bottom";
   showHeader?: boolean;
-  layoutMode?: 'fixed' | 'fluid' | 'custom';
+  layoutMode?: "fixed" | "fluid" | "custom";
   mainContentRatio?: number;
   sidebarRatio?: number;
   editorRatio?: number;
@@ -29,16 +29,16 @@ interface LayoutSettings {
   };
   animations?: {
     enabled: boolean;
-    type: 'slide' | 'fade';
+    type: "slide" | "fade";
     duration: number;
   };
 }
 
-export const useLayoutStore = defineStore('layout', {
+export const useLayoutStore = defineStore("layout", {
   state: () => {
-    const savedSettings = localStorage.getItem('layoutSettings');
+    const savedSettings = localStorage.getItem("layoutSettings");
     const defaultSettings = {
-      toolbarPosition: 'top',
+      toolbarPosition: "top",
       isCollapsed: false,
       sidebarWidth: 240,
       minSidebarWidth: 200,
@@ -50,27 +50,29 @@ export const useLayoutStore = defineStore('layout', {
       compactMode: false,
       showBorders: true,
       showShadows: true,
-      currentLayout: 'classic',
-      sidebarPosition: localStorage.getItem('sidebarPosition') || 'left',
-      tabsPosition: 'top'
+      currentLayout: "classic",
+      sidebarPosition: localStorage.getItem("sidebarPosition") || "left",
+      tabsPosition: "top",
     } as LayoutSettings;
 
     return {
-      settings: savedSettings ? { ...defaultSettings, ...JSON.parse(savedSettings) } : defaultSettings,
-      previewSettings: null as LayoutSettings | null
+      settings: savedSettings
+        ? { ...defaultSettings, ...JSON.parse(savedSettings) }
+        : defaultSettings,
+      previewSettings: null as LayoutSettings | null,
     };
   },
 
   actions: {
     updateSettings(newSettings: Partial<LayoutSettings>) {
       this.settings = { ...this.settings, ...newSettings };
-      localStorage.setItem('layoutSettings', JSON.stringify(this.settings));
+      localStorage.setItem("layoutSettings", JSON.stringify(this.settings));
     },
 
     previewLayout(settings: Partial<LayoutSettings>) {
       this.previewSettings = {
         ...this.settings,
-        ...settings
+        ...settings,
       };
     },
 
@@ -87,12 +89,12 @@ export const useLayoutStore = defineStore('layout', {
 
     toggleSidebar() {
       this.updateSettings({ isCollapsed: !this.settings.isCollapsed });
-    }
+    },
   },
 
   getters: {
     currentSettings(): LayoutSettings {
       return this.previewSettings || this.settings;
-    }
-  }
-}); 
+    },
+  },
+});

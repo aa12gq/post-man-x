@@ -30,6 +30,7 @@
     "yaml": "^2.6.1"
   },
   "devDependencies": {
+    "@intlify/vite-plugin-vue-i18n": "^7.0.0",
     "@types/node": "^20.11.19",
     "@types/vue-i18n": "^7.0.0",
     "@types/vue-router": "^2.0.0",

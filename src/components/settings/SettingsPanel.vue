@@ -2,18 +2,20 @@
   <div class="settings-panel">
     <el-tabs>
       <!-- 布局设置 -->
-      <el-tab-pane label="布局设置">
+      <el-tab-pane :label="t('settings.layout.title')">
         <div class="settings-section">
           <div class="section-header">
-            <h3>布局设置</h3>
+            <h3>{{ t("settings.layout.title") }}</h3>
             <el-button type="primary" @click="showLayoutSettings = true">
-              自定义布局
+              {{ t("settings.layout.customize") }}
             </el-button>
           </div>
-          
+
           <div class="current-layout">
             <div class="layout-info">
-              <span class="label">当前布局:</span>
+              <span class="label"
+                >{{ t("settings.layout.currentLayout") }}:</span
+              >
               <span class="value">{{ getCurrentLayoutName() }}</span>
             </div>
           </div>
@@ -21,29 +23,27 @@
       </el-tab-pane>
 
       <!-- 主题设置 -->
-      <el-tab-pane label="主题设置">
+      <el-tab-pane :label="t('settings.theme.title')">
         <ThemeSettings />
       </el-tab-pane>
 
       <!-- 常规设置 -->
-      <el-tab-pane label="常规设置">
+      <el-tab-pane :label="t('settings.general.title')">
         <GeneralSettings />
       </el-tab-pane>
 
       <!-- 快捷键设置 -->
-      <el-tab-pane label="快捷键">
+      <el-tab-pane :label="t('settings.shortcuts.title')">
         <ShortcutsSettings />
       </el-tab-pane>
 
       <!-- 关于 -->
-      <el-tab-pane label="关于">
+      <el-tab-pane :label="t('settings.about.title')">
         <div class="settings-section">
-          <h3>关于 RPC Master</h3>
+          <h3>{{ t("settings.about.title") }} RPC Master</h3>
           <div class="about-content">
-            <p class="version">Version: 1.0.0</p>
-            <p class="description">
-              A modern API testing tool for gRPC and HTTP requests.
-            </p>
+            <p class="version">{{ t("settings.about.version") }}: 1.0.0</p>
+            <p class="description">{{ t("settings.about.description") }}</p>
             <div class="links">
               <a href="https://github.com/vtyug/rpc-master" target="_blank">
                 <el-button>
@@ -53,12 +53,12 @@
               </a>
               <el-button @click="checkForUpdates">
                 <el-icon><Refresh /></el-icon>
-                检查更新
+                {{ t("settings.about.checkUpdates") }}
               </el-button>
             </div>
             <div class="credits">
-              <h4>技术栈</h4>
-              <p>Built with Vue 3, TypeScript, and Element Plus</p>
+              <h4>{{ t("settings.about.techStack") }}</h4>
+              <p>{{ t("settings.about.techStackDesc") }}</p>
             </div>
           </div>
         </div>
@@ -74,23 +74,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Link, Refresh } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
-import { useLayoutStore } from '../../stores/layout';
-import LayoutSettings from './LayoutSettings.vue';
-import ThemeSettings from './ThemeSettings.vue';
-import GeneralSettings from './GeneralSettings.vue';
-import ShortcutsSettings from './ShortcutsSettings.vue';
-import { layoutPresets } from '../../constants/layoutPresets';
+import { ref } from "vue";
+import { Link, Refresh } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { useLayoutStore } from "../../stores/layout";
+import LayoutSettings from "./LayoutSettings.vue";
+import ThemeSettings from "./ThemeSettings.vue";
+import GeneralSettings from "./GeneralSettings.vue";
+import ShortcutsSettings from "./ShortcutsSettings.vue";
+import { layoutPresets } from "../../constants/layoutPresets";
+import { useI18n } from "vue-i18n";
 
 const layoutStore = useLayoutStore();
 const showLayoutSettings = ref(false);
+const { t } = useI18n();
 
 const getCurrentLayoutName = () => {
   const currentLayout = layoutStore.settings.currentLayout;
-  const preset = layoutPresets.find(p => p.id === currentLayout);
-  return preset?.name || '自定义布局';
+  const preset = layoutPresets.find((p) => p.id === currentLayout);
+  return preset
+    ? t(`settings.layout.presets.names.${preset.id}`)
+    : t('settings.layout.presets.names.custom');
 };
 
 const handleLayoutSettingsClose = () => {
@@ -99,7 +103,7 @@ const handleLayoutSettingsClose = () => {
 
 const checkForUpdates = () => {
   // TODO: 实现检查更新功能
-  ElMessage.info('正在检查更新...');
+  ElMessage.info(t("settings.about.checkUpdates"));
 };
 </script>
 
@@ -182,4 +186,4 @@ const checkForUpdates = () => {
 .credits h4 {
   margin-bottom: 8px;
 }
-</style> 
+</style>
