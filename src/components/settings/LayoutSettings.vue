@@ -882,7 +882,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   display: flex;
   flex-direction: column;
 }
@@ -953,7 +953,7 @@ onBeforeUnmount(() => {
 
 .preview-tabs {
   height: 36px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   padding: 4px 8px 0;
@@ -978,7 +978,7 @@ onBeforeUnmount(() => {
 }
 
 .preview-tab.active {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-bottom: 2px solid var(--el-color-primary);
 }
 
@@ -992,7 +992,7 @@ onBeforeUnmount(() => {
 
 .preview-toolbar {
   height: 40px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -1004,7 +1004,7 @@ onBeforeUnmount(() => {
 
 .preview-editor {
   flex: 1;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   margin: 8px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
@@ -1097,7 +1097,7 @@ onBeforeUnmount(() => {
 
 .grid-area {
   padding: 8px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: move;
@@ -1165,7 +1165,7 @@ onBeforeUnmount(() => {
   .preview-tabs {
     height: 36px !important;
     width: 100% !important;
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     padding: 4px 8px 0;
@@ -1183,7 +1183,7 @@ onBeforeUnmount(() => {
     margin: 0 2px;
 
     &.active {
-      background-color: var(--background);
+      background-color: var(--surface-1);
       border-bottom: 2px solid var(--el-color-primary);
     }
   }
@@ -1197,14 +1197,14 @@ onBeforeUnmount(() => {
 
   .preview-toolbar {
     height: 40px;
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-bottom: 1px solid var(--border-color);
   }
 
   .preview-editor {
     flex: 1;
     margin: 8px;
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border: 1px solid var(--border-color);
     border-radius: 4px;
   }
@@ -1228,7 +1228,7 @@ onBeforeUnmount(() => {
   .preview-tabs-container {
     width: 200px;
     border-right: 1px solid var(--border-color);
-    background-color: var(--background);
+    background-color: var(--surface-1);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -1295,13 +1295,13 @@ onBeforeUnmount(() => {
 
 .preview-toolbar {
   height: 40px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-bottom: 1px solid var(--border-color);
 }
 
 .preview-editor {
   flex: 1;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   margin: 8px;
   border-radius: 4px;
   border: 1px solid var(--border-color);

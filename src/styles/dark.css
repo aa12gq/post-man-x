@@ -14,7 +14,7 @@
 
   /* Select 下拉框 */
   .el-select-dropdown {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-color: var(--border-color);
   }
 
@@ -32,7 +32,7 @@
 
   /* Input 输入框 */
   .el-input__wrapper {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-color: var(--border-color);
   }
 
@@ -47,7 +47,7 @@
   .el-button:not(.el-button--primary):not(.el-button--success):not(
       .el-button--warning
     ):not(.el-button--danger) {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-color: var(--border-color);
     color: var(--text-color);
     &:hover {
@@ -57,7 +57,7 @@
 
   /* Tabs 标签页 */
   .el-tabs--border-card {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-color: var(--border-color);
   }
 
@@ -75,7 +75,7 @@
 
   /* Dialog 对话框 */
   .el-dialog {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     .el-dialog__header {
       background-color: var(--header-bg);
     }
@@ -89,7 +89,7 @@
 
   /* Drawer 抽屉 */
   .el-drawer {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-color: var(--border-color);
   }
 
@@ -99,7 +99,7 @@
   }
 
   .el-drawer__body {
-    background-color: var(--background);
+    background-color: var(--surface-1);
     color: var(--text-color);
   }
 
@@ -110,7 +110,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    background-color: var(--background);
+    background-color: var(--surface-1);
   }
 
   ::-webkit-scrollbar-thumb {

@@ -303,7 +303,7 @@ const authStatusText = computed(() => {
   return "Configured";
 });
 
-type AuthType = 'noauth' | 'apikey' | 'basic' | 'bearer';
+type AuthType = "noauth" | "apikey" | "basic" | "bearer";
 
 const authTypes = [
   {
@@ -332,7 +332,9 @@ const authTypes = [
   },
 ];
 
-const isAuthTypeConfigured = (type: 'noauth' | 'apikey' | 'basic' | 'bearer') => {
+const isAuthTypeConfigured = (
+  type: "noauth" | "apikey" | "basic" | "bearer"
+) => {
   if (type === "noauth") return false;
   if (type === "basic")
     return isBasicAuthValid.value && localAuthType.value === "basic";
@@ -354,7 +356,7 @@ const currentType = computed(() => {
 .auth-manager {
   height: 100%;
   display: flex;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .auth-sidebar {
@@ -390,7 +392,7 @@ const currentType = computed(() => {
 }
 
 .menu-item:hover {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-color: var(--border);
 }
 
@@ -403,7 +405,7 @@ const currentType = computed(() => {
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -584,7 +586,7 @@ const currentType = computed(() => {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -611,7 +613,7 @@ const currentType = computed(() => {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -625,7 +627,7 @@ const currentType = computed(() => {
 }
 
 :deep(.el-radio-button__inner) {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-color: var(--border);
   color: var(--text);
 }

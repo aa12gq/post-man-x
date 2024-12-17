@@ -542,7 +542,7 @@ const updateGradientAngle = (angle: number) => {
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.3s ease;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .preview-content::after {

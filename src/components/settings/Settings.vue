@@ -11,6 +11,6 @@ import SettingsPanel from "./SettingsPanel.vue";
 <style scoped>
 .settings-container {
   height: 100%;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 </style>

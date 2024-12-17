@@ -76,7 +76,7 @@ const copyResponse = async () => {
 
 <style scoped>
 .response-viewer {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: 1px solid var(--border-color);
 }
 
@@ -131,7 +131,7 @@ const copyResponse = async () => {
 
 .response-content {
   border: 1px solid var(--border-color);
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-radius: 4px;
   padding: 10px;
   min-height: 200px;

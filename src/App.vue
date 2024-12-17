@@ -27,8 +27,10 @@ const layoutStore = useLayoutStore();
 
 // 计算是否有背景图
 const hasBackgroundImage = computed(() => {
-  return themeStore.currentTheme?.backgroundImage?.enabled && 
-         themeStore.currentTheme?.backgroundImage?.image;
+  return (
+    themeStore.currentTheme?.backgroundImage?.enabled &&
+    themeStore.currentTheme?.backgroundImage?.image
+  );
 });
 
 // 在 setup 中直接初始化，而不是在 onMounted 中
@@ -91,7 +93,7 @@ body {
     "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   color: var(--text-color);
 }
 
@@ -204,7 +206,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -230,7 +232,7 @@ body {
 }
 
 .app-container.has-background::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;

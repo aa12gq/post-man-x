@@ -1,8 +1,10 @@
 <template>
   <div class="shortcuts-settings">
     <div class="shortcuts-header">
-      <h3>{{ t('settings.shortcuts.title') }}</h3>
-      <el-button @click="resetAll">{{ t('settings.shortcuts.resetAll') }}</el-button>
+      <h3>{{ t("settings.shortcuts.title") }}</h3>
+      <el-button @click="resetAll">{{
+        t("settings.shortcuts.resetAll")
+      }}</el-button>
     </div>
 
     <div class="shortcuts-list">
@@ -34,18 +36,20 @@
                   <el-button>{{ shortcut.key || "Click to set" }}</el-button>
                 </template>
                 <div class="shortcut-editor">
-                  <p>{{ t('settings.shortcuts.pressKeys') }}</p>
+                  <p>{{ t("settings.shortcuts.pressKeys") }}</p>
                   <div class="current-keys">
-                    {{ recordingKeys || t('settings.shortcuts.listening') }}
+                    {{ recordingKeys || t("settings.shortcuts.listening") }}
                   </div>
                   <div class="editor-actions">
-                    <el-button @click="cancelEdit">{{ t('common.cancel') }}</el-button>
+                    <el-button @click="cancelEdit">{{
+                      t("common.cancel")
+                    }}</el-button>
                     <el-button
                       type="primary"
                       @click="saveShortcut(category.id, shortcut.id)"
                       :disabled="!recordingKeys"
                     >
-                      {{ t('common.save') }}
+                      {{ t("common.save") }}
                     </el-button>
                   </div>
                 </div>
@@ -56,7 +60,7 @@
                 @click="resetShortcut(category.id, shortcut.id)"
                 :disabled="shortcut.key === shortcut.defaultKey"
               >
-                {{ t('settings.shortcuts.reset') }}
+                {{ t("settings.shortcuts.reset") }}
               </el-button>
             </div>
           </div>
@@ -116,8 +120,8 @@ const saveShortcut = (categoryId: string, shortcutId: string) => {
 const resetShortcut = async (categoryId: string, shortcutId: string) => {
   try {
     await ElMessageBox.confirm(
-      t('settings.shortcuts.resetShortcut'),
-      t('settings.shortcuts.reset')
+      t("settings.shortcuts.resetShortcut"),
+      t("settings.shortcuts.reset")
     );
     resetShortcutKey(categoryId, shortcutId);
   } catch {}
@@ -126,8 +130,8 @@ const resetShortcut = async (categoryId: string, shortcutId: string) => {
 const resetAll = async () => {
   try {
     await ElMessageBox.confirm(
-      t('settings.shortcuts.resetConfirm'),
-      t('settings.shortcuts.title')
+      t("settings.shortcuts.resetConfirm"),
+      t("settings.shortcuts.title")
     );
     shortcuts.value.forEach((category) => {
       category.shortcuts.forEach((shortcut) => {
@@ -182,7 +186,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 12px;
   border-radius: 4px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: 1px solid var(--border-color);
 }
 
@@ -214,7 +218,7 @@ onUnmounted(() => {
 .current-keys {
   margin: 16px 0;
   padding: 8px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-family: monospace;

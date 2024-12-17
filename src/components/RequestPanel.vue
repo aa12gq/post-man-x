@@ -1241,7 +1241,7 @@ watch(
   transform: translateY(-50%);
   width: 24px;
   height: 48px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: 1px solid var(--border);
   border-left: none;
   border-radius: 0 4px 4px 0;
@@ -1284,7 +1284,7 @@ watch(
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: 1px solid var(--border);
 }
 
@@ -1301,7 +1301,7 @@ watch(
   flex-direction: column;
   position: relative;
   min-height: 0;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 /* 空状态样式 */
@@ -1311,7 +1311,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 /* 空状态内容样式 */

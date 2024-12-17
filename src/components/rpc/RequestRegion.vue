@@ -657,7 +657,7 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .content-layout {
@@ -673,7 +673,7 @@ const cancelEditing = () => {
   flex-direction: column;
   min-width: 48px;
   border-right: 1px solid var(--border);
-  background-color: var(--background);
+  background-color: var(--surface-1);
   flex-shrink: 0;
   transition: width 0.3s;
 }
@@ -691,7 +691,7 @@ const cancelEditing = () => {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .new-button {
@@ -759,7 +759,7 @@ const cancelEditing = () => {
 
 .collections-sidebar {
   position: relative;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   /* border-right: 1px solid var(--border-color); */
   overflow: hidden;
   flex-shrink: 0;
@@ -789,7 +789,7 @@ const cancelEditing = () => {
   z-index: 1000;
   width: 24px;
   height: 48px;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   /* border: 1px solid var(--border-color); */
   border-left: none;
   border-radius: 0 4px 4px 0;
@@ -809,7 +809,7 @@ const cancelEditing = () => {
 
 .tabs-container {
   flex-shrink: 0;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .request-response-wrapper {
@@ -849,7 +849,7 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .request-response-panel {
@@ -1077,7 +1077,7 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .new-request {
@@ -1222,7 +1222,7 @@ const cancelEditing = () => {
 
 .invoke-button {
   background-color: var(--primary);
-  color: var(--background);
+  color: var(--surface-1);
   border: none;
   padding: 8px 16px;
   border-radius: 4px;

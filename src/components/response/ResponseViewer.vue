@@ -174,7 +174,7 @@ const trailers = computed(() => props.trailers || {});
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border: none;
   border-radius: 0;
 }

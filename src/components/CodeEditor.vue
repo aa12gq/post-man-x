@@ -227,7 +227,7 @@ defineExpose({
 
 :deep(.monaco-editor .margin),
 :deep(.monaco-editor .monaco-editor-background) {
-  background-color: var(--background) !important;
+  background-color: var(--surface-1) !important;
 }
 
 :deep(.monaco-editor .lines-content) {
