@@ -53,7 +53,10 @@
           <div class="request-response-panel">
             <el-tabs v-model="activePane" type="border-card">
               <!-- Message 选项卡 -->
-              <el-tab-pane :label="t('request.rpc.editor.message')" name="message">
+              <el-tab-pane
+                :label="t('request.rpc.editor.message')"
+                name="message"
+              >
                 <RPCMessageEditor
                   :message="requestForm.params"
                   :has-method="true"
@@ -63,7 +66,10 @@
               </el-tab-pane>
 
               <!-- Authorization 选项卡 -->
-              <el-tab-pane :label="t('request.rpc.editor.authorization')" name="auth">
+              <el-tab-pane
+                :label="t('request.rpc.editor.authorization')"
+                name="auth"
+              >
                 <AuthorizationManager
                   :initial-auth-type="authType"
                   :initial-basic-auth="auth.basic"
@@ -73,7 +79,10 @@
               </el-tab-pane>
 
               <!-- Metadata 选项卡 -->
-              <el-tab-pane :label="t('request.rpc.editor.metadata')" name="metadata">
+              <el-tab-pane
+                :label="t('request.rpc.editor.metadata')"
+                name="metadata"
+              >
                 <MetadataEditor
                   :initial-metadata="headersToRecord(requestHeaders)"
                   @update:metadata="updateMetadata"
@@ -85,16 +94,10 @@
       </div>
     </div>
 
-    <!-- 分线 -->
-    <div class="resize-handle" @mousedown="startResize">
-      <div class="resize-handle-line"></div>
-      <div class="resize-handle-icon">
-        <el-icon><ArrowUp /></el-icon>
-      </div>
-    </div>
-
     <!-- 下半部分：响应区域 -->
     <div class="response-section" :style="{ height: responseHeight }">
+      <!-- 添加一个透明的拖拽区域 -->
+      <div class="drag-area" @mousedown="startResize"></div>
       <ResponseViewer
         :response="responseInfo.response"
         :response-time="responseInfo.responseTime"
@@ -108,7 +111,7 @@
         :translations="{
           status: {
             success: t('request.rpc.response.status.success'),
-            error: t('request.rpc.response.status.error')
+            error: t('request.rpc.response.status.error'),
           },
           clear: t('request.rpc.response.clear'),
           copy: t('request.rpc.response.copy'),
@@ -120,7 +123,7 @@
           debugInfo: t('request.rpc.response.debugInfo'),
           debugCommand: t('request.rpc.response.debugCommand'),
           collapse: t('request.rpc.response.collapse'),
-          expand: t('request.rpc.response.expand')
+          expand: t('request.rpc.response.expand'),
         }"
       />
     </div>
@@ -283,7 +286,7 @@ const loadServices = async () => {
     rpcServices.value = services;
   } catch (error) {
     console.error("Failed to load services:", error);
-    ElMessage.error(t('request.rpc.messages.failedLoadServices'));
+    ElMessage.error(t("request.rpc.messages.failedLoadServices"));
   } finally {
     loadingServices.value = false;
   }
@@ -317,7 +320,7 @@ const generateExample = async () => {
 
 const clearResponse = () => {
   responseInfo.value = Response.create();
-  ElMessage.success(t('request.rpc.response.clear'));
+  ElMessage.success(t("request.rpc.response.clear"));
 };
 
 const sendRequest = async () => {
@@ -433,7 +436,7 @@ const loadServiceMethods = async (serviceName: string) => {
     }
   } catch (error) {
     console.error("Failed to load methods:", error);
-    ElMessage.error(t('request.rpc.messages.failedLoadMethods'));
+    ElMessage.error(t("request.rpc.messages.failedLoadMethods"));
   } finally {
     loadingMethods.value = false;
   }
@@ -858,6 +861,7 @@ const cancelEditing = () => {
 
 .response-section {
   height: 100%;
+  position: relative;
 }
 
 :deep(.el-tabs) {
@@ -1257,4 +1261,17 @@ const cancelEditing = () => {
 .status-error {
   color: var(--el-color-danger);
 }
+
+/* 添加透明拖拽区域样式 */
+.drag-area {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  cursor: row-resize;
+  z-index: 100;
+}
+
+/* 删除原有的 resize-handle 相关样式 */
 </style>
