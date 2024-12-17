@@ -373,7 +373,63 @@
         "previewCardTitle": "卡片标题",
         "previewCardContent": "这是主题效果的预览内容。",
         "save": "保存主题",
-        "nameRequired": "主题名称不能为空"
+        "nameRequired": "主题名称不能为空",
+        "background": "背景设置",
+        "enableBackground": "启用背景图片",
+        "backgroundType": "背景类型",
+        "image": "图片",
+        "gradient": "渐变",
+        "pattern": "图案",
+        "uploadImage": "上传图片",
+        "selectImage": "选择图片",
+        "removeImage": "移除图片",
+        "position": "背景位置",
+        "positions": {
+          "center": "居中",
+          "top": "顶部",
+          "bottom": "底部",
+          "left": "左侧",
+          "right": "右侧"
+        },
+        "repeat": "重复模式",
+        "repeats": {
+          "noRepeat": "不重复",
+          "repeat": "重复",
+          "repeatX": "水平重复",
+          "repeatY": "垂直重复"
+        },
+        "size": "背景尺寸",
+        "sizes": {
+          "cover": "填充",
+          "contain": "适应",
+          "auto": "自动"
+        },
+        "blendMode": "混合模式",
+        "blendModes": {
+          "normal": "正常",
+          "multiply": "正片叠底",
+          "screen": "滤色",
+          "overlay": "叠加",
+          "darken": "变暗",
+          "lighten": "变亮"
+        },
+        "opacity": "不透明度",
+        "presets": {
+          "title": "预设效果",
+          "light": "浅色",
+          "dark": "深色",
+          "custom": "自定义"
+        },
+        "gradientPresets": "渐变预设",
+        "gradientAngle": "渐变角度",
+        "gradientPlaceholder": "输入 CSS 渐变，例如: linear-gradient(45deg, #ff0000, #00ff00)",
+        "patternPlaceholder": "输入图案 URL",
+        "imageUploadError": "图片上传失败",
+        "imageTips": "图片上传提示",
+        "imageTipsContent": "建议上传分辨率不低于 1920x1080 的图片，支持 JPG、PNG 格式",
+        "optimizeImage": "优化图片",
+        "optimizeSuccess": "图片优化成功",
+        "optimizeError": "图片优化失败"
       }
     },
     "general": {
@@ -387,7 +443,7 @@
       "fontFamily": "字体",
       "tabSize": "缩进大小",
       "wordWrap": "自动换行",
-      "showLineNumbers": "显示行号",
+      "showLineNumbers": "显��行号",
       "saveSettings": "保存设置",
       "resetSettings": "重置设置",
       "resetConfirm": "确定要将所有设置重置为默认值吗？",

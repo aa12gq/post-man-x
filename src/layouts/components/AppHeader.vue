@@ -251,9 +251,9 @@ const handleLanguageChange = (lang: LanguageType) => {
   height: 48px;
   min-height: 48px;
   padding: 0 8px;
-  background-color: var(--toolbar-bg);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow-light);
+  background-color: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -286,23 +286,24 @@ const handleLanguageChange = (lang: LanguageType) => {
   padding: 4px 8px;
   border-radius: 4px;
   transition: background-color 0.2s;
+  color: var(--text);
 }
 
 .logo-container:hover {
-  background-color: var(--hover-color);
+  background-color: var(--surface-2);
 }
 
 .logo {
   width: 24px;
   height: 24px;
-  color: var(--primary-color);
+  color: var(--el-color-primary);
   flex-shrink: 0;
 }
 
 .app-title {
   font-weight: 600;
   font-size: 16px;
-  color: var(--text-color);
+  color: var(--text);
 }
 
 .toolbar-btn {
@@ -313,14 +314,15 @@ const handleLanguageChange = (lang: LanguageType) => {
   border-radius: 4px;
   border: none;
   background: transparent;
-  color: var(--text-color);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .toolbar-btn:hover {
-  background-color: var(--hover-color);
+  background-color: var(--surface-2);
+  color: var(--text);
 }
 
 .btn-icon {
@@ -332,7 +334,7 @@ const handleLanguageChange = (lang: LanguageType) => {
 .divider {
   width: 1px;
   height: 24px;
-  background-color: var(--border-color);
+  background-color: var(--border);
   margin: 0 4px;
   flex-shrink: 0;
 }
@@ -395,7 +397,7 @@ const handleLanguageChange = (lang: LanguageType) => {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -409,12 +411,13 @@ const handleLanguageChange = (lang: LanguageType) => {
 
 .action-btn:hover {
   transform: translateY(-1px);
-  background-color: var(--hover-color);
+  background-color: var(--surface-2);
+  color: var(--text);
 }
 
 .arrow-icon {
   font-size: 12px;
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
   transition: transform 0.2s ease;
 }
 
@@ -454,7 +457,7 @@ const handleLanguageChange = (lang: LanguageType) => {
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--text);
   margin: 0 0 16px;
 }
 
@@ -465,7 +468,7 @@ const handleLanguageChange = (lang: LanguageType) => {
 }
 
 .theme-item {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px;
   cursor: pointer;
@@ -473,12 +476,12 @@ const handleLanguageChange = (lang: LanguageType) => {
 }
 
 .theme-item:hover {
-  background: var(--hover-color);
+  background: var(--surface-2);
 }
 
 .theme-item.active {
-  border-color: var(--primary-color);
-  background: var(--primary-light);
+  border-color: var(--el-color-primary);
+  background: var(--surface-2);
 }
 
 .theme-info {
@@ -545,7 +548,7 @@ const handleLanguageChange = (lang: LanguageType) => {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -553,7 +556,7 @@ const handleLanguageChange = (lang: LanguageType) => {
 
 .arrow-icon {
   font-size: 12px;
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
   transition: transform 0.2s ease;
 }
 
@@ -572,6 +575,67 @@ const handleLanguageChange = (lang: LanguageType) => {
   .theme-name,
   .arrow-icon {
     display: none;
+  }
+}
+
+/* 工作区选择器样式 */
+:deep(.workspace-selector) {
+  .el-dropdown-link {
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: var(--text);
+      background-color: var(--surface-2);
+    }
+  }
+
+  .workspace-name {
+    color: var(--text-secondary);
+  }
+
+  &:hover .workspace-name {
+    color: var(--text);
+  }
+
+  /* 下拉菜单样式 */
+  .el-dropdown-menu {
+    background-color: var(--surface-1);
+    border-color: var(--border);
+  }
+
+  .el-dropdown-menu__item {
+    color: var(--text-secondary);
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--text);
+    }
+
+    &.is-active {
+      color: var(--el-color-primary);
+      background-color: var(--surface-2);
+    }
+  }
+}
+
+/* 全局下拉菜单样式覆盖 */
+:deep(.el-dropdown-menu) {
+  background-color: var(--surface-1) !important;
+  border-color: var(--border) !important;
+
+  .el-dropdown-menu__item {
+    color: var(--text-secondary);
+
+    &:hover, &:focus {
+      background-color: var(--surface-2);
+      color: var(--text);
+    }
+
+    &.is-active {
+      color: var(--el-color-primary);
+      background-color: var(--surface-2);
+    }
   }
 }
 </style>

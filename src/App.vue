@@ -6,6 +6,7 @@
       'sidebar-collapsed': layoutStore.settings.isCollapsed,
       [`toolbar-${layoutStore.settings.toolbarPosition}`]: true,
       [`tabs-${layoutStore.settings.tabsPosition}`]: true,
+      'has-background': hasBackgroundImage,
     }"
   >
     <MainLayout />
@@ -13,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import MainLayout from "./layouts/MainLayout.vue";
 import { useThemeStore } from "./stores/theme";
 import { useSettings } from "./stores/settings";
@@ -23,6 +24,12 @@ import { useLayoutStore } from "./stores/layout";
 const themeStore = useThemeStore();
 const settingsStore = useSettings();
 const layoutStore = useLayoutStore();
+
+// 计算是否有背景图
+const hasBackgroundImage = computed(() => {
+  return themeStore.currentTheme?.backgroundImage?.enabled && 
+         themeStore.currentTheme?.backgroundImage?.image;
+});
 
 // 在 setup 中直接初始化，而不是在 onMounted 中
 themeStore.initializeTheme();
@@ -218,8 +225,29 @@ body {
 
 /* 布局样式 */
 .app-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.app-container.has-background::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--background-overlay), var(--background-image);
+  background-blend-mode: var(--background-blend-mode);
+  background-size: var(--background-size);
+  background-position: var(--background-position);
+  background-repeat: var(--background-repeat);
+  background-attachment: var(--background-attachment);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app-container > * {
+  position: relative;
+  z-index: 1;
 }
 </style>

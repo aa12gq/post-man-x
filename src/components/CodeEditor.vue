@@ -199,8 +199,8 @@ defineExpose({
   align-items: center;
   justify-content: flex-end;
   padding: 8px;
-  background-color: var(--bg-color-light);
-  border: 1px solid var(--border-color);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border);
   border-bottom: none;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;

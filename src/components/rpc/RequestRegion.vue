@@ -822,7 +822,7 @@ const cancelEditing = () => {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .request-section {
@@ -888,16 +888,17 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tabs--border-card) {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-color: var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header) {
-  background-color: var(--header);
+  background-color: var(--surface-2);
+  border-bottom: 1px solid var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-right-color: var(--border);
   border-left-color: var(--border);
 }
@@ -958,7 +959,7 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tree-node__content:hover) {
-  background-color: var(--hover-color);
+  background-color: var(--surface-2);
 }
 
 :deep(.el-icon) {
@@ -970,7 +971,7 @@ const cancelEditing = () => {
 }
 
 :deep(.el-tree) {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   color: var(--text);
 }
 
@@ -1022,11 +1023,7 @@ const cancelEditing = () => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: var(--background);
-  /* border: 2px solid var(--border); */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--surface-1);
   color: var(--text);
   opacity: 0;
   transition: opacity 0.2s;
@@ -1087,7 +1084,7 @@ const cancelEditing = () => {
 .activity-divider {
   height: 1px;
   margin: 8px 0;
-  background-color: var(--border-color);
+  background-color: var(--border);
 }
 
 .request-type-dialog {
@@ -1110,7 +1107,7 @@ const cancelEditing = () => {
   /* border-radius: 6px; */
   cursor: pointer;
   transition: all 0.3s;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   /* border: 1px solid var(--border-color); */
   &:hover {
     background-color: var(--el-color-primary-light-9);
@@ -1124,7 +1121,7 @@ const cancelEditing = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--background);
+  background-color: var(--surface-1);
   padding: 20px;
 }
 
@@ -1134,7 +1131,7 @@ const cancelEditing = () => {
 
 .breadcrumb-container {
   padding: 8px 10px 4px 10px;
-  background-color: var(--background);
+  background-color: var(--surface-2);
   box-shadow: 0 1px 2px var(--shadow);
 }
 
@@ -1211,12 +1208,12 @@ const cancelEditing = () => {
 }
 
 .request-region {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   color: var(--text);
 }
 
 .request-header {
-  background-color: var(--header);
+  background-color: var(--surface-2);
 }
 
 .invoke-button {
@@ -1240,24 +1237,24 @@ const cancelEditing = () => {
 
 .request-body {
   border-radius: 4px;
-  background-color: var(--background-light);
+  background-color: var(--surface-2);
 }
 
 .response-panel {
-  background-color: var(--background-light);
+  background-color: var(--surface-2);
   border-radius: 4px;
 }
 
 .response-header {
-  background-color: var(--header);
+  background-color: var(--surface-2);
   color: var(--text);
 }
 
 .status-success {
-  color: var(--success);
+  color: var(--el-color-success);
 }
 
 .status-error {
-  color: var(--danger);
+  color: var(--el-color-danger);
 }
 </style>

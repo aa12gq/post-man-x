@@ -38,6 +38,8 @@ const layoutStore = useLayoutStore();
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 100vh;
+  background-color: rgba(var(--background-rgb), 0.8);
 }
 
 .main-content {
@@ -46,6 +48,7 @@ const layoutStore = useLayoutStore();
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  background-color: transparent;
 }
 
 .main-layout.toolbar-bottom {

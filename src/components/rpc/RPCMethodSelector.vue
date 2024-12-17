@@ -13,7 +13,10 @@
         />
       </div>
       <el-button-group class="view-toggle">
-        <el-tooltip :content="t('request.rpc.toolbar.viewModes.dropdown')" placement="top">
+        <el-tooltip
+          :content="t('request.rpc.toolbar.viewModes.dropdown')"
+          placement="top"
+        >
           <el-button
             :type="viewMode === 'dropdown' ? 'primary' : ''"
             @click="viewMode = 'dropdown'"
@@ -22,7 +25,10 @@
             <el-icon><List /></el-icon>
           </el-button>
         </el-tooltip>
-        <el-tooltip :content="t('request.rpc.toolbar.viewModes.cascade')" placement="top">
+        <el-tooltip
+          :content="t('request.rpc.toolbar.viewModes.cascade')"
+          placement="top"
+        >
           <el-button
             :type="viewMode === 'cascade' ? 'primary' : ''"
             @click="viewMode = 'cascade'"
@@ -82,10 +88,12 @@
           <template #empty>
             <div class="select-empty">
               <p v-if="!props.url">
-                {{ t('request.rpc.messages.enterUrl') }}
+                {{ t("request.rpc.messages.enterUrl") }}
               </p>
-              <p v-else-if="loadingServices">{{ t('request.rpc.messages.loadingServices') }}</p>
-              <p v-else>{{ t('request.rpc.messages.noMethods') }}</p>
+              <p v-else-if="loadingServices">
+                {{ t("request.rpc.messages.loadingServices") }}
+              </p>
+              <p v-else>{{ t("request.rpc.messages.noMethods") }}</p>
             </div>
           </template>
 
@@ -144,10 +152,12 @@
           <template #empty>
             <div class="select-empty">
               <p v-if="!props.url">
-                {{ t('request.rpc.messages.enterUrl') }}
+                {{ t("request.rpc.messages.enterUrl") }}
               </p>
-              <p v-else-if="loadingServices">{{ t('request.rpc.messages.loadingServices') }}</p>
-              <p v-else>{{ t('request.rpc.messages.noMethods') }}</p>
+              <p v-else-if="loadingServices">
+                {{ t("request.rpc.messages.loadingServices") }}
+              </p>
+              <p v-else>{{ t("request.rpc.messages.noMethods") }}</p>
             </div>
           </template>
         </el-cascader>
@@ -158,7 +168,7 @@
         :loading="loading"
         :disabled="!canSend"
       >
-        {{ t('request.rpc.toolbar.invoke') }}
+        {{ t("request.rpc.toolbar.invoke") }}
       </el-button>
     </div>
   </div>
@@ -168,7 +178,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { List, Operation, Cpu, Link, Loading } from "@element-plus/icons-vue";
 import type { RpcService } from "../../services/RpcService";
-import type { CascaderValue } from 'element-plus';
+import type { CascaderValue } from "element-plus";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -302,6 +312,8 @@ onMounted(() => {
 <style scoped>
 .rpc-toolbar {
   padding: 12px;
+  background-color: var(--surface-1);
+  border-bottom: 1px solid var(--border);
 }
 
 .toolbar-section {
@@ -385,10 +397,9 @@ onMounted(() => {
 
 .select-footer {
   padding: 8px;
-  border: 1px solid var(--border);
   border-top: none;
   text-align: center;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .refresh-icon.is-loading {
@@ -402,6 +413,10 @@ onMounted(() => {
   to {
     transform: rotate(360deg);
   }
+}
+
+.el-select__wrapper {
+  background-color: var(--surface-1) !important;
 }
 
 .service-label {
@@ -478,7 +493,8 @@ onMounted(() => {
 :deep(.el-select-group__title) {
   padding: 8px 12px;
   font-weight: bold;
-  background-color: var(--el-fill-color-light);
+  background-color: var(--surface-2);
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -510,7 +526,7 @@ onMounted(() => {
     padding: 8px;
     border-top: 1px solid var(--border);
     text-align: center;
-    background-color: var(--background);
+    background-color: var(--surface-1);
   }
 
   .refresh-button {
@@ -540,7 +556,7 @@ onMounted(() => {
     left: 0;
     right: 0;
     padding: 8px;
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-top: 1px solid var(--border);
     text-align: center;
   }
@@ -564,7 +580,7 @@ onMounted(() => {
     left: 0;
     right: 0;
     padding: 8px;
-    background-color: var(--background);
+    background-color: var(--surface-1);
     border-top: 1px solid var(--border);
     text-align: center;
     z-index: 1;
@@ -575,7 +591,236 @@ onMounted(() => {
     justify-content: center;
   }
 }
+
 :deep(.el-input) {
   width: 100% !important;
+}
+
+:deep(.el-input__wrapper) {
+  background-color: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+
+:deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--el-color-primary) !important;
+}
+
+:deep(.el-input__inner) {
+  color: var(--text);
+}
+
+:deep(.el-select-dropdown__item) {
+  color: var(--text-secondary);
+}
+
+:deep(.el-select-dropdown__item.hover) {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+:deep(.el-select-dropdown__item.selected) {
+  background-color: var(--surface-2);
+  color: var(--el-color-primary);
+}
+
+:deep(.el-select-group__title) {
+  padding: 8px 12px;
+  font-weight: bold;
+  background-color: var(--surface-2);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:deep(.el-cascader__dropdown) {
+  .select-empty {
+    padding: 8px;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  .select-footer {
+    padding: 8px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    background-color: var(--surface-1);
+  }
+}
+
+:deep(.custom-cascader-dropdown) {
+  .el-cascader-panel {
+    &::after {
+      content: "";
+      position: relative;
+      display: block;
+      height: 40px;
+      border-top: 1px solid var(--border);
+    }
+  }
+
+  .el-cascader__dropdown-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    background-color: var(--surface-1);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+}
+
+:global(.custom-cascader-dropdown) {
+  .el-cascader-panel::after {
+    content: "";
+    display: block;
+    height: 40px;
+  }
+
+  .el-cascader__dropdown-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    background-color: var(--surface-1);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    z-index: 1;
+  }
+}
+
+:deep(.el-select-dropdown) {
+  background-color: var(--surface-1);
+  border-color: var(--border);
+
+  .el-select-dropdown__item {
+    color: var(--text-secondary);
+
+    &:hover,
+    &.hover {
+      background-color: var(--surface-2);
+      color: var(--text);
+    }
+
+    &.selected {
+      background-color: var(--surface-2);
+      color: var(--el-color-primary);
+    }
+
+    .el-icon {
+      color: var(--text-secondary);
+    }
+
+    &:hover .el-icon {
+      color: var(--text);
+    }
+  }
+}
+
+:deep(.el-cascader-menu) {
+  background-color: var(--surface-1);
+  border-right-color: var(--border);
+
+  .el-cascader-menu__item {
+    color: var(--text-secondary);
+
+    &:hover,
+    &.is-active {
+      background-color: var(--surface-2);
+      color: var(--text);
+    }
+
+    &.is-active {
+      color: var(--el-color-primary);
+    }
+  }
+}
+
+:deep(.el-cascader-menu__item) {
+  color: var(--text-secondary);
+}
+
+:deep(.el-cascader-menu__item:hover) {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+:deep(.el-cascader-menu__item.is-active) {
+  background-color: var(--surface-2);
+  color: var(--el-color-primary);
+}
+
+:deep(.el-button) {
+  background-color: var(--surface-1);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+:deep(.el-button:hover) {
+  background-color: var(--surface-2);
+  border-color: var(--el-color-primary);
+  color: var(--text);
+}
+
+:deep(.el-button--primary) {
+  background-color: var(--el-color-primary);
+  border-color: var(--el-color-primary);
+  color: white;
+}
+
+:deep(.el-button--primary:hover) {
+  background-color: var(--el-color-primary-light-3);
+  border-color: var(--el-color-primary-light-3);
+  color: white;
+}
+
+:deep(.el-select-dropdown__footer),
+:deep(.el-cascader__dropdown-footer) {
+  background-color: var(--surface-2);
+  border-top-color: var(--border);
+}
+
+:deep(.el-select-group__title) {
+  color: var(--text);
+  background-color: var(--surface-2);
+}
+
+:deep(.el-select-dropdown__empty) {
+  color: var(--text-secondary);
+  background-color: var(--surface-1);
+}
+
+:deep(.el-popper) {
+  background-color: var(--surface-1) !important;
+  border-color: var(--border) !important;
+  transition: none !important;
+}
+
+:deep(.el-select-dropdown__wrap),
+:deep(.el-cascader-menu__wrap) {
+  background-color: var(--surface-1);
+}
+
+:deep(.el-popper__arrow::before) {
+  background-color: var(--surface-1) !important;
+  border-color: var(--border) !important;
+  transition: none !important;
+}
+
+:deep(.el-select-dropdown),
+:deep(.el-cascader__dropdown) {
+  transition: none !important;
+}
+
+:deep(.el-select-dropdown__item),
+:deep(.el-cascader-menu__item) {
+  transition: none !important;
+}
+
+:deep(.el-select-dropdown.el-popper),
+:deep(.el-cascader__dropdown.el-popper) {
+  transition: none !important;
 }
 </style>

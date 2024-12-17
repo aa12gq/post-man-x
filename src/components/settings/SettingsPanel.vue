@@ -110,6 +110,8 @@ const checkForUpdates = () => {
 <style scoped>
 .settings-panel {
   padding: 20px;
+  overflow-y: auto;
+  background-color: transparent;
 }
 
 .settings-section {

@@ -14,8 +14,16 @@ interface GeneralSettings {
   showLineNumbers: boolean;
 }
 
+interface ThemeColors {
+  "surface-1": string;
+  "surface-2": string;
+  "surface-3": string;
+  "surface-4": string;
+}
+
 export interface Settings {
   general: GeneralSettings;
+  themeColors: ThemeColors;
 }
 
 const defaultSettings: Settings = {
@@ -30,6 +38,12 @@ const defaultSettings: Settings = {
     tabSize: 2,
     wordWrap: true,
     showLineNumbers: true,
+  },
+  themeColors: {
+    "surface-1": "#ffffff",
+    "surface-2": "#f0f0f0",
+    "surface-3": "#e0e0e0",
+    "surface-4": "#d0d0d0",
   },
 };
 

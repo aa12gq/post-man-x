@@ -4,12 +4,14 @@ import {
   RouteLocationNormalized,
   RouteRecordRaw,
 } from "vue-router";
+import Home from '../views/Home.vue';
+import BackgroundTest from '../views/BackgroundTest.vue';
 
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: "Home",
-    component: () => import("../views/Home.vue"),
+    component: Home,
     meta: {
       title: "Home",
     },
@@ -29,6 +31,11 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "WorkspaceSetup",
     },
+  },
+  {
+    path: '/background-test',
+    name: 'BackgroundTest',
+    component: BackgroundTest,
   },
 ];
 

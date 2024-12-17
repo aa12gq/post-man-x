@@ -80,6 +80,13 @@
         <el-button size="large" @click="handleLearnMore">
           {{ t("home.learnMore") }}
         </el-button>
+        <el-button
+          type="info"
+          size="large"
+          @click="$router.push('/background-test')"
+        >
+          背景测试
+        </el-button>
       </div>
     </div>
   </div>
@@ -106,14 +113,14 @@ const handleLearnMore = () => {
 
 <style scoped>
 .home {
-  min-height: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--background);
   padding: 40px;
   position: relative;
   overflow: auto;
+  background-color: transparent;
 }
 
 .background-decoration {
@@ -198,7 +205,7 @@ const handleLearnMore = () => {
   backdrop-filter: blur(10px);
   padding: 40px;
   border-radius: 16px;
-  background: rgba(var(--bg-color-rgb), 0.7);
+  background-color: rgba(var(--surface-1), 0.8);
 }
 
 .logo-container {
@@ -212,7 +219,7 @@ const handleLearnMore = () => {
 .logo {
   width: 72px;
   height: 72px;
-  color: var(--primary-color);
+  color: var(--el-color-primary);
 }
 
 .animate-bounce {
@@ -269,9 +276,9 @@ h1 {
 .feature-item {
   padding: 20px;
   border-radius: 16px;
-  background: var(--header-bg);
+  background: var(--surface-2);
   transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 .feature-item:hover {
@@ -303,7 +310,7 @@ h1 {
 .feature-item h3 {
   font-size: 20px;
   margin: 0 0 8px;
-  color: var(--text-color);
+  color: var(--text);
 }
 
 .feature-item p {
@@ -375,5 +382,39 @@ h1 {
     width: 150px;
     height: 150px;
   }
+}
+
+.feature-card {
+  padding: 24px;
+  border-radius: 12px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background-color: var(--surface-3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.feature-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: var(--el-color-primary);
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.feature-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
 </style>

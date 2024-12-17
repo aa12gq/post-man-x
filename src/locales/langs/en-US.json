@@ -373,7 +373,67 @@
         "previewCardTitle": "Card Title",
         "previewCardContent": "This is a preview of how your theme will look.",
         "save": "Save Theme",
-        "nameRequired": "Theme name is required"
+        "nameRequired": "Theme name is required",
+        "background": "Background",
+        "enableBackground": "Enable Background",
+        "backgroundType": "Background Type",
+        "image": "Image",
+        "gradient": "Gradient",
+        "pattern": "Pattern",
+        "uploadImage": "Upload Image",
+        "selectImage": "Select Image",
+        "removeImage": "Remove Image",
+        "position": "Position",
+        "positions": {
+          "center": "Center",
+          "top": "Top",
+          "bottom": "Bottom",
+          "left": "Left",
+          "right": "Right"
+        },
+        "repeat": "Repeat",
+        "repeats": {
+          "noRepeat": "No Repeat",
+          "repeat": "Repeat",
+          "repeatX": "Repeat X",
+          "repeatY": "Repeat Y"
+        },
+        "size": "Size",
+        "sizes": {
+          "cover": "Cover",
+          "contain": "Contain",
+          "auto": "Auto"
+        },
+        "blendMode": "Blend Mode",
+        "blendModes": {
+          "normal": "Normal",
+          "multiply": "Multiply",
+          "screen": "Screen",
+          "overlay": "Overlay",
+          "darken": "Darken",
+          "lighten": "Lighten"
+        },
+        "opacity": "Opacity",
+        "presets": {
+          "title": "Presets",
+          "light": "Light",
+          "dark": "Dark",
+          "custom": "Custom"
+        },
+        "gradientPresets": "Gradient Presets",
+        "gradientAngle": "Gradient Angle",
+        "gradientPlaceholder": "Enter CSS gradient, e.g.: linear-gradient(45deg, #ff0000, #00ff00)",
+        "patternPlaceholder": "Enter pattern URL",
+        "imageUploadError": "Failed to upload image",
+        "imageTips": "Image Upload Tips",
+        "imageTipsContent": "Recommended resolution: 1920x1080 or higher, supports JPG and PNG formats",
+        "optimizeImage": "Optimize Image",
+        "optimizeSuccess": "Image optimized successfully",
+        "optimizeError": "Failed to optimize image",
+        "preview": "Preview",
+        "previewHeader": "Theme Preview",
+        "previewCardTitle": "Card Title",
+        "previewCardContent": "This is a preview of the theme effect."
       }
     },
     "general": {

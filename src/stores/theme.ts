@@ -4,6 +4,32 @@ import type { Theme, ThemePreset } from "../types/theme";
 import type { PersistenceOptions } from "pinia-plugin-persistedstate";
 import { officialThemes } from "../constants/officialThemes";
 
+// 辅助函数：将十六进制颜色转换为 RGB
+function hexToRgb(hex: string) {
+  // 移除可能存在的 # 前缀
+  hex = hex.replace(/^#/, "");
+
+  // 处理缩写形式 (#fff => #ffffff)
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((char) => char + char)
+      .join("");
+  }
+
+  // 解析 RGB 值
+  const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) {
+    return null;
+  }
+
+  return {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16),
+  };
+}
+
 // 默认主题设置
 const defaultLightTheme: Theme = {
   id: "light",
@@ -16,19 +42,30 @@ const defaultLightTheme: Theme = {
     background: "#ffffff",
     "background-light": "#f5f7fa",
     "background-dark": "#e4e7ed",
+    "surface-1": "#ffffff",
+    "surface-2": "#f5f7fa",
+    "surface-3": "#f0f2f5",
+    "surface-4": "#e4e7ed",
     text: "#333333",
     "text-secondary": "#909399",
     border: "#dcdfe6",
-    hover: "#f5f7fa",
-    header: "#f5f7fa",
+    hover: "rgba(64, 158, 255, 0.1)",
+    header: "#f0f2f5",
     shadow: "rgba(0, 0, 0, 0.1)",
     success: "#67c23a",
     warning: "#e6a23c",
     danger: "#f56c6c",
     info: "#909399",
-    selected: 'var(--el-color-primary-light-9)',
-    'selected-hover': 'var(--el-color-primary-light-8)',
-    'border-active': 'var(--el-color-primary-light-5)',
+    selected: "rgba(64, 158, 255, 0.15)",
+    "selected-hover": "rgba(64, 158, 255, 0.25)",
+    "border-active": "rgba(64, 158, 255, 0.3)",
+  },
+  backgroundImage: {
+    enabled: false,
+    image: "",
+    blendMode: "normal",
+    opacity: 0.1,
+    type: "image",
   },
 };
 
@@ -43,23 +80,32 @@ const defaultDarkTheme: Theme = {
     background: "#1e1e1e",
     "background-light": "#252525",
     "background-dark": "#141414",
-    text: "#e0e0e0",
-    "text-secondary": "#909399",
+    "surface-1": "#2d2d2d",
+    "surface-2": "#252525",
+    "surface-3": "#1e1e1e",
+    "surface-4": "#181818",
+    text: "#ffffff",
+    "text-secondary": "#a0a0a0",
     border: "#333333",
-    hover: "#2c2c2c",
-    header: "#252525",
+    hover: "rgba(64, 158, 255, 0.15)",
+    header: "#1e1e1e",
     shadow: "rgba(0, 0, 0, 0.3)",
     success: "#67c23a",
     warning: "#e6a23c",
     danger: "#f56c6c",
     info: "#909399",
-    selected: 'rgba(64, 158, 255, 0.1)',
-    'selected-hover': 'rgba(64, 158, 255, 0.15)',
-    'border-active': 'rgba(64, 158, 255, 0.2)',
+    selected: "rgba(64, 158, 255, 0.25)",
+    "selected-hover": "rgba(64, 158, 255, 0.35)",
+    "border-active": "rgba(64, 158, 255, 0.4)",
+  },
+  backgroundImage: {
+    enabled: false,
+    image: "",
+    blendMode: "normal",
+    opacity: 0.1,
+    type: "image",
   },
 };
-
-// 添加在 defaultDarkTheme 后面
 
 // Element Plus 主题变量映射
 const elementPlusVariables = {
@@ -87,8 +133,6 @@ function resetToDefaultTheme(): Theme {
   // 只清除当前主题相关的存储
   localStorage.removeItem("theme-settings");
   localStorage.removeItem("current-theme");
-  // 不要清除 theme-store，因为它包含自定义主题列表
-  // localStorage.removeItem("theme-store"); // 删除这行
 
   // 返回一个全新的默认主题实例
   return deepClone(defaultLightTheme);
@@ -224,11 +268,15 @@ export const useThemeStore = defineStore(
       const cssVars: string[] = [];
       const elementVars: string[] = [];
 
-      // 批量收集 CSS 变量
+      // 先应用 CSS 变量
       Object.entries(theme.colors).forEach(([key, value]) => {
         cssVars.push(`--${key}: ${value};`);
-
-        // 设置对应的 Element Plus 变量
+        if (key === "background") {
+          const rgb = hexToRgb(value);
+          if (rgb) {
+            cssVars.push(`--background-rgb: ${rgb.r}, ${rgb.g}, ${rgb.b};`);
+          }
+        }
         if (key in elementPlusVariables) {
           const elVar =
             elementPlusVariables[key as keyof typeof elementPlusVariables];
@@ -236,11 +284,58 @@ export const useThemeStore = defineStore(
         }
       });
 
-      // 一次性设置主题属性
-      root.setAttribute("data-theme", theme.isDark ? "dark" : "light");
+      // 应用背景图片设置
+      if (theme.backgroundImage?.enabled) {
+        const {
+          type,
+          image,
+          blendMode,
+          opacity,
+          gradient,
+          pattern,
+          position,
+          repeat,
+          size,
+        } = theme.backgroundImage;
+
+        if (type === "image" && image) {
+          const overlayColor = theme.isDark ? "0, 0, 0" : "255, 255, 255";
+          cssVars.push(
+            `--background-overlay: linear-gradient(rgba(${overlayColor}, ${
+              1 - opacity
+            }), rgba(${overlayColor}, ${1 - opacity}));`
+          );
+          cssVars.push(`--background-image: url("${image}");`);
+          cssVars.push(`--background-blend-mode: ${blendMode || "normal"};`);
+          cssVars.push(`--background-size: ${size || "cover"};`);
+          cssVars.push(
+            `--background-position: ${position || "center center"};`
+          );
+          cssVars.push(`--background-repeat: ${repeat || "no-repeat"};`);
+          cssVars.push(`--background-attachment: fixed;`);
+        } else if (type === "gradient" && gradient) {
+          cssVars.push(`--background-image: ${gradient};`);
+          cssVars.push(`--background-overlay: none;`);
+        } else if (type === "pattern" && pattern) {
+          cssVars.push(`--background-image: url("${pattern}");`);
+          cssVars.push(`--background-overlay: none;`);
+          cssVars.push(`--background-repeat: repeat;`);
+        } else {
+          // 如果没有启用背景图片，清除相关样式
+          cssVars.push(`--background-image: none;`);
+          cssVars.push(`--background-overlay: none;`);
+          cssVars.push(`--background-blend-mode: normal;`);
+          cssVars.push(`--background-size: auto;`);
+          cssVars.push(`--background-position: initial;`);
+          cssVars.push(`--background-repeat: repeat;`);
+          cssVars.push(`--background-attachment: scroll;`);
+        }
+      }
+
+      // 应用所有 CSS 变量
       root.setAttribute("style", cssVars.join(" "));
 
-      // 一次性更新 Element Plus 样式
+      // 更新 Element Plus 样式
       style.id = "element-plus-theme";
       style.textContent = `:root { ${elementVars.join(" ")} }`;
       if (!style.parentNode) {
@@ -452,6 +547,22 @@ export const useThemeStore = defineStore(
       ...customThemes.value,
     ]);
 
+    // 添加背景图片处理函数
+    async function handleBackgroundImage(file: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            resolve(e.target.result as string);
+          } else {
+            reject(new Error("Failed to read image file"));
+          }
+        };
+        reader.onerror = () => reject(new Error("Failed to read image file"));
+        reader.readAsDataURL(file);
+      });
+    }
+
     return {
       currentTheme,
       customThemes,
@@ -465,6 +576,7 @@ export const useThemeStore = defineStore(
       importTheme,
       officialCustomThemes,
       allCustomThemes,
+      handleBackgroundImage,
     };
   },
   {

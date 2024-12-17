@@ -92,7 +92,7 @@ const getTabIcon = (tab: any) => {
 
 <style scoped>
 .tab-manager {
-  background-color: var(--background);
+  background-color: var(--surface-2);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -101,7 +101,7 @@ const getTabIcon = (tab: any) => {
   align-items: center;
   width: 100%;
   height: 40px;
-  background-color: var(--header-bg);
+  background-color: var(--surface-3);
 }
 
 :deep(.el-tabs) {
@@ -112,7 +112,7 @@ const getTabIcon = (tab: any) => {
 :deep(.el-tabs__header) {
   margin: 0;
   height: 100%;
-  background-color: var(--header-bg);
+  background-color: var(--surface-3);
   border: none;
 }
 
@@ -157,11 +157,11 @@ const getTabIcon = (tab: any) => {
   }
 
   &:hover {
-    background-color: var(--hover-color);
+    background-color: var(--surface-2);
   }
 
   &.is-active {
-    background-color: var(--background);
+    background-color: var(--surface-2);
 
     &::after {
       opacity: 1;
@@ -217,7 +217,7 @@ const getTabIcon = (tab: any) => {
   transition: all 0.2s;
 
   &:hover {
-    background-color: var(--hover-color);
+    background-color: var(--surface-2);
     color: var(--el-color-primary);
   }
 }
@@ -302,7 +302,7 @@ const getTabIcon = (tab: any) => {
     }
 
     &.is-active {
-      background-color: var(--el-color-primary-light-9) !important;
+      background-color: var(--surface-1);
       height: 40px !important;
 
       &::after {
@@ -311,7 +311,7 @@ const getTabIcon = (tab: any) => {
     }
 
     &:hover:not(.is-active) {
-      background-color: var(--hover-color) !important;
+      background-color: var(--surface-2);
     }
   }
 
@@ -378,14 +378,14 @@ const getTabIcon = (tab: any) => {
     }
 
     &.is-active {
-      background-color: var(--background);
+      background-color: var(--surface-1);
       &::after {
         opacity: 1;
       }
     }
 
     &:hover:not(.is-active) {
-      background-color: var(--hover-color);
+      background-color: var(--surface-2);
     }
   }
 

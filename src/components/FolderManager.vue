@@ -577,24 +577,6 @@ const isRefreshing = ref(false);
   border-bottom: 1px solid var(--border-color);
 }
 
-.folder-header {
-  background-color: var(--bg-color-light);
-  color: var(--text-color);
-}
-
-.folder-header:hover {
-  background-color: var(--hover-color);
-}
-
-.folder-header.active {
-  background-color: var(--active-color);
-  color: var(--primary-color);
-}
-
-.folder-name {
-  color: var(--text-color);
-}
-
 .folder-actions {
   color: var(--text-color-secondary);
 }

@@ -498,9 +498,9 @@ import { storage } from "../services/storage";
 import { HistoryItem } from "../types";
 import { useLayoutStore } from "../stores/layout";
 import { storeToRefs } from "pinia";
-import { useI18n } from 'vue-i18n'
+import { useI18n } from "vue-i18n";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const layoutStore = useLayoutStore();
 const { settings } = storeToRefs(layoutStore);
@@ -584,7 +584,7 @@ const removeTab = async (targetId: string) => {
   // 如果关闭的是当前标签页,需要激活其他标签页
   if (activeTab.value === targetId) {
     if (tabs.value.length === 1) {
-      // 如果只有个标签页,清空活标签页
+      // 如果只有���标签页,清空活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
       // 如果闭的是最后一个标签页,激活前一个标签页
@@ -796,7 +796,7 @@ const selectRequestType = (type: "http" | "grpc") => {
     folderId: selectedFolderId.value || undefined,
   };
 
-  // 如果有选中文件夹，设置请求的文件夹ID
+  // 如果有选中文件夹，设置请求文件夹ID
   if (selectedFolderId.value) {
     storage.saveRequestFolder(newId, selectedFolderId.value);
     selectedFolderId.value = null;
@@ -1029,7 +1029,7 @@ watch(
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: var(--background);
+  background-color: var(--surface-2);
 }
 
 .content-layout {
@@ -1038,6 +1038,7 @@ watch(
   min-height: 0;
   overflow: hidden;
   position: relative;
+  background-color: transparent;
 }
 
 /* 左侧区域样式 */
@@ -1045,7 +1046,7 @@ watch(
   display: flex;
   flex-direction: column;
   min-width: 48px;
-  background-color: var(--background);
+  background-color: var(--surface-3);
   flex-shrink: 0;
   transition: all 0.3s;
 }
@@ -1082,7 +1083,7 @@ watch(
   display: flex;
   align-items: center;
   padding: 0 16px;
-  background-color: var(--background);
+  background-color: var(--surface-3);
   border-bottom: 1px solid var(--border);
 }
 
@@ -1094,12 +1095,13 @@ watch(
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--text);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .new-button:hover {
-  background-color: var(--background-light);
+  background-color: var(--surface-1);
+  color: var(--text);
 }
 
 /* 活动栏和边栏容器 */
@@ -1115,7 +1117,7 @@ watch(
 .activity-bar {
   width: 48px;
   height: 100%;
-  background-color: var(--header);
+  background-color: var(--surface-4);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -1133,7 +1135,7 @@ watch(
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text);
+  color: var(--text-secondary);
   position: relative;
 }
 
@@ -1162,7 +1164,7 @@ watch(
 /* Collections 边栏样式 */
 .collections-sidebar {
   position: relative;
-  background-color: var(--background);
+  background-color: var(--surface-2);
   border-right: 1px solid var(--border);
   transition: none;
   overflow: hidden;
@@ -1170,6 +1172,8 @@ watch(
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: var(--sidebar-width);
+  overflow-y: auto;
 }
 
 .sidebar-controls {
@@ -1183,17 +1187,19 @@ watch(
 .sidebar-header {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
-  background-color: var(--header);
+  background-color: var(--surface-3);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  color: var(--text);
 }
 
 .sidebar-content {
   flex: 1;
   overflow: auto;
   padding: 8px;
+  color: var(--text-secondary);
 }
 
 /* 当边栏折叠时样式 */
@@ -1524,5 +1530,50 @@ watch(
   .main-content {
     flex: 1;
   }
+}
+
+/* 文件夹和请求项的样式 */
+:deep(.folder-item),
+:deep(.request-item) {
+  color: var(--text);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+:deep(.folder-item:hover),
+:deep(.request-item:hover) {
+  background-color: var(--surface-3);
+  color: var(--text);
+  opacity: 1;
+}
+
+:deep(.folder-item.active),
+:deep(.request-item.active) {
+  background-color: var(--surface-3);
+  color: var(--text);
+  opacity: 1;
+}
+
+/* 文件夹和请求项的图标 */
+:deep(.folder-item .el-icon),
+:deep(.request-item .el-icon) {
+  color: var(--text-secondary);
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+:deep(.folder-item:hover .el-icon),
+:deep(.request-item:hover .el-icon),
+:deep(.folder-item.active .el-icon),
+:deep(.request-item.active .el-icon) {
+  color: var(--text);
+  opacity: 1;
+}
+
+/* 文件夹和请求项的名称 */
+:deep(.folder-item .folder-name),
+:deep(.request-item .request-name) {
+  font-size: 13px;
+  transition: all 0.2s ease;
 }
 </style>

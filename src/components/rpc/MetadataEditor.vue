@@ -217,7 +217,7 @@ const removeSelected = async () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--background);
+  background-color: var(--surface-1);
 }
 
 .editor-header {
@@ -236,7 +236,7 @@ const removeSelected = async () => {
 .header-title {
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -246,7 +246,7 @@ const removeSelected = async () => {
   height: 20px;
   line-height: 18px;
   padding: 0 8px;
-  background-color: var(--el-color-info-light-9);
+  background-color: var(--surface-2);
   border: none;
   color: var(--text-secondary);
 }
@@ -270,7 +270,7 @@ const removeSelected = async () => {
 }
 
 .metadata-item:hover {
-  background-color: var(--background-light);
+  background-color: var(--surface-2);
 }
 
 .metadata-item.is-disabled {
@@ -278,11 +278,11 @@ const removeSelected = async () => {
 }
 
 .metadata-item.is-selected {
-  background-color: var(--selected);
+  background-color: var(--surface-3);
 }
 
 .metadata-item.is-selected:hover {
-  background-color: var(--selected-hover);
+  background-color: var(--surface-4);
 }
 
 .item-status {
@@ -298,7 +298,7 @@ const removeSelected = async () => {
 }
 
 :deep(.el-checkbox__inner) {
-  background-color: var(--background);
+  background-color: var(--surface-1);
   border-color: var(--border);
 }
 
@@ -317,10 +317,16 @@ const removeSelected = async () => {
 :deep(.el-input__wrapper) {
   box-shadow: none !important;
   border: 1px solid var(--border);
+  background-color: var(--surface-1);
 }
 
 :deep(.el-input__wrapper:hover) {
   border-color: var(--el-color-primary);
+}
+
+:deep(.el-input__inner) {
+  color: var(--text);
+  background-color: var(--surface-1);
 }
 
 :deep(.el-input__prefix-inner) {
