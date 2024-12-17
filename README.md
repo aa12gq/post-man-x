@@ -1,8 +1,8 @@
 <div align="center">
-<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-  <img src="./docs/images/logo.svg" alt="RPC Master Logo" width="40" height="40"/>
-  <span style="font-size: 2.5em; font-weight: bold; margin: 0 0 0 10px;">RPC Master</span>
-</div>
+<p align="center" style="display: inline-block;">
+  <img src="./docs/images/logo.svg" alt="RPC Master Logo" width="80" height="80"/>
+  <h1 align="center" style="position: relative;">RPC Master</h1>
+</p>
 
 [![Version](https://img.shields.io/badge/version-0.0.1-blue)](https://github.com/vtyug/rpc-postman)
 [![Author](https://img.shields.io/badge/Author-vtyug-ff69b4)](https://github.com/vtyug)
@@ -29,7 +29,7 @@
 #### gRPC 服务探索
 
 - ✅ 自动发现和列出服务器上的所有 gRPC 服务
-- ✅ 显示每个���务的所有可用方法
+- ✅ 显示每个 ���� 务的所有可用方法
 - ✅ 支持服务和方法的搜索过滤
 - ✅ 自动解析 Proto 文件定义
 
@@ -95,7 +95,7 @@
 
 #### 测试集合
 
-- 📝 创建测试集合
+- 📝 创建测试集 ��
 - 📝 批量运行测试
 - 📝 测试报告生成
 
