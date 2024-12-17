@@ -128,12 +128,9 @@
         "clear": "清除响应",
         "copy": "复制响应",
         "download": "下载响应",
-        "empty": "暂无响应",
         "time": "响应时间：{time}毫秒",
         "size": "大小：{size}",
         "headers": "响应头",
-        "debugInfo": "调试信息",
-        "debugCommand": "调试命令",
         "collapse": "收起",
         "expand": "展开",
         "tabs": {
@@ -211,38 +208,6 @@
           "cancel": "取消"
         }
       },
-      "preview": {
-        "title": "布局预览",
-        "header": "顶栏",
-        "sidebar": "侧边栏",
-        "tabs": "标签页",
-        "toolbar": "工具栏",
-        "editor": "编辑器",
-        "content": "内容区",
-        "dots": {
-          "minimize": "最小化",
-          "maximize": "最大化",
-          "close": "关闭"
-        },
-        "layouts": {
-          "classic": {
-            "title": "经典布局",
-            "description": "传统的固定位置布局"
-          },
-          "modern": {
-            "title": "现代布局",
-            "description": "灵活的现代设计布局"
-          }
-        },
-        "components": {
-          "header": "顶栏区域",
-          "sidebar": "侧边导航",
-          "tabs": "标签栏",
-          "toolbar": "工具栏",
-          "editor": "编辑区",
-          "content": "内容区"
-        }
-      },
       "actions": {
         "apply": "应用布局",
         "reset": "重置布局",
@@ -277,6 +242,9 @@
           "fixed": "固定",
           "fluid": "流动",
           "custom": "自定义"
+        },
+        "messages": {
+          "applySuccess": "布局应用成功"
         },
         "ratios": {
           "title": "内容比例",
@@ -393,7 +361,7 @@
         },
         "repeat": "重复模式",
         "repeats": {
-          "noRepeat": "不重复",
+          "noRepeat": "不复",
           "repeat": "重复",
           "repeatX": "水平重复",
           "repeatY": "垂直重复"
@@ -443,7 +411,7 @@
       "fontFamily": "字体",
       "tabSize": "缩进大小",
       "wordWrap": "自动换行",
-      "showLineNumbers": "显��行号",
+      "showLineNumbers": "显示行号",
       "saveSettings": "保存设置",
       "resetSettings": "重置设置",
       "resetConfirm": "确定要将所有设置重置为默认值吗？",

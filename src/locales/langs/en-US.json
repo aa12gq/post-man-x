@@ -278,6 +278,9 @@
           "fluid": "Fluid",
           "custom": "Custom"
         },
+        "messages": {
+          "applySuccess": "Layout applied successfully"
+        },
         "ratios": {
           "title": "Content Ratios",
           "tooltip": "Adjust the size ratios of different content areas",
@@ -368,10 +371,6 @@
         "name": "Theme Name",
         "type": "Theme Type",
         "colors": "Colors",
-        "preview": "Preview",
-        "previewHeader": "Preview Header",
-        "previewCardTitle": "Card Title",
-        "previewCardContent": "This is a preview of how your theme will look.",
         "save": "Save Theme",
         "nameRequired": "Theme name is required",
         "background": "Background",

@@ -584,7 +584,7 @@ const removeTab = async (targetId: string) => {
   // 如果关闭的是当前标签页,需要激活其他标签页
   if (activeTab.value === targetId) {
     if (tabs.value.length === 1) {
-      // 如果只有���标签页,清空活标签页
+      // 如果只有标签页,清空活标签页
       activeTab.value = "";
     } else if (targetIndex === tabs.value.length - 1) {
       // 如果闭的是最后一个标签页,激活前一个标签页
