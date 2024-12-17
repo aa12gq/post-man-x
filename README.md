@@ -1,5 +1,8 @@
 <div align="center">
-<h1>RPC Master</h1>
+<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+  <img src="./docs/images/logo.svg" alt="RPC Master Logo" width="40" height="40"/>
+  <span style="font-size: 2.5em; font-weight: bold; margin: 0 0 0 10px;">RPC Master</span>
+</div>
 
 [![Version](https://img.shields.io/badge/version-0.0.1-blue)](https://github.com/vtyug/rpc-postman)
 [![Author](https://img.shields.io/badge/Author-vtyug-ff69b4)](https://github.com/vtyug)
@@ -13,17 +16,11 @@
 
 <p>🚀 一个现代化的 gRPC 接口测试工具 | A Modern gRPC API Testing Tool 🚀</p>
 
-<img src="docs/images/divider.gif" alt="divider"/><br><br>
-
-<p align="center">
-  <img src="./docs/images/screenshot.png" alt="RPC Master Screenshot" width="800">
-</p>
-
 </div>
 
 ## 简介
 
-一个基于 Electron + Vue 3 的 gRPC 接口测试工具，类似于 Postman，但专注于 gRPC 接口测试。
+一个基于 Electron + Vue 3 的 gRPC 接口测试工具，类 于 Postman，但专注于 gRPC 接口测试。
 
 ## 功能特点
 
@@ -32,7 +29,7 @@
 #### gRPC 服务探索
 
 - ✅ 自动发现和列出服务器上的所有 gRPC 服务
-- ✅ 显示每个服务的所有可用方法
+- ✅ 显示每个���务的所有可用方法
 - ✅ 支持服务和方法的搜索过滤
 - ✅ 自动解析 Proto 文件定义
 
@@ -88,7 +85,7 @@
 
 - 📝 生成多语言的客户端代码
 - 📝 支持 Go、Java、Python 等主流语言
-- 📝 代码片段复制功能
+- 📝 码片段复制功能
 
 #### 请求脚本
 
@@ -172,7 +169,7 @@
 
 ## 贡献指南
 
-1. Fork 本仓库
+1. Fork 本 库
 2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
 3. 提交你的改动 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
