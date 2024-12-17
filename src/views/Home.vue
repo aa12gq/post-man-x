@@ -10,9 +10,9 @@
       <div class="logo-container">
         <LogoIcon class="logo animate-bounce" />
         <div class="text-content">
-          <h1>RPC Master</h1>
+          <h1>{{ t("home.title") }}</h1>
           <p class="subtitle">
-            A modern API testing tool for gRPC and HTTP requests
+            {{ t("home.subtitle") }}
           </p>
         </div>
       </div>
@@ -22,48 +22,48 @@
           <div class="feature-icon-wrapper">
             <el-icon class="feature-icon"><Connection /></el-icon>
           </div>
-          <h3>gRPC First</h3>
-          <p>Built specifically for gRPC, with full protocol buffer support</p>
+          <h3>{{ t("home.features.list.grpcFirst.title") }}</h3>
+          <p>{{ t("home.features.list.grpcFirst.desc") }}</p>
         </div>
 
         <div class="feature-item">
           <div class="feature-icon-wrapper">
             <el-icon class="feature-icon"><Box /></el-icon>
           </div>
-          <h3>Workspaces</h3>
-          <p>Multi-workspace support for team collaboration</p>
+          <h3>{{ t("home.features.list.workspaces.title") }}</h3>
+          <p>{{ t("home.features.list.workspaces.desc") }}</p>
         </div>
 
         <div class="feature-item">
           <div class="feature-icon-wrapper">
             <el-icon class="feature-icon"><Collection /></el-icon>
           </div>
-          <h3>Smart Collections</h3>
-          <p>Intelligent request organization with nested folders</p>
+          <h3>{{ t("home.features.list.collections.title") }}</h3>
+          <p>{{ t("home.features.list.collections.desc") }}</p>
         </div>
 
         <div class="feature-item">
           <div class="feature-icon-wrapper">
             <el-icon class="feature-icon"><Document /></el-icon>
           </div>
-          <h3>Proto Explorer</h3>
-          <p>Visual protocol buffer exploration and method discovery</p>
+          <h3>{{ t("home.features.list.protoExplorer.title") }}</h3>
+          <p>{{ t("home.features.list.protoExplorer.desc") }}</p>
         </div>
 
         <div class="feature-item">
           <div class="feature-icon-wrapper">
             <el-icon class="feature-icon"><Monitor /></el-icon>
           </div>
-          <h3>Debug Tools</h3>
-          <p>Built-in debugging tools for gRPC communication</p>
+          <h3>{{ t("home.features.list.debugTools.title") }}</h3>
+          <p>{{ t("home.features.list.debugTools.desc") }}</p>
         </div>
 
         <div class="feature-item">
           <div class="feature-icon-wrapper">
             <el-icon class="feature-icon"><Link /></el-icon>
           </div>
-          <h3>HTTP Support</h3>
-          <p>Also supports RESTful APIs for full-stack testing</p>
+          <h3>{{ t("home.features.list.httpSupport.title") }}</h3>
+          <p>{{ t("home.features.list.httpSupport.desc") }}</p>
         </div>
       </div>
 
@@ -74,11 +74,11 @@
           class="start-button"
           @click="$router.push('/request')"
         >
-          <span>Start Testing</span>
+          <span>{{ t("home.getStarted") }}</span>
           <el-icon class="el-icon-right"><ArrowRight /></el-icon>
         </el-button>
         <el-button size="large" @click="handleLearnMore">
-          Learn More
+          {{ t("home.learnMore") }}
         </el-button>
       </div>
     </div>
@@ -96,7 +96,9 @@ import {
   Document,
   Monitor,
 } from "@element-plus/icons-vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const handleLearnMore = () => {
   window.open("https://github.com/vtyug/rpc-master", "_blank");
 };

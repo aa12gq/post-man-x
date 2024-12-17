@@ -9,15 +9,55 @@
     </div>
     <div class="toolbar-right">
       <div class="divider"></div>
+      <el-dropdown trigger="click" @command="handleLanguageChange">
+        <button class="toolbar-btn action-btn">
+          <div class="current-lang">
+            <span class="lang-flag">{{
+              locale === "zh-CN" ? "🇨🇳" : "🇺🇸"
+            }}</span>
+            <span class="btn-text">{{ currentLanguageLabel }}</span>
+            <el-icon class="arrow-icon"><ArrowDown /></el-icon>
+          </div>
+        </button>
+        <template #dropdown>
+          <el-dropdown-menu class="lang-dropdown">
+            <el-dropdown-item command="en">
+              <span class="lang-item">
+                <span class="lang-flag">🇺🇸</span>
+                <span class="lang-label">
+                  <span class="lang-name">English</span>
+                  <span class="lang-native">English</span>
+                </span>
+                <el-icon v-if="locale === 'en'" class="check-icon"
+                  ><Check
+                /></el-icon>
+              </span>
+            </el-dropdown-item>
+            <el-dropdown-item command="zh-CN">
+              <span class="lang-item">
+                <span class="lang-flag">🇨🇳</span>
+                <span class="lang-label">
+                  <span class="lang-name">Chinese</span>
+                  <span class="lang-native">简体中文</span>
+                </span>
+                <el-icon v-if="locale === 'zh-CN'" class="check-icon"
+                  ><Check
+                /></el-icon>
+              </span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
 
       <!-- 主题切换按钮 -->
-      <button class="toolbar-btn" @click="showThemeDrawer = true">
-        <div class="theme-indicator">
+      <button class="toolbar-btn action-btn" @click="showThemeDrawer = true">
+        <div class="current-lang">
           <div
             class="color-block"
             :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
           ></div>
           <span class="theme-name">{{ currentThemeDisplay }}</span>
+          <el-icon class="arrow-icon"><ArrowDown /></el-icon>
         </div>
       </button>
 
@@ -96,12 +136,14 @@ import SettingsDropdown from "./SettingsDropdown.vue";
 import UserAvatar from "./UserAvatar.vue";
 import { useRouter, useRoute } from "vue-router";
 import { ref, computed } from "vue";
-import { Plus } from "@element-plus/icons-vue";
+import { Plus, ArrowDown, Check } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
 import { Theme } from "../../types/theme";
 import ThemePreviewCard from "../../components/common/ThemePreviewCard.vue";
 import WorkspaceSelector from "./WorkspaceSelector.vue";
+import { useI18n } from "vue-i18n";
+import { setLanguage } from "../../i18n";
 
 const router = useRouter();
 const route = useRoute();
@@ -109,6 +151,7 @@ const themeStore = useThemeStore();
 const settingsDropdownRef = ref();
 const showThemeEditor = ref(false);
 const showThemeDrawer = ref(false);
+const { locale } = useI18n();
 
 const goHome = () => {
   if (route.path !== "/") {
@@ -174,7 +217,7 @@ const getThemeStyle = (theme: Theme) => {
     "夏夜星辰",
   ];
 
-  // 如果是自定义主题，从名称池中选择一个（基于主题ID的哈希）
+  // 如果是自定义主题，从名称池中选择一个（基于题ID的哈希）
   if (theme.id.startsWith("custom_")) {
     const index = Math.abs(hashCode(theme.id)) % customThemeNames.length;
     return customThemeNames[index];
@@ -193,6 +236,14 @@ const hashCode = (str: string) => {
     hash = hash & hash;
   }
   return hash;
+};
+
+const currentLanguageLabel = computed(() => {
+  return locale.value === "zh-CN" ? "简体中文" : "English";
+});
+
+const handleLanguageChange = (lang: string) => {
+  setLanguage(lang);
 };
 </script>
 
@@ -265,7 +316,7 @@ const hashCode = (str: string) => {
   background: transparent;
   color: var(--text-color);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
@@ -321,324 +372,69 @@ const hashCode = (str: string) => {
   }
 }
 
-.theme-indicator {
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
-  margin-right: 12px;
-  background-color: var(--background);
-  box-shadow: var(--shadow-light);
-}
-
-.theme-indicator:hover {
-  border-color: var(--primary-color);
-  background-color: var(--hover-color);
-  box-shadow: var(--shadow-base);
-}
-
-.theme-preview {
+.current-lang {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+.lang-flag,
 .color-block {
   width: 16px;
   height: 16px;
-  border-radius: 3px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
 }
 
+.color-block {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-text,
 .theme-name {
-  font-size: 13px;
-  color: var(--text-color);
-}
-
-.theme-preview .el-icon {
-  font-size: 14px;
-  color: var(--text-color-secondary);
-}
-
-.theme-indicator:hover .el-icon {
-  color: var(--primary-color);
-}
-
-.custom-theme-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.color-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-/* 确保下拉菜单有合适的最大高度和滚动 */
-:deep(.el-dropdown-menu) {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.dropdown-section-title {
-  color: var(--text-secondary);
-  font-size: 12px;
-  padding: 0 12px;
-}
-
-.theme-tag {
-  font-size: 11px;
-  padding: 1px 6px;
-  border-radius: 10px;
-  background-color: var(--el-color-primary);
-  color: white;
-  margin-left: 8px;
-}
-
-/* 调整下拉菜单项的样式 */
-:deep(.el-dropdown-menu__item) {
-  padding: 8px 16px;
-  line-height: 1.4;
-}
-
-:deep(.el-dropdown-menu__item .el-icon) {
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-.custom-theme-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 160px;
-}
-
-.color-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.section-header {
-  pointer-events: none;
-  cursor: default;
-}
-
-.theme-item {
-  height: auto !important;
-  padding: 4px 12px !important;
-}
-
-.custom-theme-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 180px;
-  padding: 2px 0;
-}
-
-.theme-preview-colors {
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.preview-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
-}
-
-.theme-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.theme-name {
-  font-size: 12px;
-  line-height: 1.2;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.theme-type {
-  font-size: 11px;
-  line-height: 1.2;
-  color: var(--text-secondary);
+.action-btn {
+  min-width: 100px;
+  padding: 5px 10px;
+  transition: all 0.2s ease;
 }
 
-.theme-tag {
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 10px;
-  background-color: var(--el-color-primary-light-8);
-  color: var(--el-color-primary);
-  flex-shrink: 0;
-  font-weight: 500;
+.action-btn:hover {
+  transform: translateY(-1px);
+  background-color: var(--hover-color);
 }
 
-/* 修改下拉菜单样式 */
-:deep(.el-dropdown-menu) {
-  padding: 4px !important;
-}
-
-:deep(.el-dropdown-menu__item) {
-  padding: 8px 12px !important;
-  border-radius: 4px;
-  margin: 2px 0;
-}
-
-:deep(.el-dropdown-menu__item:not(.el-dropdown-menu__item--divided):hover) {
-  background-color: var(--el-color-primary-light-9);
-}
-
-.dropdown-section-title {
-  color: var(--text-secondary);
+.arrow-icon {
   font-size: 12px;
-  font-weight: 500;
-  padding: 0 4px;
+  color: var(--text-color-secondary);
+  transition: transform 0.2s ease;
 }
 
-/* 主题指示器样式优化 */
-.theme-indicator {
-  padding: 4px 8px;
-  border-radius: 6px;
-  background-color: var(--bg-color-light);
-}
-
-.theme-preview {
-  gap: 10px;
-}
-
-.color-block {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-}
-
-/* 添加主题标签样式 */
-.theme-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 500;
-}
-
-.tag-github-light {
-  background-color: #f6f8fa;
-  color: #0969da;
-  border: 1px solid #0969da;
-}
-
-.tag-github-dark {
-  background-color: #161b22;
-  color: #58a6ff;
-  border: 1px solid #58a6ff;
-}
-
-.tag-one-dark {
-  background-color: #282c34;
-  color: #61afef;
-  border: 1px solid #61afef;
-}
-
-.tag-solarized {
-  background-color: #eee8d5;
-  color: #268bd2;
-  border: 1px solid #268bd2;
-}
-
-.tag-light {
-  background-color: var(--el-color-primary-light-9);
+.action-btn:hover .arrow-icon {
+  transform: translateY(2px);
   color: var(--el-color-primary);
-  border: 1px solid var(--el-color-primary);
 }
 
-.tag-dark {
-  background-color: var(--el-color-primary-dark-2);
-  color: white;
-  border: 1px solid transparent;
-}
-
-/* 当工具栏在底部时的样式 */
-:deep(.toolbar-bottom) .toolbar {
-  border-top: 1px solid var(--border-color);
-  border-bottom: none;
-  box-shadow: var(--shadow-light);
-}
-
-/* 响应式布局调整 */
 @media (max-width: 768px) {
-  .toolbar {
-    padding: 0 4px;
+  .action-btn {
+    min-width: unset;
+    padding: 6px;
   }
 
-  /* 确保在底部时也保持正确的样式 */
-  :deep(.toolbar-bottom) .toolbar {
-    position: sticky;
-    bottom: 0;
+  .btn-text,
+  .theme-name,
+  .arrow-icon {
+    display: none;
   }
-}
-
-/* 调整主题项样式 */
-.theme-item {
-  height: auto !important;
-  padding: 4px 12px !important;
-}
-
-.custom-theme-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 180px;
-  padding: 2px 0;
-}
-
-/* 调整预览卡片大小 */
-:deep(.theme-preview-card) {
-  transform: scale(0.7);
-  transform-origin: left center;
-  margin: -8px 0;
-}
-
-.theme-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.theme-name {
-  font-size: 12px;
-  line-height: 1.2;
-}
-
-.theme-type {
-  font-size: 11px;
-  line-height: 1.2;
-}
-
-.theme-tag {
-  font-size: 10px;
-  padding: 1px 6px;
-  line-height: 1.2;
-}
-
-/* 调整下拉菜单的最大高度 */
-:deep(.el-dropdown-menu) {
-  max-height: 360px;
-  padding: 2px !important;
 }
 
 .theme-drawer-content {
@@ -702,4 +498,91 @@ const hashCode = (str: string) => {
   font-size: 12px;
   color: var(--text-secondary);
 }
+
+/* 添加语言切换相关样式 */
+.lang-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-icon {
+  font-size: 16px;
+}
+
+/* 语言切换按钮样式 */
+.action-btn {
+  min-width: 100px;
+  padding: 5px 10px;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.current-lang,
+.theme-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-flag,
+.color-block {
+  width: 16px;
+  height: 16px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+}
+
+.color-block {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-text,
+.theme-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrow-icon {
+  font-size: 12px;
+  color: var(--text-color-secondary);
+  transition: transform 0.2s ease;
+}
+
+.action-btn:hover .arrow-icon {
+  transform: translateY(2px);
+  color: var(--el-color-primary);
+}
+
+@media (max-width: 768px) {
+  .action-btn {
+    min-width: unset;
+    padding: 6px;
+  }
+
+  .btn-text,
+  .theme-name,
+  .arrow-icon {
+    display: none;
+  }
+}
+
+/* 删除重复的样式 */
+- .theme-switch { }
+- .theme-switch:hover { }
+- .theme-indicator { }
+- .color-block { }
+- .theme-switch:hover .color-block { }
+- .theme-name { }
+- .arrow-icon { }
+- .theme-switch:hover .arrow-icon { }
 </style>

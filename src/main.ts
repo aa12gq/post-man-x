@@ -7,6 +7,7 @@ import 'element-plus/dist/index.css'
 import './styles/dark.css'
 import router from './router'
 import { useThemeStore } from './stores/theme';
+import { i18n } from './i18n'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -15,6 +16,7 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(ElementPlus)
 app.use(router)
+app.use(i18n)
 
 // 在应用启动时初始化主题
 const initializeTheme = () => {
