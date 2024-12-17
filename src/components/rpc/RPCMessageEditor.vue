@@ -101,7 +101,6 @@ const handleChange = (value: string) => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
 }
 
 .editor-toolbar {

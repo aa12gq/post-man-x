@@ -96,7 +96,7 @@
 
     <!-- 下半部分：响应区域 -->
     <div class="response-section" :style="{ height: responseHeight }">
-      <!-- 添加一个透明的拖拽区域 -->
+      <!-- 透明拖拽区域 -->
       <div class="drag-area" @mousedown="startResize"></div>
       <ResponseViewer
         :response="responseInfo.response"
@@ -143,7 +143,7 @@ import RPCMessageEditor from "./RPCMessageEditor.vue";
 import AuthorizationManager from "../auth/AuthorizationManager.vue";
 import MetadataEditor from "./MetadataEditor.vue";
 import ResponseViewer from "../response/ResponseViewer.vue";
-import { ArrowUp, Folder, Link, Document } from "@element-plus/icons-vue";
+import { Folder, Link, Document } from "@element-plus/icons-vue";
 import EditorConfig from "../editor/EditorConfig.vue";
 import { useI18n } from "vue-i18n";
 
@@ -699,7 +699,6 @@ const cancelEditing = () => {
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  /* border-radius: 4px; */
   cursor: pointer;
   transition: all 0.2s;
   color: var(--text-color);
@@ -721,7 +720,6 @@ const cancelEditing = () => {
   width: 48px;
   height: 100%;
   background-color: var(--header-bg);
-  /* border-right: 1px solid var(--border-color); */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -760,7 +758,6 @@ const cancelEditing = () => {
 .collections-sidebar {
   position: relative;
   background-color: var(--surface-1);
-  /* border-right: 1px solid var(--border-color); */
   overflow: hidden;
   flex-shrink: 0;
   flex: 1;
@@ -790,7 +787,6 @@ const cancelEditing = () => {
   width: 24px;
   height: 48px;
   background-color: var(--surface-1);
-  /* border: 1px solid var(--border-color); */
   border-left: none;
   border-radius: 0 4px 4px 0;
   display: flex;
@@ -898,7 +894,6 @@ const cancelEditing = () => {
 
 :deep(.el-tabs--border-card > .el-tabs__header) {
   background-color: var(--surface-2);
-  border-bottom: 1px solid var(--border);
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
@@ -1070,7 +1065,6 @@ const cancelEditing = () => {
 
 :deep(.el-tabs--card > .el-tabs__header .el-tabs__item) {
   border: none;
-  /* border-right: 1px solid var(--border-color); */
   height: 40px;
   line-height: 40px;
   font-size: 13px;
@@ -1108,11 +1102,9 @@ const cancelEditing = () => {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  /* border-radius: 6px; */
   cursor: pointer;
   transition: all 0.3s;
   background-color: var(--surface-1);
-  /* border: 1px solid var(--border-color); */
   &:hover {
     background-color: var(--el-color-primary-light-9);
     border-color: var(--el-color-primary);
@@ -1273,5 +1265,4 @@ const cancelEditing = () => {
   z-index: 100;
 }
 
-/* 删除原有的 resize-handle 相关样式 */
 </style>

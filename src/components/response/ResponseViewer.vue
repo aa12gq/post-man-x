@@ -1,35 +1,5 @@
 <template>
   <div class="response-viewer">
-    <div class="response-header">
-      <div class="resize-handle">
-        <div class="resize-handle-line"></div>
-        <div class="resize-handle-icon">
-          <el-icon><ArrowUp /></el-icon>
-        </div>
-      </div>
-
-      <div class="header-left">
-        <span class="header-title"></span>
-        <div
-          v-if="props.status"
-          class="response-status"
-          :class="{ success: isSuccess }"
-        >
-          {{ statusText }}
-        </div>
-        <span v-if="responseTime !== null" class="response-time">
-          {{ responseTime }}ms
-        </span>
-      </div>
-      <div class="header-right">
-        <el-button size="small" text>
-          <el-icon>
-            <ArrowUp />
-          </el-icon>
-        </el-button>
-      </div>
-    </div>
-
     <div class="response-content">
       <el-tabs v-model="activeTab" type="border-card">
         <!-- Payload 选项卡 -->
@@ -44,7 +14,6 @@
               language="json"
               :read-only="true"
             />
-            <!-- <div v-else class="empty-response">No response data</div> -->
           </div>
         </el-tab-pane>
 
@@ -123,7 +92,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { ArrowUp } from "@element-plus/icons-vue";
 import CodeEditor from "../CodeEditor.vue";
 import { useI18n } from "vue-i18n";
 
@@ -143,29 +111,6 @@ const activeTab = ref(
   props.response ? "body" : props.debugLogs ? "debug" : "body"
 );
 
-const isSuccess = computed(() => {
-  if (!props.status) return false;
-  const statusCode = Number(props.status);
-  return statusCode >= 200 && statusCode < 300;
-});
-
-const statusText = computed(() => {
-  const statusCode = Number(props.status);
-  const statusMap: Record<number, string> = {
-    200: "OK",
-    201: "Created",
-    400: "Bad Request",
-    401: "Unauthorized",
-    403: "Forbidden",
-    404: "Not Found",
-    500: "Internal Server Error",
-    502: "Bad Gateway",
-    503: "Service Unavailable",
-    504: "Gateway Timeout",
-  };
-  return `${statusCode} ${statusMap[statusCode] || ""}`;
-});
-
 const trailers = computed(() => props.trailers || {});
 </script>
 
@@ -181,16 +126,6 @@ const trailers = computed(() => props.trailers || {});
 
 .response-viewer.collapsed {
   height: 48px;
-}
-
-.response-header {
-  position: relative;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .response-content {
@@ -262,7 +197,6 @@ const trailers = computed(() => props.trailers || {});
   display: flex;
   gap: 8px;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .header-item:last-child {
@@ -338,13 +272,11 @@ pre {
   font-weight: 500;
   background-color: var(--el-color-danger-light-9);
   color: var(--el-color-danger);
-  border: 1px solid var(--el-color-danger-light-7);
 }
 
 .response-status.success {
   background-color: var(--el-color-success-light-9);
   color: var(--el-color-success);
-  border: 1px solid var(--el-color-success-light-7);
 }
 
 .resize-handle {
@@ -355,25 +287,5 @@ pre {
   height: 100%;
   cursor: row-resize;
   z-index: 1;
-}
-
-.resize-handle-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 2px;
-  background-color: var(--border-color);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.resize-handle:hover .resize-handle-line {
-  opacity: 1;
-  background-color: var(--el-color-primary);
-}
-
-.resize-handle-icon {
-  display: none;
 }
 </style>

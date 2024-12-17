@@ -149,7 +149,6 @@ defineExpose({
 .editor-container {
   width: 100%;
   min-height: 100px;
-  border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
 }

@@ -313,7 +313,6 @@ onMounted(() => {
 .rpc-toolbar {
   padding: 12px;
   background-color: var(--surface-1);
-  border-bottom: 1px solid var(--border);
 }
 
 .toolbar-section {

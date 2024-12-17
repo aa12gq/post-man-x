@@ -316,7 +316,6 @@ const removeSelected = async () => {
 
 :deep(.el-input__wrapper) {
   box-shadow: none !important;
-  border: 1px solid var(--border);
   background-color: var(--surface-1);
 }
 

@@ -200,9 +200,8 @@ defineExpose({
   justify-content: flex-end;
   padding: 8px;
   background-color: var(--surface-1);
-  border: 1px solid var(--border);
   border-bottom: none;
-  border-top-left-radius: 4px;
+  border-top-left-radius: 4px;  
   border-top-right-radius: 4px;
   flex-shrink: 0;
   z-index: 1;
