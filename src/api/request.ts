@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { displayNotification } from '../utils/message'
+import { $t } from '../i18n'
 
 const request = axios.create({
   baseURL: 'http://localhost:8080/api',

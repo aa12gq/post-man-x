@@ -997,7 +997,7 @@
 		});
 	};
 
-	const { history, addFolder, addHistoryItem, loadHistory } =
+	const { history, addHistoryItem, loadHistory } =
 		useRequestHistory();
 
 	// 监听历史记录变化，更新标签页名称

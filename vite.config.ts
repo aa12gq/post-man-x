@@ -6,6 +6,9 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
   server: {
@@ -46,6 +49,15 @@ export default defineConfig({
       fullInstall: true
     }),
     vueDevTools(),
+    AutoImport({
+      imports: ['vue', 'vue-router', 'pinia'],
+      dts: 'src/auto-imports.d.ts',
+    }),
+    Components({
+      dirs: ['src/components'],
+      resolvers: [ElementPlusResolver()],
+      dts: 'src/components.d.ts',
+    }),
   ],
   resolve: {
     alias: {
