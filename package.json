@@ -15,7 +15,7 @@
     "@grpc/proto-loader": "^0.7.13",
     "@types/uuid": "^10.0.0",
     "@vscode/codicons": "^0.0.36",
-    "axios": "^1.6.7",
+    "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "element-plus": "^2.5.6",

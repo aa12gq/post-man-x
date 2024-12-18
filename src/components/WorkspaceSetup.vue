@@ -1,73 +1,182 @@
 <template>
-	<div class="workspace-creation">
-		<div class="left-panel">
-			<h2>Create your workspace</h2>
-			<p>Get the most out of your workspace with a template.</p>
-			<div class="template-list">
+	<div class="flex h-screen">
+		<div class="w-[400px] p-5 bg-surface-1">
+			<h2 class="text-center text-lg mb-2">Create your workspace</h2>
+			<p
+				v-if="
+					workspaceStore.workspaceConfig.createWorkspacePage ===
+					'blank'
+				"
+				class="text-center text-sm mb-5"
+			>
+				Get the most out of your workspace with a template.
+			</p>
+			<div class="mt-5">
 				<div
-					class="template-item"
-					:class="{ selected: selectedTemplate === 'blank' }"
+					v-if="
+						workspaceStore.workspaceConfig.createWorkspacePage ===
+						'blank'
+					"
+					class="flex items-center p-3 cursor-pointer border border-border rounded mb-2 transition-colors duration-200"
+					:class="{
+						'bg-primary-light border-primary-color':
+							selectedTemplate === 'blank',
+					}"
 					@click="selectTemplate('blank')"
 				>
 					<el-icon :component="Document" />
-					<span class="template-name">Blank workspace</span>
-					<span class="radio-button">
+					<span class="flex-grow ml-2 text-xs text-text-color"
+						>Blank workspace</span
+					>
+					<span class="flex items-center">
 						<input
 							type="radio"
 							:checked="selectedTemplate === 'blank'"
+							class="pointer-events-none"
 						/>
 					</span>
 				</div>
+				<div v-else>
+					<el-form label-position="top">
+						<el-form-item label="Name">
+							<el-input
+								type="text"
+								size="large"
+								id="workspace-name"
+								v-model="workspaceName"
+								placeholder="Enter workspace name"
+							/>
+						</el-form-item>
+					</el-form>
+				</div>
 			</div>
-			<div class="divider">
-				<span>Explore our templates</span>
+			<div class="flex items-center text-center my-5 text-sm font-bold">
+				<span
+					v-if="
+						workspaceStore.workspaceConfig.createWorkspacePage ===
+						'blank'
+					"
+				>
+					Explore our templates
+				</span>
+				<span v-else> Who can access your workspace? </span>
 			</div>
-			<div class="template-list">
+			<div
+				v-if="
+					workspaceStore.workspaceConfig.createWorkspacePage ===
+					'blank'
+				"
+				class="mt-5"
+			>
 				<div
 					v-for="template in templates"
 					:key="template.id"
-					class="template-item"
-					:class="{ selected: selectedTemplate === template.id }"
+					class="flex items-center p-3 cursor-pointer border border-border rounded mb-2 transition-colors duration-200"
+					:class="{
+						'bg-primary-light border-primary-color':
+							selectedTemplate === template.id,
+					}"
 					@click="selectTemplate(template.id)"
 				>
-					<el-icon :component="template.icon" />
-					<span class="template-name">{{ template.name }}</span>
-					<span class="radio-button">
+					<!-- <el-icon :component="template.icon" /> -->
+					<span class="flex-grow ml-2 text-xs text-text-color">{{
+						template.name
+					}}</span>
+					<span class="flex items-center">
 						<input
 							type="radio"
 							:checked="selectedTemplate === template.id"
+							class="pointer-events-none"
 						/>
 					</span>
 				</div>
 			</div>
-			<div class="footer">
-				<div class="step-info">Step 1 of 2</div>
-				<div class="actions">
+			<div
+				v-else
+				class="mt-5"
+			>
+				<div
+					v-for="access in accessselected"
+					:key="access.id"
+					class="flex items-center p-3 cursor-pointer border border-border-color rounded mb-2 transition-colors duration-200"
+					:class="{
+						'bg-primary-light border-primary-color':
+							selectedAccess === access.id,
+					}"
+					@click="selectAccess(access.id)"
+				>
+					<!-- <el-icon :component="access.icon" /> -->
+					<span class="flex-grow ml-2 text-sm text-text-color">{{
+						access.name
+					}}</span>
+					<span class="flex items-center">
+						<input
+							type="radio"
+							:checked="selectedAccess === access.id"
+							class="pointer-events-none"
+						/>
+					</span>
+				</div>
+			</div>
+
+			<div class="flex items-center justify-between mt-5">
+				<div class="text-xs text-gray-500">
+					Step
+					{{
+						workspaceStore.workspaceConfig.createWorkspacePage ===
+						"blank"
+							? 1
+							: 2
+					}}
+					of 2
+				</div>
+				<div class="flex">
 					<el-button
-						@click="cancel"
-						class="cancel-button"
+						@click="
+							cancelOrBack(
+								workspaceStore.workspaceConfig
+									.createWorkspacePage
+							)
+						"
+						class="ml-2 px-4 py-2 text-sm border-none rounded cursor-pointer text-text-color hover:bg-secondary-button-hover-color"
 					>
-						Cancel
+						{{
+							workspaceStore.workspaceConfig
+								.createWorkspacePage === "blank"
+								? "Cancel"
+								: "Back"
+						}}
 					</el-button>
 					<el-button
-						type="primary"
+						:disabled="
+							!workspaceName &&
+							workspaceStore.workspaceConfig
+								.createWorkspacePage === 'init'
+						"
 						@click="nextStep"
-						class="next-button"
+						class="ml-2 px-4 py-2 text-sm border-none rounded cursor-pointer text-primary-light bg-primary hover:text-primary-light"
 					>
-						Next
+						{{
+							workspaceStore.workspaceConfig
+								.createWorkspacePage === "blank"
+								? "Next"
+								: "Create"
+						}}
 					</el-button>
 				</div>
 			</div>
 		</div>
-		<div class="right-panel">
+		<div class="flex-grow">
 			<!-- Right panel content -->
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+	import { Connection, Document, Monitor } from "@element-plus/icons-vue";
 	import { ref, watchEffect } from "vue";
-	import { Document, Connection, Monitor } from "@element-plus/icons-vue";
+	import { useWorkspaceStore } from "../stores/workspace";
+	const workspaceStore = useWorkspaceStore();
 
 	const templates = [
 		{
@@ -113,9 +222,14 @@
 			description: "Template for partner collaboration.",
 		},
 	];
+	// workspace name
+	const workspaceName = ref("");
 
+	// 模版
 	const selectedTemplate = ref("blank");
+	// 模版名称
 	const selectedTemplateName = ref("");
+	// 模版描述
 	const selectedTemplateDescription = ref("");
 
 	watchEffect(() => {
@@ -124,141 +238,53 @@
 		selectedTemplateDescription.value = template?.description || "";
 	});
 
+	// 选择模板
 	const selectTemplate = (id: string) => {
 		selectedTemplate.value = id;
 	};
 
-	const cancel = () => {
-		console.log("Cancel creation");
+	const accessselected = [
+		{
+			id: "1",
+			name: "Only me",
+			// icon: User,
+			description: "Personal.",
+		},
+		{
+			id: "2",
+			name: "Only invited team members",
+			// icon: Lock,
+			description: "Private",
+		},
+		{
+			id: "3",
+			name: "Everyone",
+			// icon: Users,
+			description: "Public",
+		},
+		{
+			id: "4",
+			name: "Only invited team members",
+			// icon: Lock,
+			description: "Private",
+		},
+	];
+
+	const selectedAccess = ref("1");
+
+	const selectAccess = (id: string) => {
+		selectedAccess.value = id;
+	};
+
+	const cancelOrBack = (step: string) => {
+		if (step === "blank") {
+			workspaceStore.setCreateWorkspacePage("cancel");
+		} else {
+			workspaceStore.setCreateWorkspacePage("blank");
+		}
 	};
 
 	const nextStep = () => {
-		console.log("Proceed to next step");
+		workspaceStore.setCreateWorkspacePage("init");
 	};
 </script>
-
-<style scoped>
-	.workspace-creation {
-		display: flex;
-		height: 100vh;
-	}
-
-	.left-panel {
-		width: 400px; /* 固定宽度 */
-		padding: 20px;
-		background-color: var(--bg-color);
-	}
-
-	.right-panel {
-		flex-grow: 1; /* 占据剩余宽度 */
-		background-color: var(--bg-secondary);
-	}
-
-	.left-panel h2,
-	.left-panel p {
-		text-align: center;
-		color: var(--text-color);
-	}
-
-	.left-panel h2 {
-		font-size: 20px;
-		margin-bottom: 10px;
-	}
-
-	.left-panel p {
-		font-size: 13px;
-		margin-bottom: 20px;
-	}
-
-	.template-list {
-		margin-top: 20px;
-	}
-
-	.template-item {
-		display: flex;
-		align-items: center;
-		padding: 10px;
-		cursor: pointer;
-		border: 1px solid var(--border-color);
-		border-radius: 4px;
-		margin-bottom: 10px;
-		transition: background-color 0.3s, border-color 0.3s;
-	}
-
-	.template-item.selected {
-		background-color: var(--primary-light);
-		border-color: var(--primary-color);
-	}
-
-	.template-item:hover {
-		background-color: var(--hover-color);
-		border-color: var(--border-hover-color);
-	}
-
-	.template-name {
-		flex-grow: 1;
-		margin-left: 10px;
-		font-size: 14px;
-		color: var(--text-color);
-	}
-
-	.radio-button {
-		display: flex;
-		align-items: center;
-	}
-
-	.radio-button input {
-		pointer-events: none;
-	}
-
-	.divider {
-		display: flex;
-		align-items: center;
-		text-align: center;
-		margin: 20px 0;
-	}
-
-	.divider::before,
-	.divider::after {
-		content: "";
-		flex: 1;
-		border-bottom: 1px solid #ccc;
-	}
-
-	.divider:not(:empty)::before {
-		margin-right: 10px;
-	}
-
-	.divider:not(:empty)::after {
-		margin-left: 10px;
-	}
-
-	.footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 20px;
-	}
-
-	.step-info {
-		font-size: 12px;
-		color: #888;
-	}
-
-	.actions {
-		display: flex;
-	}
-
-	.actions button {
-		margin-left: 10px;
-		padding: 8px 16px;
-		font-size: 14px;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-	}
-
-	.next-button:hover {
-		background-color: var(--button-hover-bg);
-	}
-</style>

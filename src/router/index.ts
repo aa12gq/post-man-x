@@ -4,8 +4,9 @@ import {
   RouteLocationNormalized,
   RouteRecordRaw,
 } from "vue-router";
-import Home from '../views/Home.vue';
+import { useUserStore } from '../stores/user'; // 假设你有一个用户 store
 import BackgroundTest from '../views/BackgroundTest.vue';
+import Home from '../views/Home.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,6 +15,7 @@ const routes: RouteRecordRaw[] = [
     component: Home,
     meta: {
       title: "Home",
+      requiresAuth: false,
     },
   },
   {
@@ -22,6 +24,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import("../components/RequestPanel.vue"),
     meta: {
       title: "Request",
+      requiresAuth: true,
     },
   },
   {
@@ -30,12 +33,34 @@ const routes: RouteRecordRaw[] = [
     component: () => import("../components/WorkspaceSetup.vue"),
     meta: {
       title: "WorkspaceSetup",
+      requiresAuth: true,
     },
   },
   {
     path: '/background-test',
     name: 'BackgroundTest',
     component: BackgroundTest,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue'),
+    meta: {
+      title: "Login",
+      requiresAuth: false,
+    },
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('../views/Register.vue'),
+    meta: {
+      title: "Register",
+      requiresAuth: false,
+    },
   },
 ];
 
@@ -44,11 +69,20 @@ const router = createRouter({
   routes,
 });
 
-// 路由标题
+// 路由鉴权和标题设置
 router.beforeEach(
-  (to: RouteLocationNormalized, _from: any, next: () => void) => {
-    document.title = `${to.meta?.title || "RPC Master"} - RPC Master`;
-    next();
+  (to: RouteLocationNormalized, _from: RouteLocationNormalized, next: (to?: string | false | { name: string }) => void) => {
+    const userStore = useUserStore();
+    const isAuthenticated = !!userStore.token;
+
+    if (to.meta.requiresAuth && !isAuthenticated) {
+      // 如果路由需要登录且用户未登录，则重定向到登录页面
+      next({ name: 'Login' });
+    } else {
+      // 设置页面标题
+      document.title = `${to.meta?.title || "RPC Master"} - RPC Master`;
+      next();
+    }
   }
 );
 

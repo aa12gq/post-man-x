@@ -483,5 +483,36 @@
         "about": "关于"
       }
     }
+  },
+  "auth": {
+    "register": {
+      "title": "注册",
+      "username": "用户名",
+      "email": "邮箱",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "submit": "注册",
+      "success": "注册成功",
+      "failure": "注册失败",
+      "validation": {
+        "usernameRequired": "用户名不能为空",
+        "emailRequired": "邮箱不能为空",
+        "passwordRequired": "密码不能为空",
+        "confirmPasswordRequired": "确认密码不能为空",
+        "passwordMismatch": "密码不匹配"
+      }
+    },
+    "login": {
+      "title": "登录",
+      "username": "用户名",
+      "password": "密码",
+      "submit": "登录",
+      "success": "登录成功",
+      "failure": "登录失败",
+      "validation": {
+        "usernameRequired": "用户名不能为空",
+        "passwordRequired": "密码不能为空"
+      }
+    }
   }
 }

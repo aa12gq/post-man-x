@@ -518,5 +518,36 @@
         "about": "About"
       }
     }
+  },
+  "auth": {
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Register",
+      "success": "Registration successful",
+      "failure": "Registration failed",
+      "validation": {
+        "usernameRequired": "Username is required",
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required",
+        "confirmPasswordRequired": "Confirm password is required",
+        "passwordMismatch": "Passwords do not match"
+      }
+    },
+    "login": {
+      "title": "Login",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Login",
+      "success": "Login successful",
+      "failure": "Login failed",
+      "validation": {
+        "usernameRequired": "Username is required",
+        "passwordRequired": "Password is required"
+      }
+    }
   }
 }
