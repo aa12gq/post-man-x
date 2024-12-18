@@ -390,6 +390,8 @@ ipcMain.handle("rpc-request", async (event, params) => {
       serviceName: params.serviceName,
       methodName: params.methodName,
       params: params.params,
+      metadata: params.metadata,
+      metadataArgs: params.metadataArgs
     });
 
     // 将参数写入临时文件
@@ -399,9 +401,19 @@ ipcMain.handle("rpc-request", async (event, params) => {
     // 构建完整的服务方法名
     const fullMethodName = `${params.serviceName}/${params.methodName}`;
 
+    // 构建命令数组，包含元数据参数
+    const args = [
+      'grpcurl',
+      '-plaintext',
+      ...(params.metadataArgs || []), // 添加元数据参数
+      '-d', '@',
+      cleanUrl,
+      `"${fullMethodName}"`
+    ];
+
     // 执行带调试信息的请求
     const { stdout, stderr } = await execAsync(
-      `grpcurl -plaintext -d @ ${cleanUrl} "${fullMethodName}" < ${tmpFile}`,
+      `${args.join(' ')} < ${tmpFile}`,
       {
         env: {
           ...process.env,
@@ -419,14 +431,12 @@ ipcMain.handle("rpc-request", async (event, params) => {
       response = stdout;
     }
 
-    // 确保回所有必要的信息
+    // 确保返回所有必要的信息
     return {
       success: true,
       data: response,
-      debug: stderr || "", // 确保总是返回字符串
-      command: `grpcurl -plaintext -d '${JSON.stringify(
-        params.params
-      )}' ${cleanUrl} ${fullMethodName}`,
+      debug: stderr || "", 
+      command: args.join(' '),
     };
   } catch (error: any) {
     console.error("Failed to make RPC request:", error);

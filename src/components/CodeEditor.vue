@@ -34,6 +34,7 @@ import { setupEditor } from "../utils/editor";
 import { Document, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { editorManager } from "../utils/editorManager";
+import * as monaco from 'monaco-editor';
 
 const props = defineProps<{
   modelValue: string;
@@ -92,6 +93,22 @@ onMounted(async () => {
   }
 
   try {
+    // 确保 JSON 语言支持已注册
+    if (props.language === 'json' && !monaco.languages.getLanguages().some(l => l.id === 'json')) {
+      monaco.languages.register({ id: 'json' });
+      monaco.languages.setLanguageConfiguration('json', {
+        brackets: [
+          ['{', '}'],
+          ['[', ']'],
+        ],
+        autoClosingPairs: [
+          { open: '{', close: '}' },
+          { open: '[', close: ']' },
+          { open: '"', close: '"' },
+        ],
+      });
+    }
+
     isReady.value = true;
     await nextTick();
 

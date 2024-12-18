@@ -62,6 +62,7 @@
               size="default"
               :prefix-icon="Document"
               :status="item.key.trim() === '' ? 'error' : ''"
+              @click.stop
             />
             <el-input
               v-model="item.value"
@@ -70,9 +71,10 @@
               @change="emitChange"
               size="default"
               :prefix-icon="Edit"
+              @click.stop
             />
             <div class="item-actions">
-              <el-button link type="danger" @click="removeMetadata(index)">
+              <el-button link type="danger" @click.stop="removeMetadata(index)">
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>

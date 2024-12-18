@@ -69,14 +69,36 @@ export default class RpcClient {
     }
   }
 
-  async invoke(serviceName: string, methodName: string, params: any): Promise<RpcResponse> {
+  async invoke(serviceName: string, methodName: string, params: any, options?: { metadata?: Record<string, string> }): Promise<RpcResponse> {
     try {
-      const response = await window.electron.invoke('rpc-request', {
+      const metadataArgs = options?.metadata 
+        ? Object.entries(options.metadata).map(([key, value]) => 
+            `-H "${key}: ${value.replace(/"/g, '\\"')}"`
+          )
+        : [];
+
+      const requestParams = {
         url: this.url,
         serviceName,
         methodName,
-        params
-      });
+        params: JSON.parse(JSON.stringify(params)),
+        metadata: options?.metadata,
+        metadataArgs
+      };
+
+      const command = [
+        'grpcurl',
+        '-plaintext',
+        ...metadataArgs,
+        '-d', '@',
+        this.url,
+        `${serviceName}/${methodName}`
+      ];
+
+      console.log('Sending RPC request:', requestParams);
+      console.log('Command:', command.join(' '));
+
+      const response = await window.electron.invoke('rpc-request', requestParams);
 
       if (!response.success) {
         throw new Error(response.error);
@@ -88,7 +110,7 @@ export default class RpcClient {
         metadata: response.metadata || {},
         trailers: response.trailers || {},
         debug: response.debug || '',
-        command: response.command || ''
+        command: command.join(' ')
       };
     } catch (error: any) {
       console.error('RPC request failed:', error);

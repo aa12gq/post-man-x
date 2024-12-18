@@ -48,8 +48,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', headers: Header[]): void
-}>()
+  'update:modelValue': [headers: Header[]];
+  'update:headers': [headers: Header[]];
+  'change': [headers: Header[]];
+}>();
 
 const headers = ref<Header[]>(props.modelValue)
 
@@ -63,7 +65,9 @@ watch(
 watch(
   headers,
   (newValue) => {
-    emit('update:modelValue', newValue)
+    emit('update:modelValue', newValue);
+    emit('update:headers', newValue);
+    emit('change', newValue);
   },
   { deep: true }
 )

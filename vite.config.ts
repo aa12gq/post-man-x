@@ -9,7 +9,15 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 export default defineConfig({
   plugins: [
     vue(),
-    monacoEditorPlugin({}),
+    monacoEditorPlugin({
+      languageWorkers: ['json'],
+      customWorkers: [
+        {
+          label: 'json',
+          entry: 'monaco-editor/esm/vs/language/json/json.worker',
+        },
+      ],
+    }),
     electron([
       {
         entry: 'electron/main.ts',
@@ -36,6 +44,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['electron'],
+    include: [
+      'monaco-editor/esm/vs/language/json/json.worker',
+      'monaco-editor/esm/vs/editor/editor.worker'
+    ],
   },
   build: {
     rollupOptions: {
@@ -46,8 +58,6 @@ export default defineConfig({
         }
       }
     },
-    sourcemap: false,
-    outDir: 'dist',
-    emptyOutDir: true,
+    sourcemap: true,
   }
 }) 

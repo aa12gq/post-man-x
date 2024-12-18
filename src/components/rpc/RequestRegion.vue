@@ -336,25 +336,14 @@ const sendRequest = async () => {
       const serviceName = methodParts.slice(0, -1).join(".");
       const methodName = methodParts[methodParts.length - 1];
 
-      // 保数是可序列化的对象
-      let params;
-      try {
-        params =
-          typeof requestForm.value.params === "string"
-            ? JSON.parse(requestForm.value.params)
-            : JSON.parse(JSON.stringify(requestForm.value.params));
-      } catch (error) {
-        console.error("Failed to parse params:", error);
-        throw new Error("Invalid request parameters");
-      }
+      // 确保将元数据传递给 RPC 客户端
+      const metadata = headersToRecord(requestHeaders.value);
+      console.log("Sending request with metadata:", metadata); // 添加日志
 
-      console.log("Sending request:", {
-        serviceName,
-        methodName,
-        params,
+      const response = await client.invoke(serviceName, methodName, requestForm.value.params, {
+        metadata: metadata // 添加这一行，传递元数据
       });
 
-      const response = await client.invoke(serviceName, methodName, params);
       console.log("Full response:", response); // 添加日志以检查响应
 
       // 更新响应
@@ -391,32 +380,52 @@ const sendRequest = async () => {
         type: "rpc",
         url: requestForm.value.url,
         method: selectedMethod.value,
-        params: params,
+        params: requestForm.value.params,
         response: response.data,
         timestamp: Date.now(),
         debugInfo: response.debug || "",
         debugCommand: response.command || "",
-        requestMessage: JSON.stringify(params),
+        requestMessage: JSON.stringify(requestForm.value.params),
         name: `${selectedMethod.value} Request`,
       });
     }
   } catch (error: any) {
     console.error("Request failed:", error);
-    ElMessage.error(`Request failed: ${error.message}`);
+    
+    // 从错误消息中提取关键信息
+    const errorMessageStr = error.message || '';
+    const errorMatch = errorMessageStr.match(/ERROR:\s*Code:\s*([^\n]*)\s*Message:\s*([^\n]*)\s*Details:\s*([\s\S]*?)(?=\s*\d{4}\/|$)/);
+    
+    let errorMessage = "ERROR:\n";
+    if (errorMatch) {
+      const [, code, message, details] = errorMatch;
+      if (code) {
+        errorMessage += `  Code: ${code.trim()}\n`;
+      }
+      if (message) {
+        errorMessage += `  Message: ${message.trim()}\n`;
+      }
+      if (details) {
+        errorMessage += `  Details:\n${details.trim()}\n`;
+      }
+    } else {
+      // 如果没有匹配到标准格式，则使用原始错误信息
+      errorMessage += `  Message: ${error.message}\n`;
+    }
 
-    // 清空响应，但保错误信息
+    // 将错误信息显示在响应区域，而不是弹窗
     if (requestForm.value) {
-      responseInfo.value.response = "";
+      responseInfo.value.response = errorMessage; // 在响应区域显示错误信息
       responseInfo.value.responseTime = null;
       responseInfo.value.responseHeaders = {};
-      responseInfo.value.debugLogs = error.debug || error.message || "";
+      responseInfo.value.debugLogs = error.debug || "";
       responseInfo.value.debugCommand = "";
       responseInfo.value.status = 500;
     }
   } finally {
     loading.value = false;
   }
-  console.log("Request sent, marking as saved"); // 添加日志
+  console.log("Request sent, marking as saved");
   emit("update:unsaved", false);
 };
 
@@ -450,18 +459,16 @@ const updateUrl = (url: string) => {
   }
 };
 
-const headersToRecord = (
-  headers: { enabled: boolean; name: string; value: string }[]
-): Record<string, string> => {
+const headersToRecord = (headers: Header[]): Record<string, string> => {
   return headers.reduce((acc, header) => {
-    if (header.enabled) {
-      acc[header.name] = header.value;
+    if (header.enabled && header.name.trim()) {
+      acc[header.name.trim()] = header.value;
     }
     return acc;
   }, {} as Record<string, string>);
 };
 
-// 响应区域高度控制
+// 响应区域高度调整
 const responseHeight = ref("50%");
 const isResizing = ref(false);
 const minResponseHeight = 40;
@@ -1264,5 +1271,4 @@ const cancelEditing = () => {
   cursor: row-resize;
   z-index: 100;
 }
-
 </style>
