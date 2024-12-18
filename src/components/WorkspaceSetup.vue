@@ -43,7 +43,7 @@
 								type="text"
 								size="large"
 								id="workspace-name"
-								v-model="workspaceName"
+								v-model="workspaceStore.createWorkSpaceName"
 								placeholder="Enter workspace name"
 							/>
 						</el-form-item>
@@ -149,11 +149,11 @@
 					</el-button>
 					<el-button
 						:disabled="
-							!workspaceName &&
+							!workspaceStore.createWorkSpaceName &&
 							workspaceStore.workspaceConfig
 								.createWorkspacePage === 'init'
 						"
-						@click="nextStep"
+						@click="nextStepOrCreate"
 						class="ml-2 px-4 py-2 text-sm border-none rounded cursor-pointer text-primary-light bg-primary hover:text-primary-light"
 					>
 						{{
@@ -222,8 +222,6 @@
 			description: "Template for partner collaboration.",
 		},
 	];
-	// workspace name
-	const workspaceName = ref("");
 
 	// 模版
 	const selectedTemplate = ref("blank");
@@ -284,7 +282,11 @@
 		}
 	};
 
-	const nextStep = () => {
-		workspaceStore.setCreateWorkspacePage("init");
+	const nextStepOrCreate = () => {
+		if (workspaceStore.workspaceConfig.createWorkspacePage === "blank") {
+			workspaceStore.setCreateWorkspacePage("init");
+		} else {
+			workspaceStore.createWorkspace();
+		}
 	};
 </script>

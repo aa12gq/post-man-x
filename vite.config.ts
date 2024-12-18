@@ -1,12 +1,20 @@
-import { defineConfig } from 'vite'
+import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vue from '@vitejs/plugin-vue'
+import { resolve } from 'path'
+import { defineConfig } from 'vite'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
-import { resolve } from 'path'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
-import vueI18n from '@intlify/vite-plugin-vue-i18n'
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     vue(),
     monacoEditorPlugin({
@@ -59,5 +67,5 @@ export default defineConfig({
       }
     },
     sourcemap: true,
-  }
+  },
 }) 

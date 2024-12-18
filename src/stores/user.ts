@@ -3,9 +3,9 @@ import { PersistenceOptions } from 'pinia-plugin-persistedstate'
 import { ref } from 'vue'
 import { post } from '../api/fetch'
 import { $t } from '../i18n'
+import router from '../router'
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../types/user'
 import { displayNotification } from '../utils/message'
-import router from '../router'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>('')
@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
 
   const handleRegister = async () => {
     try {
-      const resp = await post<RegisterResponse>('/api/user/register', { username: registerForm.value.username, password: registerForm.value.password })
+      const resp = await post<RegisterResponse>('/user/register', { username: registerForm.value.username, password: registerForm.value.password })
       if (resp.success) {
         displayNotification($t('auth.register.success'), 'success')
       }
@@ -33,7 +33,7 @@ export const useUserStore = defineStore('user', () => {
 
   const handleLogin = async () => {
     try {
-      const resp = await post<LoginResponse>('/api/user/login', { username: loginForm.value.username, password: loginForm.value.password })
+      const resp = await post<LoginResponse>('/user/login', { username: loginForm.value.username, password: loginForm.value.password })
       if (resp.success) {
         token.value = resp.data.token
         router.push({ name: 'Request' })
