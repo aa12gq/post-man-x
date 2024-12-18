@@ -1536,7 +1536,6 @@ watch(
 :deep(.folder-item),
 :deep(.request-item) {
   color: var(--text);
-  opacity: 0.6;
   transition: all 0.2s ease;
 }
 

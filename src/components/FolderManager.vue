@@ -62,14 +62,11 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-if="!folder.parentId" command="refresh">
+              <el-dropdown-item command="refresh">
                 <el-icon><Refresh /></el-icon>
                 Refresh
               </el-dropdown-item>
-              <el-dropdown-item
-                v-if="!folder.parentId"
-                divided
-              ></el-dropdown-item>
+              <el-dropdown-item divided></el-dropdown-item>
               <el-dropdown-item command="newRequest"
                 >New Request</el-dropdown-item
               >
@@ -151,6 +148,11 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
+                  <el-dropdown-item command="refresh">
+                    <el-icon><Refresh /></el-icon>
+                    Refresh
+                  </el-dropdown-item>
+                  <el-dropdown-item divided></el-dropdown-item>
                   <el-dropdown-item command="newRequest"
                     >New Request</el-dropdown-item
                   >
@@ -569,34 +571,8 @@ const isRefreshing = ref(false);
 </script>
 
 <style scoped>
-.folder-manager {
-  background-color: var(--surface-1);
-}
-
-.folder {
-  border-bottom: 1px solid var(--border-color);
-}
-
 .folder-actions {
   color: var(--text-color-secondary);
-}
-
-.folder-actions button:hover {
-  color: var(--primary-color);
-}
-
-.request-item {
-  background-color: var(--surface-1);
-  border-left: 2px solid transparent;
-}
-
-.request-item:hover {
-  background-color: var(--hover-color);
-}
-
-.request-item.active {
-  background-color: var(--selected-color);
-  border-left-color: var(--primary-color);
 }
 
 .folder-item {
@@ -737,7 +713,6 @@ const isRefreshing = ref(false);
 
 :deep(.el-icon) {
   font-size: 16px;
-  color: var(--text-color-secondary);
 }
 
 .editing-input {
