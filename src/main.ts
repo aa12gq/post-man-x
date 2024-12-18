@@ -8,15 +8,12 @@ import './styles/dark.css'
 import router from './router'
 import { useThemeStore } from './stores/theme'
 import { setupI18n } from './i18n'
+import './assets/styles/global.css'
 
 const app = createApp(App)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
-
-// 确保先初始化 pinia
 app.use(pinia)
-
-// 然后初始化其他插件
 app.use(ElementPlus)
 app.use(router)
 app.use(setupI18n)

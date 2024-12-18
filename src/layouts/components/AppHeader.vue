@@ -1,67 +1,84 @@
 <template>
-  <div class="toolbar">
-    <div class="toolbar-left">
-      <div class="logo-container" @click="goHome">
-        <LogoIcon class="logo" />
-        <span class="app-title">RPC Master</span>
+  <div
+    class="h-12 min-h-12 px-2 bg-surface-1 border-b border-border flex items-center justify-between flex-nowrap relative z-50 shadow-sm"
+  >
+    <!-- 左侧区域 -->
+    <div class="flex items-center gap-2 min-w-0 flex-shrink-1">
+      <!-- Logo -->
+      <div
+        class="flex items-center gap-2 flex-shrink-0 cursor-pointer p-1 rounded hover:bg-surface-2 transition-colors"
+        @click="goHome"
+      >
+        <LogoIcon class="w-6 h-6 text-primary-color flex-shrink-0" />
+        <span class="font-semibold text-base text-text-color hidden sm:block"
+          >RPC Master</span
+        >
       </div>
       <WorkspaceSelector />
     </div>
-    <div class="toolbar-right">
-      <div class="divider"></div>
+
+    <!-- 右侧区域 -->
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <!-- 分隔线 -->
+      <div class="w-px h-6 bg-border mx-1 flex-shrink-0 hidden sm:block"></div>
+
+      <!-- 语言切换 -->
       <el-dropdown trigger="click" @command="handleLanguageChange">
-        <button class="toolbar-btn action-btn">
-          <div class="current-lang">
-            <span class="lang-flag">{{
-              locale === "zh-CN" ? "🇨🇳" : "🇺🇸"
-            }}</span>
-            <span class="btn-text">{{
-              $t(`header.language.${locale === "zh-CN" ? "zh" : "en"}`)
-            }}</span>
-            <el-icon class="arrow-icon"><ArrowDown /></el-icon>
-          </div>
+        <button
+          class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-2 text-text-secondary hover:text-text transition-colors min-w-[100px] sm:min-w-fit"
+        >
+          <span class="w-4 h-4 leading-none">{{
+            locale === "zh-CN" ? "🇨🇳" : "🇺🇸"
+          }}</span>
+          <span class="hidden sm:block">{{
+            $t(`header.language.${locale === "zh-CN" ? "zh" : "en"}`)
+          }}</span>
+          <el-icon
+            class="text-xs transition-transform group-hover:translate-y-0.5 hidden sm:block"
+            ><ArrowDown
+          /></el-icon>
         </button>
         <template #dropdown>
-          <el-dropdown-menu class="lang-dropdown">
+          <el-dropdown-menu class="!bg-surface-1 !border-border">
             <el-dropdown-item command="en-US">
-              <span class="lang-item">
-                <span class="lang-flag">🇺🇸</span>
-                <span class="lang-label">
-                  <span class="lang-name">{{ $t("header.language.en-US") }}</span>
-                </span>
-                <el-icon v-if="locale === 'en-US'" class="check-icon"
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-4">🇺🇸</span>
+                <span>{{ $t("header.language.en-US") }}</span>
+                <el-icon v-if="locale === 'en-US'" class="ml-auto"
                   ><Check
                 /></el-icon>
-              </span>
+              </div>
             </el-dropdown-item>
             <el-dropdown-item command="zh-CN">
-              <span class="lang-item">
-                <span class="lang-flag">🇨🇳</span>
-                <span class="lang-label">
-                  <span class="lang-name">{{ $t("header.language.zh-CN") }}</span>
-                </span>
-                <el-icon v-if="locale === 'zh-CN'" class="check-icon"
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-4">🇨🇳</span>
+                <span>{{ $t("header.language.zh-CN") }}</span>
+                <el-icon v-if="locale === 'zh-CN'" class="ml-auto"
                   ><Check
                 /></el-icon>
-              </span>
+              </div>
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
 
-      <!-- 主题切换按钮 -->
-      <button class="toolbar-btn action-btn" @click="showThemeDrawer = true">
-        <div class="current-lang">
-          <div
-            class="color-block"
-            :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
-          ></div>
-          <span class="theme-name">{{ $t("header.theme.title") }}</span>
-          <el-icon class="arrow-icon"><ArrowDown /></el-icon>
-        </div>
+      <!-- 主题切换 -->
+      <button
+        class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-2 text-text-secondary hover:text-text transition-colors min-w-[100px] sm:min-w-fit"
+        @click="showThemeDrawer = true"
+      >
+        <div
+          class="w-4 h-4 rounded shadow-inner"
+          :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
+        ></div>
+        <span class="hidden sm:block">{{ $t("header.theme.title") }}</span>
+        <el-icon
+          class="text-xs transition-transform group-hover:translate-y-0.5 hidden sm:block"
+          ><ArrowDown
+        /></el-icon>
       </button>
 
-      <!-- 设置按钮 -->
+      <!-- 设置和用户头像 -->
       <SettingsDropdown ref="settingsDropdownRef" />
       <UserAvatar />
     </div>
@@ -73,47 +90,132 @@
     :title="t('header.theme.title')"
     size="400px"
     :with-header="true"
+    class="theme-drawer"
   >
-    <div class="theme-drawer-content">
-      <div class="theme-section">
-        <h3 class="section-title">{{ t('settings.theme.officialThemes') }}</h3>
-        <div class="theme-list">
+    <div class="p-6 overflow-y-auto">
+      <!-- 官方主题 -->
+      <div class="mb-10">
+        <h3
+          class="text-lg font-semibold text-text-color mb-6 flex items-center gap-2"
+        >
+          <div class="w-1 h-6 bg-primary-color rounded-full"></div>
+          {{ t("settings.theme.officialThemes") }}
+        </h3>
+        <div class="grid grid-cols-1 gap-6">
           <div
             v-for="theme in themeStore.officialCustomThemes"
             :key="theme.id"
-            class="theme-item"
-            :class="{ active: themeStore.currentTheme.id === theme.id }"
+            class="group relative border border-border/50 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-gradient-to-br from-surface-1 to-surface-2"
+            :class="{
+              'ring-2 ring-primary-color ring-offset-4 ring-offset-surface-1':
+                themeStore.currentTheme.id === theme.id,
+            }"
             @click="applyTheme(['custom', theme.id])"
           >
-            <ThemePreviewCard :theme="theme" />
-            <div class="theme-info">
-              <span class="theme-name">{{ theme.name }}</span>
-              <span class="theme-type">{{ t(`settings.theme.${theme.isDark ? 'dark' : 'light'}`) }}</span>
+            <!-- 悬停渐变效果 -->
+            <div
+              class="absolute -inset-[1px] bg-gradient-to-r from-primary-color/20 via-success/20 to-primary-color/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm"
+            ></div>
+
+            <!-- 主题预览卡片 -->
+            <div
+              class="relative rounded-lg overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-primary-color/20"
+            >
+              <ThemePreviewCard
+                :theme="theme"
+                class="w-full aspect-[3/1] relative z-10"
+              />
+            </div>
+
+            <!-- 主题信息 -->
+            <div class="text-center mt-4 relative z-10">
+              <span
+                class="block text-base font-medium text-text-color mb-1.5 group-hover:text-primary-color transition-colors"
+              >
+                {{ theme.name }}
+              </span>
+              <span
+                class="inline-block px-3 py-1 text-sm text-text-secondary bg-surface-1/80 rounded-full shadow-inner backdrop-blur-sm"
+              >
+                {{ t(`settings.theme.${theme.isDark ? "dark" : "light"}`) }}
+              </span>
+            </div>
+
+            <!-- 选中指示器 -->
+            <div
+              v-if="themeStore.currentTheme.id === theme.id"
+              class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-primary-color rounded-full shadow-lg flex items-center justify-center z-20"
+            >
+              <el-icon class="text-white text-sm"><Check /></el-icon>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="theme-section">
-        <div class="section-header">
-          <h3 class="section-title">{{ t('settings.theme.customThemes') }}</h3>
-          <el-button type="primary" link @click="showThemeEditor = true">
+      <!-- 自定义主题 -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <h3
+            class="text-lg font-semibold text-text-color flex items-center gap-2"
+          >
+            <div class="w-1 h-6 bg-primary-color rounded-full"></div>
+            {{ t("settings.theme.customThemes") }}
+          </h3>
+          <el-button
+            type="primary"
+            class="!bg-gradient-to-r !from-primary-color !to-success hover:!opacity-90 border-none flex items-center gap-2 !px-4 !h-9"
+            @click="showThemeEditor = true"
+          >
             <el-icon><Plus /></el-icon>
-            {{ t('settings.theme.createTheme') }}
+            {{ t("settings.theme.createTheme") }}
           </el-button>
         </div>
-        <div class="theme-list">
+        <div class="grid grid-cols-1 gap-6">
           <div
             v-for="theme in themeStore.customThemes"
             :key="theme.id"
-            class="theme-item"
-            :class="{ active: themeStore.currentTheme.id === theme.id }"
+            class="group relative border border-border/50 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-gradient-to-br from-surface-1 to-surface-2"
+            :class="{
+              'ring-2 ring-primary-color ring-offset-4 ring-offset-surface-1':
+                themeStore.currentTheme.id === theme.id,
+            }"
             @click="applyTheme(['custom', theme.id])"
           >
-            <ThemePreviewCard :theme="theme" />
-            <div class="theme-info">
-              <span class="theme-name">{{ theme.name }}</span>
-              <span class="theme-type">{{ getThemeStyle(theme) }}</span>
+            <!-- 悬停渐变效果 -->
+            <div
+              class="absolute -inset-[1px] bg-gradient-to-r from-primary-color/20 via-success/20 to-primary-color/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm"
+            ></div>
+
+            <!-- 主题预览卡片 -->
+            <div
+              class="relative rounded-lg overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-primary-color/20"
+            >
+              <ThemePreviewCard
+                :theme="theme"
+                class="w-full aspect-[3/1] relative z-10"
+              />
+            </div>
+
+            <!-- 主题信息 -->
+            <div class="text-center mt-4 relative z-10">
+              <span
+                class="block text-base font-medium text-text-color mb-1.5 group-hover:text-primary-color transition-colors"
+              >
+                {{ theme.name }}
+              </span>
+              <span
+                class="inline-block px-3 py-1 text-sm text-text-secondary bg-surface-1/80 rounded-full shadow-inner backdrop-blur-sm"
+              >
+                {{ t(`settings.theme.${theme.isDark ? "dark" : "light"}`) }}
+              </span>
+            </div>
+
+            <!-- 选中指示器 -->
+            <div
+              v-if="themeStore.currentTheme.id === theme.id"
+              class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-primary-color rounded-full shadow-lg flex items-center justify-center z-20"
+            >
+              <el-icon class="text-white text-sm"><Check /></el-icon>
             </div>
           </div>
         </div>
@@ -179,60 +281,6 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
   showThemeEditor.value = false;
 };
 
-// 获取主题风格描述
-const getThemeStyle = (theme: Theme) => {
-  const styleMap: Record<string, string> = {
-    // 官方主题
-    light: "素雅清风",
-    dark: "暗夜星河",
-    github_light: "晴空雅境",
-    github_dark: "墨韵沉香",
-    one_dark: "玄黛之美",
-    catppuccin_latte: "奶茶物语",
-    rose_pine_dawn: "曦光微醺",
-    everforest_light: "青松翠竹",
-    rainbow: "绚烂霓虹",
-    high_contrast: "黑白交响",
-    eye_care: "青玉护目",
-  };
-
-  // 自定义主题名称池
-  const customThemeNames = [
-    "流云幻境",
-    "碧海潮声",
-    "紫气东来",
-    "春日暖阳",
-    "秋水伊人",
-    "月华流转",
-    "山岚雾霭",
-    "江南烟雨",
-    "琉璃光影",
-    "竹影清风",
-    "梅雪飘香",
-    "夏夜星辰",
-  ];
-
-  // 如果是自定义主题，从名称池中选择一个（基于题ID的哈希）
-  if (theme.id.startsWith("custom_")) {
-    const index = Math.abs(hashCode(theme.id)) % customThemeNames.length;
-    return customThemeNames[index];
-  }
-
-  // 返回映射中的名称如果没找到则返回主题原名
-  return styleMap[theme.id] || theme.name;
-};
-
-// 简单的字符串哈希函数
-const hashCode = (str: string) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
-  }
-  return hash;
-};
-
 const handleLanguageChange = (lang: LanguageType) => {
   try {
     setLanguage(lang);
@@ -246,396 +294,33 @@ const handleLanguageChange = (lang: LanguageType) => {
 };
 </script>
 
-<style scoped>
-.toolbar {
-  height: 48px;
-  min-height: 48px;
-  padding: 0 8px;
-  background-color: var(--surface-1);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  position: relative;
-  z-index: 100;
-}
-
-.toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex-shrink: 1;
-}
-
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  color: var(--text);
-}
-
-.logo-container:hover {
-  background-color: var(--surface-2);
-}
-
-.logo {
-  width: 24px;
-  height: 24px;
-  color: var(--el-color-primary);
-  flex-shrink: 0;
-}
-
-.app-title {
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--text);
-}
-
-.toolbar-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.toolbar-btn:hover {
-  background-color: var(--surface-2);
-  color: var(--text);
-}
-
-.btn-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.divider {
-  width: 1px;
-  height: 24px;
-  background-color: var(--border);
-  margin: 0 4px;
-  flex-shrink: 0;
-}
-
-/* 响应式布局 */
-@media (max-width: 768px) {
-  .app-title {
-    display: none;
-  }
-
-  .toolbar {
-    padding: 0 4px;
-  }
-
-  .toolbar-left,
-  .toolbar-right {
-    gap: 4px;
-  }
-
-  .btn-text {
-    display: none;
-  }
-
-  .toolbar-btn {
-    padding: 6px;
-  }
-
-  .theme-name {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .divider {
-    display: none;
-  }
-}
-
-.current-lang {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lang-flag,
-.color-block {
-  width: 16px;
-  height: 16px;
-  line-height: 1;
-  border-radius: 4px;
-  transition: transform 0.2s ease;
-}
-
-.color-block {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.btn-text,
-.theme-name {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.action-btn {
-  min-width: 100px;
-  padding: 5px 10px;
-  transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-  transform: translateY(-1px);
-  background-color: var(--surface-2);
-  color: var(--text);
-}
-
-.arrow-icon {
-  font-size: 12px;
-  color: var(--text-secondary);
-  transition: transform 0.2s ease;
-}
-
-.action-btn:hover .arrow-icon {
-  transform: translateY(2px);
-  color: var(--el-color-primary);
-}
-
-@media (max-width: 768px) {
-  .action-btn {
-    min-width: unset;
-    padding: 6px;
-  }
-
-  .btn-text,
-  .theme-name,
-  .arrow-icon {
-    display: none;
-  }
-}
-
-.theme-drawer-content {
-  padding: 16px;
-}
-
-.theme-section {
-  margin-bottom: 32px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0 0 16px;
-}
-
-.theme-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-}
-
-.theme-item {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.theme-item:hover {
-  background: var(--surface-2);
-}
-
-.theme-item.active {
-  border-color: var(--el-color-primary);
-  background: var(--surface-2);
-}
-
-.theme-info {
-  margin-top: 8px;
-  text-align: center;
-}
-
-.theme-name {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-
-.theme-type {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* 添加言切换相关样式 */
-.lang-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lang-icon {
-  font-size: 16px;
-}
-
-/* 语言切换按钮样式 */
-.action-btn {
-  min-width: 100px;
-  padding: 5px 10px;
-  transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-  transform: translateY(-1px);
-}
-
-.current-lang,
-.theme-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lang-flag,
-.color-block {
-  width: 16px;
-  height: 16px;
-  line-height: 1;
-  border-radius: 4px;
-  transition: transform 0.2s ease;
-}
-
-.color-block {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.btn-text,
-.theme-name {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.arrow-icon {
-  font-size: 12px;
-  color: var(--text-secondary);
-  transition: transform 0.2s ease;
-}
-
-.action-btn:hover .arrow-icon {
-  transform: translateY(2px);
-  color: var(--el-color-primary);
-}
-
-@media (max-width: 768px) {
-  .action-btn {
-    min-width: unset;
-    padding: 6px;
-  }
-
-  .btn-text,
-  .theme-name,
-  .arrow-icon {
-    display: none;
-  }
-}
-
-/* 工作区选择器样式 */
-:deep(.workspace-selector) {
-  .el-dropdown-link {
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
-    
-    &:hover {
-      color: var(--text);
-      background-color: var(--surface-2);
-    }
-  }
-
-  .workspace-name {
-    color: var(--text-secondary);
-  }
-
-  &:hover .workspace-name {
-    color: var(--text);
-  }
-
-  /* 下拉菜单样式 */
-  .el-dropdown-menu {
-    background-color: var(--surface-1);
-    border-color: var(--border);
-  }
-
-  .el-dropdown-menu__item {
-    color: var(--text-secondary);
-
-    &:hover {
-      background-color: var(--surface-2);
-      color: var(--text);
-    }
-
-    &.is-active {
-      color: var(--el-color-primary);
-      background-color: var(--surface-2);
-    }
-  }
-}
-
-/* 全局下拉菜单样式覆盖 */
+<style>
+/* 仅保留必要的全局样式覆盖 */
 :deep(.el-dropdown-menu) {
   background-color: var(--surface-1) !important;
-  border-color: var(--border) !important;
+  border-color: var(--border-color) !important;
+}
 
-  .el-dropdown-menu__item {
-    color: var(--text-secondary);
+:deep(.el-dropdown-menu__item) {
+  color: var(--text-secondary);
+}
 
-    &:hover, &:focus {
-      background-color: var(--surface-2);
-      color: var(--text);
-    }
+:deep(.el-dropdown-menu__item:hover) {
+  background-color: var(--surface-2);
+  color: var(--text-color);
+}
 
-    &.is-active {
-      color: var(--el-color-primary);
-      background-color: var(--surface-2);
-    }
-  }
+:deep(.el-dropdown-menu__item.is-active) {
+  color: var(--primary-color);
+  background-color: var(--surface-2);
+}
+
+:deep(.workspace-selector .el-dropdown-link) {
+  color: var(--text-secondary);
+}
+
+:deep(.workspace-selector .el-dropdown-link:hover) {
+  color: var(--text-color);
+  background-color: var(--surface-2);
 }
 </style>

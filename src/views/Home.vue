@@ -1,81 +1,66 @@
 <template>
-  <div class="home">
-    <div class="background-decoration">
-      <div class="circle circle-1"></div>
-      <div class="circle circle-2"></div>
-      <div class="circle circle-3"></div>
+  <div
+    class="min-h-screen w-full py-16 px-8 relative overflow-x-hidden sm:py-8 sm:px-4"
+  >
+    <!-- 背景装饰 -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute w-2/5 aspect-square rounded-full opacity-10 -top-1/6 -right-1/6 animate-float bg-gradient-to-br from-primary-color to-success"
+      ></div>
+      <div
+        class="absolute w-1/3 aspect-square rounded-full opacity-10 -bottom-1/6 -left-1/6 animate-float delay-[5s] bg-gradient-to-br from-warning to-danger"
+      ></div>
+      <div
+        class="absolute w-1/4 aspect-square rounded-full opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float delay-[10s] bg-gradient-to-br from-primary-color to-info"
+      ></div>
     </div>
 
-    <div class="welcome-section">
-      <div class="logo-container">
-        <LogoIcon class="logo animate-bounce" />
-        <div class="text-content">
-          <h1>{{ t("home.title") }}</h1>
-          <p class="subtitle">
+    <!-- 主要内容区 -->
+    <div
+      class="max-w-5xl w-full mx-auto relative z-10 backdrop-blur-md p-8 rounded-2xl bg-surface-1/80 sm:p-4"
+    >
+      <!-- Logo 区域 -->
+      <div class="flex flex-col items-center gap-4 mb-12">
+        <LogoIcon class="w-16 h-16 text-primary-color animate-bounce" />
+        <div class="flex flex-col items-center gap-3">
+          <h1
+            class="text-4xl sm:text-3xl m-0 bg-gradient-to-r from-primary-color to-success bg-clip-text text-transparent"
+          >
+            {{ t("home.title") }}
+          </h1>
+          <p class="text-lg sm:text-base text-text-secondary m-0">
             {{ t("home.subtitle") }}
           </p>
         </div>
       </div>
 
-      <div class="features">
-        <div class="feature-item">
-          <div class="feature-icon-wrapper">
-            <el-icon class="feature-icon"><Connection /></el-icon>
-          </div>
-          <h3>{{ t("home.features.list.grpcFirst.title") }}</h3>
-          <p>{{ t("home.features.list.grpcFirst.desc") }}</p>
-        </div>
-
-        <div class="feature-item">
-          <div class="feature-icon-wrapper">
-            <el-icon class="feature-icon"><Box /></el-icon>
-          </div>
-          <h3>{{ t("home.features.list.workspaces.title") }}</h3>
-          <p>{{ t("home.features.list.workspaces.desc") }}</p>
-        </div>
-
-        <div class="feature-item">
-          <div class="feature-icon-wrapper">
-            <el-icon class="feature-icon"><Collection /></el-icon>
-          </div>
-          <h3>{{ t("home.features.list.collections.title") }}</h3>
-          <p>{{ t("home.features.list.collections.desc") }}</p>
-        </div>
-
-        <div class="feature-item">
-          <div class="feature-icon-wrapper">
-            <el-icon class="feature-icon"><Document /></el-icon>
-          </div>
-          <h3>{{ t("home.features.list.protoExplorer.title") }}</h3>
-          <p>{{ t("home.features.list.protoExplorer.desc") }}</p>
-        </div>
-
-        <div class="feature-item">
-          <div class="feature-icon-wrapper">
-            <el-icon class="feature-icon"><Monitor /></el-icon>
-          </div>
-          <h3>{{ t("home.features.list.debugTools.title") }}</h3>
-          <p>{{ t("home.features.list.debugTools.desc") }}</p>
-        </div>
-
-        <div class="feature-item">
-          <div class="feature-icon-wrapper">
-            <el-icon class="feature-icon"><Link /></el-icon>
-          </div>
-          <h3>{{ t("home.features.list.httpSupport.title") }}</h3>
-          <p>{{ t("home.features.list.httpSupport.desc") }}</p>
-        </div>
+      <!-- 特性展示区 -->
+      <div
+        class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6 my-12 mx-auto max-w-4xl"
+      >
+        <FeatureCard
+          v-for="(feature, index) in features"
+          :key="index"
+          :icon="feature.icon"
+          :title="t(feature.titleKey)"
+          :description="t(feature.descKey)"
+        />
       </div>
 
-      <div class="action-buttons">
+      <!-- 操作按钮 -->
+      <div
+        class="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center"
+      >
         <el-button
           type="primary"
           size="large"
-          class="start-button"
+          class="flex items-center justify-center gap-2 px-6 py-3 group"
           @click="$router.push('/request')"
         >
           <span>{{ t("home.getStarted") }}</span>
-          <el-icon class="el-icon-right"><ArrowRight /></el-icon>
+          <el-icon class="transition-transform group-hover:translate-x-1">
+            <ArrowRight />
+          </el-icon>
         </el-button>
         <el-button size="large" @click="handleLearnMore">
           {{ t("home.learnMore") }}
@@ -94,92 +79,52 @@
 
 <script setup lang="ts">
 import LogoIcon from "../components/icons/LogoIcon.vue";
-import {
-  Connection,
-  Link,
-  Collection,
-  ArrowRight,
-  Box,
-  Document,
-  Monitor,
-} from "@element-plus/icons-vue";
+import FeatureCard from "../components/home/FeatureCard.vue";
+import { ArrowRight } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
+
+// 特性列表数据
+const features = [
+  {
+    icon: "Connection",
+    titleKey: "home.features.list.grpcFirst.title",
+    descKey: "home.features.list.grpcFirst.desc",
+  },
+  {
+    icon: "Box",
+    titleKey: "home.features.list.workspaces.title",
+    descKey: "home.features.list.workspaces.desc",
+  },
+  {
+    icon: "Collection",
+    titleKey: "home.features.list.collections.title",
+    descKey: "home.features.list.collections.desc",
+  },
+  {
+    icon: "Document",
+    titleKey: "home.features.list.protoExplorer.title",
+    descKey: "home.features.list.protoExplorer.desc",
+  },
+  {
+    icon: "Monitor",
+    titleKey: "home.features.list.debugTools.title",
+    descKey: "home.features.list.debugTools.desc",
+  },
+  {
+    icon: "Link",
+    titleKey: "home.features.list.httpSupport.title",
+    descKey: "home.features.list.httpSupport.desc",
+  },
+];
+
 const handleLearnMore = () => {
   window.open("https://github.com/vtyug/rpc-master", "_blank");
 };
 </script>
 
-<style scoped>
-.home {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  position: relative;
-  overflow: auto;
-  background-color: transparent;
-}
-
-.background-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.1;
-  animation: float 20s infinite ease-in-out;
-}
-
-.circle-1 {
-  width: 600px;
-  height: 600px;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary) 0%,
-    var(--el-color-success) 100%
-  );
-  top: -200px;
-  right: -200px;
-  animation-delay: 0s;
-}
-
-.circle-2 {
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-warning) 0%,
-    var(--el-color-danger) 100%
-  );
-  bottom: -150px;
-  left: -150px;
-  animation-delay: -5s;
-}
-
-.circle-3 {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary) 0%,
-    var(--el-color-info) 100%
-  );
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation-delay: -10s;
-}
-
+<style>
 @keyframes float {
   0%,
   100% {
@@ -196,225 +141,7 @@ const handleLearnMore = () => {
   }
 }
 
-.welcome-section {
-  max-width: 1000px;
-  width: 100%;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 16px;
-  background-color: rgba(var(--surface-1), 0.8);
-}
-
-.logo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 48px;
-}
-
-.logo {
-  width: 72px;
-  height: 72px;
-  color: var(--el-color-primary);
-}
-
-.animate-bounce {
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.text-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-h1 {
-  font-size: 36px;
-  color: var(--text-color);
-  margin: 0;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary) 0%,
-    var(--el-color-success) 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-  font-size: 18px;
-  color: var(--text-color-secondary);
-  margin: 0;
-}
-
-.features {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin: 48px 0;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.feature-item {
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--surface-2);
-  transition: all 0.3s ease;
-  border: 1px solid var(--border);
-}
-
-.feature-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px var(--shadow-color);
-  border-color: var(--el-color-primary);
-}
-
-.feature-icon-wrapper {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary-light-7) 0%,
-    var(--el-color-primary-light-9) 100%
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-}
-
-.feature-icon {
-  font-size: 32px;
-  color: var(--el-color-primary);
-}
-
-.feature-item h3 {
-  font-size: 20px;
-  margin: 0 0 8px;
-  color: var(--text);
-}
-
-.feature-item p {
-  font-size: 14px;
-  color: var(--text-color-secondary);
-  margin: 0;
-  line-height: 1.5;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-}
-
-.start-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-}
-
-.el-icon-right {
-  transition: transform 0.3s ease;
-}
-
-.start-button:hover .el-icon-right {
-  transform: translateX(4px);
-}
-
-@media (max-width: 1024px) {
-  .features {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .home {
-    padding: 20px;
-    align-items: flex-start;
-  }
-
-  .welcome-section {
-    padding: 20px;
-    margin: 20px 0;
-  }
-
-  .features {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .circle-1 {
-    width: 300px;
-    height: 300px;
-  }
-
-  .circle-2 {
-    width: 200px;
-    height: 200px;
-  }
-
-  .circle-3 {
-    width: 150px;
-    height: 150px;
-  }
-}
-
-.feature-card {
-  padding: 24px;
-  border-radius: 12px;
-  background-color: var(--surface-2);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-  background-color: var(--surface-3);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px var(--shadow);
-}
-
-.feature-icon {
-  font-size: 32px;
-  margin-bottom: 16px;
-  color: var(--el-color-primary);
-}
-
-.feature-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text);
-}
-
-.feature-description {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-secondary);
+.animate-float {
+  animation: float 20s infinite ease-in-out;
 }
 </style>
