@@ -9,10 +9,26 @@
         class="flex items-center gap-2 flex-shrink-0 cursor-pointer p-1 rounded hover:bg-surface-2 transition-colors"
         @click="goHome"
       >
-        <LogoIcon class="w-6 h-6 text-primary-color flex-shrink-0" />
-        <span class="font-semibold text-base text-text-color hidden sm:block"
-          >RPC Master</span
+        <LogoIcon
+          class="w-6 h-6 flex-shrink-0"
+          :style="{ 
+            background: `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }"
+        />
+        <span 
+          class="font-semibold text-base hidden sm:block gradient-text"
+          :style="{ 
+            background: `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }"
         >
+          RPC Master
+        </span>
       </div>
       <WorkspaceSelector />
     </div>
@@ -322,5 +338,37 @@ const handleLanguageChange = (lang: LanguageType) => {
 :deep(.workspace-selector .el-dropdown-link:hover) {
   color: var(--text-color);
   background-color: var(--surface-2);
+}
+
+/* 图标颜色过渡效果 */
+:deep(svg) {
+  transition: color 0.3s ease;
+}
+
+/* 图标和文字的颜色过渡效果 */
+:deep(svg), 
+.font-semibold {
+  transition: color 0.3s ease;
+}
+
+/* 渐变文字效果 */
+:deep(svg), 
+.gradient-text {
+  transition: all 0.3s ease;
+  background-size: 200% auto;
+  animation: shine 2s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* 确保渐变效果在 hover 时更明显 */
+.cursor-pointer:hover :deep(svg),
+.cursor-pointer:hover .gradient-text {
+  filter: brightness(1.1);
+  transform: scale(1.02);
 }
 </style>

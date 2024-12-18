@@ -5,13 +5,16 @@
     <!-- 背景装饰 -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
       <div
-        class="absolute w-2/5 aspect-square rounded-full opacity-10 -top-1/6 -right-1/6 animate-float bg-gradient-to-br from-primary-color to-success"
+        class="absolute w-[800px] aspect-square rounded-full opacity-10 -top-[400px] -right-[200px] animate-float"
+        :style="{
+          background: `linear-gradient(to bottom right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`
+        }"
       ></div>
       <div
-        class="absolute w-1/3 aspect-square rounded-full opacity-10 -bottom-1/6 -left-1/6 animate-float delay-[5s] bg-gradient-to-br from-warning to-danger"
-      ></div>
-      <div
-        class="absolute w-1/4 aspect-square rounded-full opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float delay-[10s] bg-gradient-to-br from-primary-color to-info"
+        class="absolute w-[600px] aspect-square rounded-full opacity-10 -bottom-[300px] -left-[150px] animate-float delay-[5s]"
+        :style="{
+          background: `linear-gradient(to bottom right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`
+        }"
       ></div>
     </div>
 
@@ -21,10 +24,19 @@
     >
       <!-- Logo 区域 -->
       <div class="flex flex-col items-center gap-4 mb-12">
-        <LogoIcon class="w-16 h-16 text-primary-color animate-bounce" />
+        <LogoIcon 
+          class="w-16 h-16 animate-bounce"
+          :style="{ color: themeStore.currentTheme.colors.primary }"
+        />
         <div class="flex flex-col items-center gap-3">
           <h1
-            class="text-4xl sm:text-3xl m-0 bg-gradient-to-r from-primary-color to-success bg-clip-text text-transparent"
+            class="text-4xl sm:text-3xl m-0"
+            :style="{ 
+              background: `linear-gradient(to right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }"
           >
             {{ t("home.title") }}
           </h1>
@@ -44,6 +56,10 @@
           :icon="feature.icon"
           :title="t(feature.titleKey)"
           :description="t(feature.descKey)"
+          :style="{
+            '--card-gradient': `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`
+          }"
+          class="feature-card"
         />
       </div>
 
@@ -82,8 +98,10 @@ import LogoIcon from "../components/icons/LogoIcon.vue";
 import FeatureCard from "../components/home/FeatureCard.vue";
 import { ArrowRight } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
+import { useThemeStore } from "../stores/theme";
 
 const { t } = useI18n();
+const themeStore = useThemeStore();
 
 // 特性列表数据
 const features = [
@@ -128,20 +146,49 @@ const handleLearnMore = () => {
 @keyframes float {
   0%,
   100% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg) scale(1);
   }
   25% {
-    transform: translate(20px, 20px) rotate(5deg);
+    transform: translate(50px, 50px) rotate(5deg) scale(1.05);
   }
   50% {
-    transform: translate(0, 40px) rotate(0deg);
+    transform: translate(0, 100px) rotate(0deg) scale(1);
   }
   75% {
-    transform: translate(-20px, 20px) rotate(-5deg);
+    transform: translate(-50px, 50px) rotate(-5deg) scale(0.95);
   }
 }
 
 .animate-float {
   animation: float 20s infinite ease-in-out;
+  will-change: transform;
+}
+
+.feature-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--card-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover::before {
+  opacity: 0.1;
+}
+
+/* 确保渐变文字有平滑过渡 */
+[style*="background-clip: text"] {
+  transition: all 0.3s ease;
+}
+
+/* 图标颜色过渡 */
+:deep(svg) {
+  transition: color 0.3s ease;
 }
 </style>
