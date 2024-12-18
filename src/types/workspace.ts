@@ -1,23 +1,23 @@
 // 定义请求和响应的接口
-interface CreateWorkspaceRequest {
+export interface CreateWorkspaceRequest {
   name: string;
 }
 
-interface CreateWorkspaceResponse {
+export interface CreateWorkspaceResponse {
   id: string;
   name: string;
 }
 
-interface CreateCollectionRequest {
+export interface CreateCollectionRequest {
   name: string;
   workspace_id: string;
 }
 
-interface GetCollectionListResponse {
-  collections: Collection[];
+export interface GetCollectionListResponse {
+  list: Collection[];
 }
 
-interface Collection {
+export interface Collection {
   id: string;
   name: string;
   workspace_id: string;

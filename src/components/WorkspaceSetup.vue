@@ -3,20 +3,14 @@
 		<div class="w-[400px] p-5 bg-surface-1">
 			<h2 class="text-center text-lg mb-2">Create your workspace</h2>
 			<p
-				v-if="
-					workspaceStore.workspaceConfig.createWorkspacePage ===
-					'blank'
-				"
+				v-if="workspaceStore.createWorkspacePage === 'blank'"
 				class="text-center text-sm mb-5"
 			>
 				Get the most out of your workspace with a template.
 			</p>
 			<div class="mt-5">
 				<div
-					v-if="
-						workspaceStore.workspaceConfig.createWorkspacePage ===
-						'blank'
-					"
+					v-if="workspaceStore.createWorkspacePage === 'blank'"
 					class="flex items-center p-3 cursor-pointer border border-border rounded mb-2 transition-colors duration-200"
 					:class="{
 						'bg-primary-light border-primary-color':
@@ -51,21 +45,13 @@
 				</div>
 			</div>
 			<div class="flex items-center text-center my-5 text-sm font-bold">
-				<span
-					v-if="
-						workspaceStore.workspaceConfig.createWorkspacePage ===
-						'blank'
-					"
-				>
+				<span v-if="workspaceStore.createWorkspacePage === 'blank'">
 					Explore our templates
 				</span>
 				<span v-else> Who can access your workspace? </span>
 			</div>
 			<div
-				v-if="
-					workspaceStore.workspaceConfig.createWorkspacePage ===
-					'blank'
-				"
+				v-if="workspaceStore.createWorkspacePage === 'blank'"
 				class="mt-5"
 			>
 				<div
@@ -122,27 +108,18 @@
 			<div class="flex items-center justify-between mt-5">
 				<div class="text-xs text-gray-500">
 					Step
-					{{
-						workspaceStore.workspaceConfig.createWorkspacePage ===
-						"blank"
-							? 1
-							: 2
-					}}
+					{{ workspaceStore.createWorkspacePage === "blank" ? 1 : 2 }}
 					of 2
 				</div>
 				<div class="flex">
 					<el-button
 						@click="
-							cancelOrBack(
-								workspaceStore.workspaceConfig
-									.createWorkspacePage
-							)
+							cancelOrBack(workspaceStore.createWorkspacePage)
 						"
 						class="ml-2 px-4 py-2 text-sm border-none rounded cursor-pointer text-text-color hover:bg-secondary-button-hover-color"
 					>
 						{{
-							workspaceStore.workspaceConfig
-								.createWorkspacePage === "blank"
+							workspaceStore.createWorkspacePage === "blank"
 								? "Cancel"
 								: "Back"
 						}}
@@ -150,15 +127,13 @@
 					<el-button
 						:disabled="
 							!workspaceStore.createWorkSpaceName &&
-							workspaceStore.workspaceConfig
-								.createWorkspacePage === 'init'
+							workspaceStore.createWorkspacePage === 'init'
 						"
 						@click="nextStepOrCreate"
 						class="ml-2 px-4 py-2 text-sm border-none rounded cursor-pointer text-primary-light bg-primary hover:text-primary-light"
 					>
 						{{
-							workspaceStore.workspaceConfig
-								.createWorkspacePage === "blank"
+							workspaceStore.createWorkspacePage === "blank"
 								? "Next"
 								: "Create"
 						}}
@@ -283,10 +258,10 @@
 	};
 
 	const nextStepOrCreate = () => {
-		if (workspaceStore.workspaceConfig.createWorkspacePage === "blank") {
+		if (workspaceStore.createWorkspacePage === "blank") {
 			workspaceStore.setCreateWorkspacePage("init");
 		} else {
-			workspaceStore.createWorkspace();
+			workspaceStore.handleCreateWorkspace();
 		}
 	};
 </script>

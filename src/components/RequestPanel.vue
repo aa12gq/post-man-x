@@ -36,7 +36,7 @@
 							class="new-button"
 							@click="showNewRequestDialog"
 						>
-							<el-icon><Plus /></el-icon>
+							<!-- <el-icon><Plus /></el-icon> -->
 							<span>{{
 								t(
 									"request.panel.sidebar.collections.newRequest"
@@ -200,7 +200,7 @@
 											link
 											size="small"
 											@click="
-												workspaceStore.handleAddFolder
+												workspaceStore.handleCreateCollection
 											"
 										>
 											<el-icon><Plus /></el-icon>
@@ -278,7 +278,7 @@
 										:tab-id="currentTab.id"
 										:request-type="currentTab.type"
 										@update:unsaved="
-											(value) =>
+											(value: any) =>
 												currentTab?.id &&
 												handleUnsavedChange(
 													currentTab.id,
@@ -562,7 +562,7 @@
 											link
 											size="small"
 											@click="
-												workspaceStore.handleAddFolder
+												workspaceStore.handleCreateCollection
 											"
 										>
 											<el-icon><Plus /></el-icon>
