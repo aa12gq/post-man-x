@@ -5,6 +5,7 @@ import { defineConfig } from 'vite'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
   server: {
@@ -43,7 +44,8 @@ export default defineConfig({
       runtimeOnly: false,
       compositionOnly: true,
       fullInstall: true
-    })
+    }),
+    vueDevTools(),
   ],
   resolve: {
     alias: {

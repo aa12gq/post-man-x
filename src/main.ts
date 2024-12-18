@@ -10,6 +10,7 @@ import router from './router'
 import { useThemeStore } from './stores/theme'
 import { setupI18n } from './i18n'
 import './assets/styles/global.css'
+import VueDevTools from './components/debug/VueDevTools.vue'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -18,6 +19,7 @@ app.use(pinia)
 app.use(ElementPlus)
 app.use(router)
 app.use(setupI18n)
+app.component('VueDevTools', VueDevTools)
 
 // 在应用启动时初始化主题
 const initializeTheme = () => {
