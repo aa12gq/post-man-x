@@ -11,20 +11,18 @@
       >
         <LogoIcon
           class="w-6 h-6 flex-shrink-0"
-          :style="{ 
-            background: `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+          :style="{
+            color: `${themeStore.currentTheme.colors.primary}`,
+            filter: 'brightness(1.1)',
           }"
         />
-        <span 
+        <span
           class="font-semibold text-base hidden sm:block gradient-text"
-          :style="{ 
+          :style="{
             background: `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            backgroundClip: 'text',
           }"
         >
           RPC Master
@@ -87,7 +85,7 @@
           class="w-4 h-4 rounded shadow-inner"
           :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
         ></div>
-        <span class="hidden sm:block">{{ $t("header.theme.title") }}</span>
+        <span class="hidden sm:block text-sm">{{ $t("header.theme.title") }}</span>
         <el-icon
           class="text-xs transition-transform group-hover:translate-y-0.5 hidden sm:block"
           ><ArrowDown
@@ -254,7 +252,7 @@ import LogoIcon from "../../components/icons/LogoIcon.vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
 import UserAvatar from "./UserAvatar.vue";
 import { useRouter, useRoute } from "vue-router";
-import { ref, nextTick, watch } from "vue";
+import { ref } from "vue";
 import { Plus, ArrowDown, Check } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
@@ -271,13 +269,6 @@ const settingsDropdownRef = ref();
 const showThemeEditor = ref(false);
 const showThemeDrawer = ref(false);
 const { locale, t } = useI18n();
-
-// 监听语言变化，在需要时触发特定组件的更新
-watch(() => locale.value, (newLocale) => {
-  // 如果有需要特殊处理的组件，可以在这里处理
-  // 例如：触发某些组件的重新渲染
-  // 或者发出自定义事件通知需要更新的组件
-});
 
 const goHome = () => {
   if (route.path !== "/") {
@@ -349,13 +340,13 @@ const handleLanguageChange = (lang: LanguageType) => {
 }
 
 /* 图标和文字的颜色过渡效果 */
-:deep(svg), 
+:deep(svg),
 .font-semibold {
   transition: color 0.3s ease;
 }
 
 /* 渐变文字效果 */
-:deep(svg), 
+:deep(svg),
 .gradient-text {
   transition: all 0.3s ease;
   background-size: 200% auto;

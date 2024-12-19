@@ -674,7 +674,8 @@
 		id: string;
 		name: string;
 		title: string;
-		type: "http" | "rpc"; // 添加类型字段
+		type: "http" | "rpc"; 
+		url?: string;
 	}
 
 	const tabs = ref<Tab[]>([]); // 移除默认签页
@@ -732,7 +733,7 @@
 					// 用户点 X 按钮,不关闭标签页
 					return;
 				}
-				// 用户选择放弃更改,继续关闭
+				// 用户选��放弃更改,继续关闭
 			}
 		}
 
@@ -973,12 +974,12 @@
 		// 添加到历史记录
 		addHistoryItem(newRequest);
 
-		// 添加到标签页
 		const newTab = {
 			id: newId,
 			name: `New ${type.toUpperCase()} Request`,
 			title: `New ${type.toUpperCase()} Request`,
 			type: type === "grpc" ? "rpc" : "http",
+			url: newRequest.url,
 		};
 
 		tabs.value.push(newTab as Tab);
@@ -1058,7 +1059,6 @@
 		selectedFolderId.value = folderId;
 	};
 
-	// 添加新的响应式变量
 	const selectedFolderId = ref<string | null>(null);
 
 	// 处理打开请求
@@ -1067,13 +1067,15 @@
 		if (existingTab) {
 			existingTab.name = request.name || request.url;
 			existingTab.title = request.name || request.url;
+			existingTab.url = request.url;
 			activeTab.value = request.id;
 		} else {
 			tabs.value.push({
 				id: request.id,
 				name: request.name || request.url,
 				title: request.name || request.url,
-				type: request.type, // 直接使用请求的类型，因为历史记录中已经是正确的 'rpc' 或 'http' 类型
+				type: request.type,
+				url: request.url,
 			});
 			activeTab.value = request.id;
 		}
@@ -1173,7 +1175,7 @@
 	watch(
 		() => settings.value,
 		(newSettings) => {
-			// 保存到本地存储
+			// ��存到本地存储
 			localStorage.setItem("layoutSettings", JSON.stringify(newSettings));
 
 			// 应用布相关的 CSS 变量
