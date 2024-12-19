@@ -12,7 +12,6 @@ const messages = {
 
 export type MessageSchema = (typeof messages)["en-US"];
 
-// 创建 i18n 实例
 export const i18n = createI18n<[MessageSchema], LanguageType>({
   legacy: false,
   locale: (localStorage.getItem("language") ||
@@ -27,9 +26,9 @@ export function $t(key: string) {
   return i18n.global.t(key);
 }
 
-// 设置语言的函数
 export function setLanguage(lang: LanguageType) {
-  i18n.global.locale = lang;
+  // @ts-ignore
+  i18n.global.locale.value = lang;
   localStorage.setItem("language", lang);
   document.querySelector("html")?.setAttribute("lang", lang);
 }

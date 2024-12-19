@@ -254,7 +254,7 @@ import LogoIcon from "../../components/icons/LogoIcon.vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
 import UserAvatar from "./UserAvatar.vue";
 import { useRouter, useRoute } from "vue-router";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, watch } from "vue";
 import { Plus, ArrowDown, Check } from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
@@ -271,6 +271,13 @@ const settingsDropdownRef = ref();
 const showThemeEditor = ref(false);
 const showThemeDrawer = ref(false);
 const { locale, t } = useI18n();
+
+// 监听语言变化，在需要时触发特定组件的更新
+watch(() => locale.value, (newLocale) => {
+  // 如果有需要特殊处理的组件，可以在这里处理
+  // 例如：触发某些组件的重新渲染
+  // 或者发出自定义事件通知需要更新的组件
+});
 
 const goHome = () => {
   if (route.path !== "/") {
@@ -300,10 +307,6 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
 const handleLanguageChange = (lang: LanguageType) => {
   try {
     setLanguage(lang);
-    // 强制刷新组件
-    nextTick(() => {
-      window.location.reload();
-    });
   } catch (error) {
     console.error("Failed to change language:", error);
   }

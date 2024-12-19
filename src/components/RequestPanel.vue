@@ -1198,7 +1198,7 @@
 	.request-panel {
 		height: 100%;
 		display: flex;
-		flex-direction: column;
+		/* flex-direction: column; */
 		overflow: hidden;
 		background-color: var(--surface-2);
 	}
@@ -1336,7 +1336,6 @@
 	.collections-sidebar {
 		position: relative;
 		background-color: var(--surface-2);
-		border-right: 1px solid var(--border);
 		transition: none;
 		overflow: hidden;
 		flex-shrink: 0;
@@ -1469,7 +1468,7 @@
 	.request-response-wrapper {
 		flex: 1;
 		display: flex;
-		flex-direction: column;
+		/* flex-direction: column; */
 		position: relative;
 		min-height: 0;
 		background-color: var(--surface-1);
@@ -1511,7 +1510,7 @@
 	.request-workspace {
 		flex: 1;
 		display: flex;
-		flex-direction: column;
+		/* flex-direction: column; */
 		min-height: 0;
 		height: 100%;
 	}
@@ -1569,7 +1568,7 @@
 		}
 
 		.main-content.tabs-left {
-			flex-direction: column;
+			/* flex-direction: column; */
 
 			.tab-manager {
 				width: 100%;
@@ -1612,7 +1611,7 @@
 		.main-content {
 			flex: 1;
 			display: flex;
-			flex-direction: column;
+			/* flex-direction: column; */
 			position: relative;
 		}
 
@@ -1626,7 +1625,7 @@
 		.request-response-wrapper {
 			flex: 1;
 			display: flex;
-			flex-direction: column;
+			/* flex-direction: column; */
 			min-height: 0;
 		}
 	}
@@ -1662,7 +1661,7 @@
 			min-width: 0;
 			position: relative;
 			display: flex;
-			flex-direction: column;
+			/* flex-direction: column; */
 		}
 
 		/* 当侧栏在右侧时的样式 */
