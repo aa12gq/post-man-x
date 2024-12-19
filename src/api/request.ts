@@ -3,7 +3,7 @@ import { displayNotification } from '../utils/message'
 import { $t } from '../i18n'
 
 const request = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://vtyug.cn:8080/api',
   timeout: 6000
 })
 
