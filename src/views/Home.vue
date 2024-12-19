@@ -84,9 +84,9 @@
         <el-button
           type="info"
           size="large"
-          @click="$router.push('/background-test')"
+          @click="$router.push('/theme-test')"
         >
-          背景测试
+          主题测试
         </el-button>
       </div>
     </div>
