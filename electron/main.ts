@@ -43,6 +43,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       webSecurity: true,
       allowRunningInsecureContent: false,
+      additionalArguments: ["--disable-site-isolation-trials"],
     },
   });
 
@@ -51,17 +52,15 @@ function createWindow() {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        "Content-Security-Policy": [
-          "default-src 'self'; " +
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; " +
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
-            "img-src 'self' data: blob: https://cdn.jsdelivr.net; " +
-            "font-src 'self' data: https://cdn.jsdelivr.net; " +
-            "connect-src 'self' ws: wss: https://cdn.jsdelivr.net; " +
-            "worker-src 'self' blob: https://cdn.jsdelivr.net;",
-        ],
-        "Cross-Origin-Opener-Policy": ["same-origin"],
-        "Cross-Origin-Embedder-Policy": ["require-corp"],
+        "content-security-policy": [
+          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;",
+          "img-src 'self' data: blob: https://cdn.jsdelivr.net https://vue-i18n.intlify.dev https://* http://*;",
+          "font-src 'self' data: https://* http://*;",
+          "media-src 'self' https://* http://*;",
+          "connect-src 'self' ws: wss: http: https:;",
+        ].join(" "),
+        "cross-origin-opener-policy": ["same-origin"],
+        "cross-origin-embedder-policy": ["require-corp"],
       },
     });
   });
@@ -391,7 +390,7 @@ ipcMain.handle("rpc-request", async (event, params) => {
       methodName: params.methodName,
       params: params.params,
       metadata: params.metadata,
-      metadataArgs: params.metadataArgs
+      metadataArgs: params.metadataArgs,
     });
 
     // 将参数写入临时文件
@@ -403,17 +402,18 @@ ipcMain.handle("rpc-request", async (event, params) => {
 
     // 构建命令数组，包含元数据参数
     const args = [
-      'grpcurl',
-      '-plaintext',
+      "grpcurl",
+      "-plaintext",
       ...(params.metadataArgs || []), // 添加元数据参数
-      '-d', '@',
+      "-d",
+      "@",
       cleanUrl,
-      `"${fullMethodName}"`
+      `"${fullMethodName}"`,
     ];
 
     // 执行带调试信息的请求
     const { stdout, stderr } = await execAsync(
-      `${args.join(' ')} < ${tmpFile}`,
+      `${args.join(" ")} < ${tmpFile}`,
       {
         env: {
           ...process.env,
@@ -435,8 +435,8 @@ ipcMain.handle("rpc-request", async (event, params) => {
     return {
       success: true,
       data: response,
-      debug: stderr || "", 
-      command: args.join(' '),
+      debug: stderr || "",
+      command: args.join(" "),
     };
   } catch (error: any) {
     console.error("Failed to make RPC request:", error);
@@ -534,7 +534,7 @@ ipcMain.handle("rpc:invoke", async (event, params) => {
   }
 });
 
-// 添加 get-rpc-example 处理程序
+// 添加 get-rpc-example ���理程序
 ipcMain.handle("get-rpc-example", async (event, params) => {
   try {
     if (!params?.url || !params?.method) {

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { post } from '../api/fetch'
-import { $t } from '../i18n'
+import { $t } from '../locales'
 import router from '../router'
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../types/user'
 import { displayNotification } from '../utils/message'

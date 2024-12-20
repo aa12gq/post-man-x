@@ -660,39 +660,6 @@ const cancelEditing = () => {
 </script>
 
 <style scoped>
-.main-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: var(--surface-1);
-}
-
-.content-layout {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
-  position: relative;
-}
-
-.left-section {
-  display: flex;
-  flex-direction: column;
-  min-width: 48px;
-  border-right: 1px solid var(--border);
-  background-color: var(--surface-1);
-  flex-shrink: 0;
-  transition: width 0.3s;
-}
-
-.left-section.is-collapsed {
-  width: 48px !important;
-  .new-area,
-  .collections-sidebar {
-    display: none;
-  }
-}
-
 .new-area {
   height: 48px;
   display: flex;
@@ -870,7 +837,6 @@ const cancelEditing = () => {
 :deep(.el-tabs) {
   flex: 1;
   display: flex;
-  flex-direction: column;
   height: 100%;
 }
 

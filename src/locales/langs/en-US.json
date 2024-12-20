@@ -128,12 +128,9 @@
         "clear": "Clear Response",
         "copy": "Copy Response",
         "download": "Download Response",
-        "empty": "No Response",
         "time": "Response Time: {time}ms",
         "size": "Size: {size}",
         "headers": "Response Headers",
-        "debugInfo": "Debug Info",
-        "debugCommand": "Debug Command",
         "collapse": "Collapse",
         "expand": "Expand",
         "tabs": {
@@ -209,38 +206,6 @@
           "message": "Are you sure you want to cancel? Unsaved changes will be lost.",
           "confirm": "Confirm",
           "cancel": "Cancel"
-        }
-      },
-      "preview": {
-        "title": "Layout Preview",
-        "header": "Header",
-        "sidebar": "Sidebar",
-        "tabs": "Tabs",
-        "toolbar": "Toolbar",
-        "editor": "Editor",
-        "content": "Content",
-        "dots": {
-          "minimize": "Minimize",
-          "maximize": "Maximize",
-          "close": "Close"
-        },
-        "layouts": {
-          "classic": {
-            "title": "Classic Layout",
-            "description": "Traditional layout with fixed positions"
-          },
-          "modern": {
-            "title": "Modern Layout",
-            "description": "Flexible layout with modern design"
-          }
-        },
-        "components": {
-          "header": "Header Area",
-          "sidebar": "Sidebar Navigation",
-          "tabs": "Tab Bar",
-          "toolbar": "Tool Bar",
-          "editor": "Editor Area",
-          "content": "Content Area"
         }
       },
       "actions": {
@@ -549,5 +514,29 @@
         "passwordRequired": "Password is required"
       }
     }
+  },
+  "profile": {
+    "title": "Profile",
+    "username": "Username",
+    "email": "Email",
+    "bio": "Bio",
+    "basicInfo": "Basic Information",
+    "changePassword": "Change Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "avatarUpdateSuccess": "Avatar updated successfully",
+    "updateSuccess": "Profile updated successfully",
+    "updateFailed": "Update failed",
+    "passwordNotMatch": "Passwords do not match",
+    "passwordUpdateSuccess": "Password updated successfully",
+    "passwordUpdateFailed": "Failed to update password",
+    "usernamePlaceholder": "Enter your username",
+    "bioPlaceholder": "Tell us about yourself...",
+    "requests": "Requests",
+    "collections": "Collections",
+    "workspaces": "Workspaces",
+    "viewActivity": "View Activity",
+    "preferences": "Preferences"
   }
 }

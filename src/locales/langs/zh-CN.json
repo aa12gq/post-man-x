@@ -361,7 +361,7 @@
         },
         "repeat": "重复模式",
         "repeats": {
-          "noRepeat": "不复",
+          "noRepeat": "不重复",
           "repeat": "重复",
           "repeatX": "水平重复",
           "repeatY": "垂直重复"
@@ -498,7 +498,7 @@
         "usernameRequired": "用户名不能为空",
         "emailRequired": "邮箱不能为空",
         "passwordRequired": "密码不能为空",
-        "confirmPasswordRequired": "确认密码不能为空",
+        "confirmPasswordRequired": "确认��码不能为空",
         "passwordMismatch": "密码不匹配"
       }
     },
@@ -514,5 +514,29 @@
         "passwordRequired": "密码不能为空"
       }
     }
+  },
+  "profile": {
+    "title": "个人中心",
+    "username": "用户名",
+    "email": "邮箱",
+    "bio": "个人简介",
+    "basicInfo": "基本信息",
+    "changePassword": "修改密码",
+    "oldPassword": "原密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认密码",
+    "avatarUpdateSuccess": "头像更新成功",
+    "updateSuccess": "个人信息更新成功",
+    "updateFailed": "更新失败",
+    "passwordNotMatch": "两次输入的密码不一致",
+    "passwordUpdateSuccess": "密码修改成功",
+    "passwordUpdateFailed": "密码修改失败",
+    "usernamePlaceholder": "请输入用户名",
+    "bioPlaceholder": "介绍一下你自己...",
+    "requests": "请求数",
+    "collections": "收藏集",
+    "workspaces": "工作空间",
+    "viewActivity": "查看活动",
+    "preferences": "偏好设置"
   }
 }

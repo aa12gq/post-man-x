@@ -11,20 +11,18 @@
       >
         <LogoIcon
           class="w-6 h-6 flex-shrink-0"
-          :style="{ 
-            background: `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+          :style="{
+            color: `${themeStore.currentTheme.colors.primary}`,
+            filter: 'brightness(1.1)',
           }"
         />
-        <span 
+        <span
           class="font-semibold text-base hidden sm:block gradient-text"
-          :style="{ 
+          :style="{
             background: `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            backgroundClip: 'text',
           }"
         >
           RPC Master
@@ -87,12 +85,167 @@
           class="w-4 h-4 rounded shadow-inner"
           :style="{ backgroundColor: themeStore.currentTheme.colors.primary }"
         ></div>
-        <span class="hidden sm:block">{{ $t("header.theme.title") }}</span>
+        <span class="hidden sm:block text-sm">{{
+          $t("header.theme.title")
+        }}</span>
         <el-icon
           class="text-xs transition-transform group-hover:translate-y-0.5 hidden sm:block"
           ><ArrowDown
         /></el-icon>
       </button>
+
+      <!-- 通知和消息 -->
+      <div class="flex items-center gap-2">
+        <!-- 通知按钮 -->
+        <el-dropdown trigger="click" @command="handleNotificationCommand">
+          <el-badge :value="notifications.length" class="notification-badge">
+            <button
+              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-2 text-text-secondary hover:text-text transition-colors"
+            >
+              <el-icon><Bell /></el-icon>
+            </button>
+          </el-badge>
+          <template #dropdown>
+            <el-dropdown-menu
+              class="!w-80 !max-h-[400px] !overflow-y-auto !bg-surface-1 !border-border"
+            >
+              <div class="px-4 py-2 border-b border-border">
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-text">通知</span>
+                  <el-button link type="primary" @click="clearNotifications"
+                    >清除全部</el-button
+                  >
+                </div>
+              </div>
+              <template v-if="notifications.length">
+                <el-dropdown-item
+                  v-for="notification in notifications"
+                  :key="notification.id"
+                >
+                  <div
+                    class="notification-item flex items-start gap-3 py-2 relative"
+                  >
+                    <div
+                      class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
+                    >
+                      <img
+                        :src="notification.avatar"
+                        :alt="notification.user"
+                        class="w-full h-full object-cover"
+                        @error="handleAvatarError"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium text-text">{{
+                          notification.user
+                        }}</span>
+                      </div>
+                      <div class="text-sm text-text">
+                        {{ notification.title }}
+                      </div>
+                      <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs text-text-secondary">{{
+                          notification.time
+                        }}</span>
+                        <span class="text-xs text-text-secondary">·</span>
+                        <span class="time-text text-xs">{{
+                          notification.workspace
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </el-dropdown-item>
+              </template>
+              <template v-else>
+                <div
+                  class="py-8 text-center text-sm text-text-secondary bg-surface-1"
+                >
+                  {{ $t("header.notification.empty") }}
+                </div>
+              </template>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
+        <!-- 消息按钮 -->
+        <el-dropdown trigger="click" @command="handleMessageCommand">
+          <el-badge :value="messages.length" class="message-badge">
+            <button
+              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-2 text-text-secondary hover:text-text transition-colors"
+            >
+              <el-icon><Message /></el-icon>
+            </button>
+          </el-badge>
+          <template #dropdown>
+            <el-dropdown-menu
+              class="!w-96 !max-h-[600px] !overflow-y-auto !bg-surface-1 !border-border"
+            >
+              <div class="px-4 py-2 border-b border-border">
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-text">消息</span>
+                  <el-button link type="primary" @click="clearMessages"
+                    >清除全部</el-button
+                  >
+                </div>
+              </div>
+              <template v-if="messages.length">
+                <el-dropdown-item v-for="message in messages" :key="message.id">
+                  <div
+                    class="message-item flex items-start gap-3 py-2 relative"
+                  >
+                    <div
+                      class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
+                    >
+                      <img
+                        :src="message.avatar"
+                        :alt="message.sender"
+                        class="w-full h-full object-cover"
+                        @error="handleAvatarError"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium text-text">{{
+                          message.sender
+                        }}</span>
+                        <span class="text-xs text-text-secondary">{{
+                          message.role
+                        }}</span>
+                      </div>
+                      <div class="preview-image mt-2" v-if="message.preview">
+                        <img
+                          :src="message.preview"
+                          class="w-full h-32 object-cover"
+                        />
+                      </div>
+                      <div class="text-sm mt-1 text-text">
+                        {{ message.content }}
+                      </div>
+                      <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs text-text-secondary">{{
+                          message.workspace
+                        }}</span>
+                        <span class="text-xs text-text-secondary">·</span>
+                        <span class="time-text text-xs">{{
+                          message.time
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </el-dropdown-item>
+              </template>
+              <template v-else>
+                <div
+                  class="py-8 text-center text-sm text-text-secondary bg-surface-1"
+                >
+                  {{ $t("header.message.empty") }}
+                </div>
+              </template>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
 
       <!-- 设置和用户头像 -->
       <SettingsDropdown ref="settingsDropdownRef" />
@@ -254,15 +407,27 @@ import LogoIcon from "../../components/icons/LogoIcon.vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
 import UserAvatar from "./UserAvatar.vue";
 import { useRouter, useRoute } from "vue-router";
-import { ref, nextTick } from "vue";
-import { Plus, ArrowDown, Check } from "@element-plus/icons-vue";
+import { ref } from "vue";
+import {
+  Plus,
+  ArrowDown,
+  Check,
+  Bell,
+  Message,
+  Setting,
+  Share,
+  User,
+  Document,
+  ChatDotRound,
+  UserFilled,
+} from "@element-plus/icons-vue";
 import { useThemeStore } from "../../stores/theme";
 import ThemeEditor from "../../components/settings/ThemeEditor.vue";
 import { Theme } from "../../types/theme";
 import ThemePreviewCard from "../../components/common/ThemePreviewCard.vue";
 import WorkspaceSelector from "./WorkspaceSelector.vue";
 import { useI18n } from "vue-i18n";
-import { LanguageType, setLanguage } from "../../i18n";
+import { LanguageType, setLanguage } from "../../locales";
 
 const router = useRouter();
 const route = useRoute();
@@ -300,37 +465,245 @@ const handleSaveTheme = (theme: Omit<Theme, "id">) => {
 const handleLanguageChange = (lang: LanguageType) => {
   try {
     setLanguage(lang);
-    // 强制刷新组件
-    nextTick(() => {
-      window.location.reload();
-    });
   } catch (error) {
     console.error("Failed to change language:", error);
   }
 };
+
+// 通知数据
+const notifications = ref([
+  {
+    id: 1,
+    title: "新的团队成员加入",
+    time: "2小时前",
+    icon: User,
+    iconColor: "text-green-500",
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    user: "Charlie Brown",
+    workspace: "电商项目",
+  },
+  {
+    id: 2,
+    title: "API集合已分享",
+    time: "5小时前",
+    icon: Share,
+    iconColor: "text-blue-500",
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    user: "Sarah Zhang",
+    workspace: "电商项目",
+  },
+  {
+    id: 3,
+    title: "工作区设置已更新",
+    time: "昨天",
+    icon: Setting,
+    iconColor: "text-orange-500",
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    user: "Mike Wilson",
+    workspace: "语聊项目",
+  },
+]);
+
+// 消息数据
+const messages = ref([
+  {
+    id: 1,
+    sender: "Alice Johnson",
+    role: "API Designer",
+    content: "请查看新的API文档更新",
+    type: "document",
+    time: "1小时前",
+    workspace: "电商项目",
+    unread: true,
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    preview:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: 2,
+    sender: "Bob Wilson",
+    role: "前端开发",
+    content: "新的UI组件已经完成",
+    type: "code",
+    time: "2小时前",
+    workspace: "组库",
+    unread: true,
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    preview:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: 3,
+    sender: "Carol White",
+    role: "Project Manager",
+    content: "@你 ��于新接口的设计讨论",
+    type: "mention",
+    time: "5小时前",
+    workspace: "用户中心",
+    unread: true,
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    preview:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: 4,
+    sender: "David Chen",
+    role: "Frontend Developer",
+    content: "已将你添加到「登录模块」协作组",
+    type: "collaboration",
+    time: "1天前",
+    workspace: "认证系统",
+    unread: false,
+    avatar:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    preview:
+      "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+]);
+
+// 处理通知点
+const handleNotificationCommand = (command: string) => {
+  console.log("Notification clicked:", command);
+};
+
+// 处理消息点击
+const handleMessageCommand = (command: string) => {
+  console.log("Message clicked:", command);
+};
+
+// 清除所有通知
+const clearNotifications = () => {
+  notifications.value = [];
+};
+
+// 清除所有消息
+const clearMessages = () => {
+  messages.value = [];
+};
+
+// 获取消息类型对应的图标
+const getMessageTypeIcon = (type: string) => {
+  const iconMap = {
+    document: Document,
+    environment: Setting,
+    mention: ChatDotRound,
+    collaboration: UserFilled,
+  };
+  return iconMap[type as keyof typeof iconMap];
+};
+
+const handleAvatarError = (e: Event) => {
+  const target = e.target as HTMLImageElement;
+  const name = target.alt || "User";
+  target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    name
+  )}&background=random&color=fff&size=128`;
+};
+
+const currentUser = ref({
+  avatar: "https://api.avatars.githubusercontent.com/u/1234567",
+  user: "Charlie Brown",
+});
+
+const userMenuItems = ref([
+  {
+    command: "profile",
+    icon: User,
+    iconColor: "text-green-500",
+    avatar: "https://api.avatars.githubusercontent.com/u/2345678",
+    user: "Charlie Brown",
+  },
+  // ... 其他菜单项
+]);
 </script>
 
 <style>
-/* 仅保留必要的全局样式覆盖 */
+/* 消息和通知下拉框样式 */
+:deep(.el-popper.is-light) {
+  background-color: var(--surface-1) !important;
+  border-color: var(--border-color) !important;
+}
+
+:deep(.el-popper.is-light .el-popper__arrow::before) {
+  background-color: var(--surface-1) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 下拉菜单基础样式 */
 :deep(.el-dropdown-menu) {
   background-color: var(--surface-1) !important;
   border-color: var(--border-color) !important;
 }
 
 :deep(.el-dropdown-menu__item) {
+  background-color: var(--surface-1) !important;
+  color: var(--text-color) !important;
+  padding: 0 !important;
+}
+
+:deep(.el-dropdown-menu__item:hover),
+:deep(.el-dropdown-menu__item:focus) {
+  background-color: transparent !important;
+}
+
+/* 消息和通知项样式 */
+:deep(.notification-item),
+:deep(.message-item) {
+  transition: background-color 0.2s ease;
+  padding: 8px 16px;
+}
+
+:deep(.notification-item:hover),
+:deep(.message-item:hover) {
+  background-color: var(--surface-2) !important;
+}
+
+/* 活动项样式 */
+:deep(.el-dropdown-menu__item.is-active) {
+  color: var(--primary-color) !important;
+  background-color: transparent !important;
+}
+
+/* 清空按钮样式 */
+:deep(.clear-button) {
+  color: var(--text-secondary) !important;
+  border-top: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  padding: 8px 16px;
+  width: 100%;
+  display: block;
+}
+
+:deep(.clear-button:hover) {
+  background-color: var(--surface-2) !important;
+  color: var(--text-color) !important;
+}
+
+/* 未读标记样式 */
+:deep(.unread-dot) {
+  background-color: var(--primary-color);
+}
+
+/* 时间和工作区标签样式 */
+:deep(.time-text),
+:deep(.workspace-tag) {
   color: var(--text-secondary);
 }
 
-:deep(.el-dropdown-menu__item:hover) {
-  background-color: var(--surface-2);
-  color: var(--text-color);
+/* 消息预览图片容器 */
+:deep(.preview-image) {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-:deep(.el-dropdown-menu__item.is-active) {
-  color: var(--primary-color);
-  background-color: var(--surface-2);
-}
-
+/* 工作区选择器样式 */
 :deep(.workspace-selector .el-dropdown-link) {
   color: var(--text-secondary);
 }
@@ -340,19 +713,11 @@ const handleLanguageChange = (lang: LanguageType) => {
   background-color: var(--surface-2);
 }
 
-/* 图标颜色过渡效果 */
+/* 图标和动画效果 */
 :deep(svg) {
   transition: color 0.3s ease;
 }
 
-/* 图标和文字的颜色过渡效果 */
-:deep(svg), 
-.font-semibold {
-  transition: color 0.3s ease;
-}
-
-/* 渐变文字效果 */
-:deep(svg), 
 .gradient-text {
   transition: all 0.3s ease;
   background-size: 200% auto;
@@ -365,7 +730,6 @@ const handleLanguageChange = (lang: LanguageType) => {
   }
 }
 
-/* 确保渐变效果在 hover 时更明显 */
 .cursor-pointer:hover :deep(svg),
 .cursor-pointer:hover .gradient-text {
   filter: brightness(1.1);

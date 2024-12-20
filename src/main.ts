@@ -1,42 +1,49 @@
-import ElementPlus from 'element-plus';
-import 'element-plus/dist/index.css';
-import { createPinia } from 'pinia';
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
+import en from "element-plus/es/locale/lang/en";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+import { createPinia } from "pinia";
 import piniaPluginPersist from 'pinia-plugin-persist';
-import { createApp } from 'vue';
-import App from './App.vue';
-import './assets/styles/global.css';
-import { setupI18n } from './i18n';
-import './monaco-config';
-import router from './router';
-import { useThemeStore } from './stores/theme';
-import './styles/dark.css';
+import { createApp, ref } from "vue";
+import App from "./App.vue";
+import "./assets/styles/global.css";
+import VueDevTools from "./components/debug/VueDevTools.vue";
+import { setupI18n } from "./locales";
+import "./monaco-config";
+import router from "./router";
+import { useThemeStore } from "./stores/theme";
+import "./styles/dark.css";
 
-const app = createApp(App)
-const pinia = createPinia()
-pinia.use(piniaPluginPersist)
-app.use(pinia)
-app.use(ElementPlus)
-app.use(router)
-app.use(setupI18n)
+const app = createApp(App);
+const pinia = createPinia();
+pinia.use(piniaPluginPersist);
+const elementLocale = ref(
+  localStorage.getItem("language") === "zh-CN" ? zhCn : en
+);
 
-// 在应用启动时初始化主题
+app.use(pinia);
+app.use(ElementPlus, {
+  locale: elementLocale.value,
+});
+app.use(router);
+app.use(setupI18n);
+app.component("VueDevTools", VueDevTools);
+
 const initializeTheme = () => {
-  const themeStore = useThemeStore()
-  // 从本地存储加载上次使用的主题
-  const savedTheme = localStorage.getItem('theme-preference')
+  const themeStore = useThemeStore();
+  const savedTheme = localStorage.getItem("theme-preference");
   if (savedTheme) {
     try {
-      const { preset, id } = JSON.parse(savedTheme)
-      themeStore.switchTheme(preset, id)
+      const { preset, id } = JSON.parse(savedTheme);
+      themeStore.switchTheme(preset, id);
     } catch {
-      themeStore.switchTheme('light')
+      themeStore.switchTheme("light");
     }
   } else {
-    themeStore.switchTheme('light')
+    themeStore.switchTheme("light");
   }
-}
+};
 
-// 在应用初始化时调用
-initializeTheme()
+initializeTheme();
 
-app.mount('#app') 
+app.mount("#app");

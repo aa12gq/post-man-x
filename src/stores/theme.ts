@@ -343,6 +343,23 @@ export const useThemeStore = defineStore(
       }
 
       currentTheme.value = theme;
+
+      // 为每个颜色添加 RGB 变量
+      const colorToRGB = (color: string) => {
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        return `${r}, ${g}, ${b}`;
+      };
+
+      // 添加 RGB 变量
+      if (theme.colors.success.startsWith('#')) {
+        root.style.setProperty('--success-rgb', colorToRGB(theme.colors.success));
+      }
+      if (theme.colors.warning.startsWith('#')) {
+        root.style.setProperty('--warning-rgb', colorToRGB(theme.colors.warning));
+      }
     }
 
     // 保存主题设置到本地存储

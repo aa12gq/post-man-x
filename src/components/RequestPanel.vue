@@ -387,7 +387,8 @@
 		id: string;
 		name: string;
 		title: string;
-		type: "http" | "rpc"; // 添加类型字段
+		type: "http" | "rpc"; 
+		url?: string;
 	}
 
 	const tabs = ref<Tab[]>([]); // 移除默认签页
@@ -445,7 +446,7 @@
 					// 用户点 X 按钮,不关闭标签页
 					return;
 				}
-				// 用户选择放弃更改,继续关闭
+				// 用户选��放弃更改,继续关闭
 			}
 		}
 
@@ -686,12 +687,12 @@
 		// 添加到历史记录
 		addHistoryItem(newRequest);
 
-		// 添加到标签页
 		const newTab = {
 			id: newId,
 			name: `New ${type.toUpperCase()} Request`,
 			title: `New ${type.toUpperCase()} Request`,
 			type: type === "grpc" ? "rpc" : "http",
+			url: newRequest.url,
 		};
 
 		tabs.value.push(newTab as Tab);
@@ -710,7 +711,7 @@
 		});
 	};
 
-	const { history, addFolder, addHistoryItem, loadHistory } =
+	const { history, addHistoryItem, loadHistory } =
 		useRequestHistory();
 
 	// 监听历史记录变化，更新标签页名称
@@ -773,7 +774,6 @@
 		selectedFolderId.value = folderId;
 	};
 
-	// 添加新的响应式变量
 	const selectedFolderId = ref<string | null>(null);
 
 	// 处理打开请求
@@ -782,13 +782,15 @@
 		if (existingTab) {
 			existingTab.name = request.name || request.url;
 			existingTab.title = request.name || request.url;
+			existingTab.url = request.url;
 			activeTab.value = request.id;
 		} else {
 			tabs.value.push({
 				id: request.id,
 				name: request.name || request.url,
 				title: request.name || request.url,
-				type: request.type, // 直接使用请求的类型，因为历史记录中已经是正确的 'rpc' 或 'http' 类型
+				type: request.type,
+				url: request.url,
 			});
 			activeTab.value = request.id;
 		}
@@ -888,7 +890,7 @@
 	watch(
 		() => settings.value,
 		(newSettings) => {
-			// 保存到本地存储
+			// ��存到本地存储
 			localStorage.setItem("layoutSettings", JSON.stringify(newSettings));
 
 			// 应用布��关的 CSS 变量
@@ -913,7 +915,7 @@
 	.request-panel {
 		height: 100%;
 		display: flex;
-		flex-direction: column;
+		/* flex-direction: column; */
 		overflow: hidden;
 		background-color: var(--surface-2);
 	}
@@ -1051,7 +1053,6 @@
 	.collections-sidebar {
 		position: relative;
 		background-color: var(--surface-2);
-		border-right: 1px solid var(--border);
 		transition: none;
 		overflow: hidden;
 		flex-shrink: 0;
@@ -1184,7 +1185,7 @@
 	.request-response-wrapper {
 		flex: 1;
 		display: flex;
-		flex-direction: column;
+		/* flex-direction: column; */
 		position: relative;
 		min-height: 0;
 		background-color: var(--surface-1);
@@ -1226,7 +1227,7 @@
 	.request-workspace {
 		flex: 1;
 		display: flex;
-		flex-direction: column;
+		/* flex-direction: column; */
 		min-height: 0;
 		height: 100%;
 	}
@@ -1284,7 +1285,7 @@
 		}
 
 		.main-content.tabs-left {
-			flex-direction: column;
+			/* flex-direction: column; */
 
 			.tab-manager {
 				width: 100%;
@@ -1327,7 +1328,7 @@
 		.main-content {
 			flex: 1;
 			display: flex;
-			flex-direction: column;
+			/* flex-direction: column; */
 			position: relative;
 		}
 
@@ -1341,7 +1342,7 @@
 		.request-response-wrapper {
 			flex: 1;
 			display: flex;
-			flex-direction: column;
+			/* flex-direction: column; */
 			min-height: 0;
 		}
 	}
@@ -1377,7 +1378,7 @@
 			min-width: 0;
 			position: relative;
 			display: flex;
-			flex-direction: column;
+			/* flex-direction: column; */
 		}
 
 		/* 当侧栏在右侧时的样式 */

@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown trigger="click" @command="handleUserCommand">
+  <el-dropdown trigger="click" @command="handleCommand">
     <div class="user-avatar">
       <el-avatar :size="32" :src="userAvatar" @error="handleAvatarError">
         <el-icon><User /></el-icon>
@@ -31,27 +31,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { User, UserFilled, Key, Setting, SwitchButton } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 
 const isLoggedIn = ref(false)
 const userAvatar = ref('')
+const router = useRouter()
 
 const handleAvatarError = () => {
   // 使用默认头像或显示用户图标
 }
 
-const handleUserCommand = (command: string) => {
+const handleCommand = (command: string) => {
   switch (command) {
     case 'profile':
-      // 处理查看个人信息
-      break
-    case 'settings':
-      // 处理设置
-      break
-    case 'login':
-      // 处理登录
+      router.push('/profile')
       break
     case 'logout':
-      // 处理退出登录
+      // TODO 原有的登出逻辑
       break
   }
 }

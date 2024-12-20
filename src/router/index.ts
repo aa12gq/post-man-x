@@ -7,6 +7,7 @@ import {
 import { useUserStore } from '../stores/user'; // 假设你有一个用户 store
 import BackgroundTest from '../views/BackgroundTest.vue';
 import Home from '../views/Home.vue';
+import ThemeTest from '../views/ThemeTest.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -62,6 +63,20 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false,
     },
   },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: {
+      title: "Profile",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/theme-test',
+    name: 'ThemeTest',
+    component: ThemeTest
+  }
 ];
 
 const router = createRouter({

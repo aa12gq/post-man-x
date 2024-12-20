@@ -9,13 +9,24 @@ module.exports = {
     extend: {
       colors: {
         'surface-1': 'var(--surface-1)',
+        'surface-2': 'var(--surface-2)',
+        'surface-3': 'var(--surface-3)',
+        'surface-4': 'var(--surface-4)',
+        'primary': 'var(--el-color-primary)',
         'border': 'var(--border-color)',
-        'hover': 'var(--hover-color)',
-        'primary': {
-          50: 'var(--el-color-primary-light-9)',
-          // ... 其他色阶
-        }
-      }
+        'text': 'var(--text-color)',
+        'secondary': 'var(--text-secondary)',
+      },
+      animation: {
+        'pulse-slow': 'pulse-slow 4s ease-in-out infinite',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
+      boxShadow: {
+        'glow-primary': '0 0 10px var(--primary)',
+        'glow-success': '0 0 10px var(--success)',
+      },
     }
   },
   plugins: [

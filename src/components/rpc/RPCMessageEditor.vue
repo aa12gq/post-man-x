@@ -1,14 +1,5 @@
 <template>
   <div class="message-editor">
-    <div class="editor-toolbar">
-      <el-button
-        size="small"
-        @click="$emit('generate-example')"
-        :disabled="!hasMethod"
-      >
-        Generate Example
-      </el-button>
-    </div>
     <div class="editor-container">
       <CodeEditor
         v-model="localMessage"
@@ -19,12 +10,23 @@
         @change="handleChange"
       />
     </div>
+    <div class="editor-toolbar">
+      <el-button
+        size="small"
+        @click="$emit('generate-example')"
+        :disabled="!hasMethod"
+      >
+        <ExampleMessageIcon class="icon" />
+        Use Example Message
+      </el-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import CodeEditor from "../CodeEditor.vue";
+import ExampleMessageIcon from "../icons/ExampleMessageIcon.vue";
 
 const props = defineProps<{
   message: any;
@@ -105,10 +107,8 @@ const handleChange = (value: string) => {
 
 .editor-toolbar {
   display: flex;
-  justify-content: flex-end;
-  padding: 8px;
-  background-color: var(--surface-2);
-  border-bottom: 1px solid var(--border);
+  padding: 4px;
+  margin-top: auto;
 }
 
 :deep(.code-editor-wrapper) {
@@ -131,20 +131,24 @@ const handleChange = (value: string) => {
 /* 按钮样式 */
 :deep(.el-button) {
   color: var(--text-secondary);
-  background-color: var(--surface-1);
-  border-color: var(--border);
+  background-color: transparent;
+  border: none;
+  padding: 8px 12px;
 }
 
 :deep(.el-button:hover) {
   color: var(--text);
-  background-color: var(--surface-2);
-  border-color: var(--el-color-primary);
+  background-color: var(--hover-color);
 }
 
 :deep(.el-button:disabled) {
   color: var(--text-secondary);
-  background-color: var(--surface-1);
-  border-color: var(--border);
+  background-color: transparent;
   opacity: 0.6;
+}
+
+:deep(.el-button .icon) {
+  margin-right: 6px;
+  margin-left: -2px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="tab-manager"
+    class="bg-surface-2 border-b border-border"
     :class="{
       'layout-modern': layoutStore.settings.currentLayout === 'modern',
       'layout-classic': layoutStore.settings.currentLayout === 'classic',
@@ -8,13 +8,13 @@
       'position-bottom': position === 'bottom',
     }"
   >
-    <div class="tabs-container">
+    <div class="flex items-center w-full h-8 bg-surface-3">
       <el-tabs
         v-model="activeTab"
         type="card"
-        closable
         @tab-remove="handleTabRemove"
         @tab-click="handleTabClick"
+        class="flex-1 h-full"
       >
         <el-tab-pane
           v-for="tab in tabs"
@@ -23,21 +23,46 @@
           :class="{ 'is-unsaved': unsavedTabs?.has(tab.id) }"
         >
           <template #label>
-            <div class="tab-label">
-              <div class="tab-icon">
-                <el-icon :size="14">
-                  <component :is="getTabIcon(tab)" />
-                </el-icon>
+            <el-tooltip
+              :content="`${tab.title}${tab.url ? '\n' + tab.url : ''}`"
+              placement="top"
+              :enterable="false"
+              :show-after="500"
+            >
+              <div class="flex items-center gap-1 max-w-full relative">
+                <div class="text-secondary flex items-center">
+                  <el-icon
+                    class="text-xs transition-colors"
+                    :style="{ color: themeStore.currentTheme.colors.primary }"
+                  >
+                    <component :is="getTabIcon(tab)" />
+                  </el-icon>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <span class="text-xs truncate block">{{ tab.title }}</span>
+                </div>
+                <div
+                  v-if="unsavedTabs?.has(tab.id)"
+                  class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"
+                />
+                <div
+                  class="w-4 h-4 flex items-center justify-center hover:bg-surface-1 hover:text-primary rounded-full cursor-pointer ml-1"
+                  @click.stop="handleTabRemove(tab.id)"
+                >
+                  <el-icon class="text-xs"><Close /></el-icon>
+                </div>
               </div>
-              <div class="tab-text">{{ tab.title }}</div>
-              <div v-if="unsavedTabs?.has(tab.id)" class="unsaved-indicator" />
-            </div>
+            </el-tooltip>
           </template>
         </el-tab-pane>
       </el-tabs>
 
-      <div class="tab-actions">
-        <div class="add-tab-button" @click="$emit('add')" title="New Tab">
+      <div class="flex items-center px-2 border-l border-border">
+        <div
+          class="w-7 h-7 flex items-center justify-center cursor-pointer text-text rounded hover:bg-surface-2 hover:text-primary transition-colors"
+          @click="$emit('add')"
+          title="New Tab"
+        >
           <el-icon><Plus /></el-icon>
         </div>
       </div>
@@ -47,17 +72,21 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { Plus, Document, Connection } from "@element-plus/icons-vue";
+import { Plus, Close, Document, Connection } from "@element-plus/icons-vue";
 import type { TabPaneName } from "element-plus";
 import { useLayoutStore } from "../../stores/layout";
+import { useThemeStore } from "../../stores/theme";
 
 const layoutStore = useLayoutStore();
+const themeStore = useThemeStore();
 
 const props = defineProps<{
   modelValue: string;
   tabs: Array<{
     id: string;
     title: string;
+    url?: string;
+    type: "http" | "rpc";
   }>;
   unsavedTabs?: Set<string>;
   position?: "top" | "left" | "bottom";
@@ -84,31 +113,12 @@ const handleTabRemove = (name: TabPaneName) => {
   }
 };
 
-// 根据标签类型返回对应图标
 const getTabIcon = (tab: any) => {
   return tab.type === "rpc" ? Connection : Document;
 };
 </script>
 
 <style scoped>
-.tab-manager {
-  background-color: var(--surface-2);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.tabs-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 40px;
-  background-color: var(--surface-3);
-}
-
-:deep(.el-tabs) {
-  flex: 1;
-  height: 100%;
-}
-
 :deep(.el-tabs__header) {
   margin: 0;
   height: 100%;
@@ -135,14 +145,35 @@ const getTabIcon = (tab: any) => {
 }
 
 :deep(.el-tabs__item) {
-  height: 40px;
-  line-height: 40px;
-  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 24px 0 10px;
   background-color: transparent;
   border: none !important;
   transition: all 0.2s ease;
   position: relative;
   margin: 0 1px;
+  max-width: 160px;
+  min-width: 80px;
+  width: auto;
+  font-size: 12px;
+
+  :deep(.el-icon-close) {
+    position: absolute !important;
+    right: 5px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    height: 14px !important;
+    width: 14px !important;
+    line-height: 14px !important;
+    border-radius: 50% !important;
+
+    &:hover {
+      background-color: var(--surface-1) !important;
+      color: var(--el-color-primary) !important;
+    }
+  }
 
   &::after {
     content: "";
@@ -169,261 +200,81 @@ const getTabIcon = (tab: any) => {
   }
 }
 
-.tab-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-right: 20px;
-}
-
-.tab-icon {
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-}
-
-.tab-text {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 13px;
-}
-
-.unsaved-indicator {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--el-color-primary);
-  flex-shrink: 0;
-}
-
-.tab-actions {
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  border-left: 1px solid var(--border-color);
-}
-
-.add-tab-button {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-color);
-  border-radius: 4px;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: var(--surface-2);
-    color: var(--el-color-primary);
-  }
-}
-
-/* 现代布局样式 */
+/* Modern Layout 样式 */
 .layout-modern {
-  height: 100%;
-  display: flex;
-  flex-direction: row;
+  @apply h-full flex flex-row;
 
   .tabs-container {
-    width: 200px;
-    height: 100%;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid var(--border-color);
+    @apply w-[200px] h-full p-0 flex flex-col border-r border-border;
   }
 
   :deep(.el-tabs) {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    @apply flex-1 flex flex-col;
   }
 
   :deep(.el-tabs__header) {
-    margin: 0;
-    padding: 0;
-    flex: 1;
+    @apply m-0 p-0 flex-1;
   }
 
   :deep(.el-tabs__nav-wrap) {
-    padding: 0;
-    height: 100%;
+    @apply p-0 h-full;
   }
 
   :deep(.el-tabs__nav-scroll) {
-    height: 100%;
-    overflow-y: auto;
+    @apply h-full overflow-y-auto;
   }
 
   :deep(.el-tabs__nav) {
-    flex-direction: column;
-    width: 100%;
-    height: auto;
-    border: none;
-    display: flex !important;
-  }
-
-  :deep(.el-tabs__content) {
-    display: none !important;
+    @apply flex-col w-full h-auto border-none !flex;
   }
 
   :deep(.el-tabs__item) {
-    height: 40px !important;
-    min-height: 40px;
-    line-height: 40px !important;
-    padding: 0 12px !important;
-    margin: 0 !important;
-    border-radius: 0;
-    width: 100%;
-    max-width: none;
-    display: flex;
-    align-items: center;
-    background-color: transparent !important;
-    box-sizing: border-box !important;
-    border: none !important;
-    position: relative;
+    @apply !h-10 min-h-[40px] !leading-10 !p-3 !m-0 rounded-none w-full max-w-none flex items-center !bg-transparent !box-border !border-none relative;
 
     &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 2px;
-      height: auto;
-      right: auto;
-      background-color: var(--el-color-primary);
-      opacity: 0;
-      transition: opacity 0.2s;
+      @apply content-[''] absolute top-0 bottom-0 left-0 w-0.5 h-auto right-auto bg-primary opacity-0 transition-opacity;
     }
 
     &.is-active {
-      background-color: var(--surface-1);
-      height: 40px !important;
-
+      @apply bg-surface-1;
       &::after {
-        opacity: 1;
+        @apply opacity-100;
       }
     }
 
     &:hover:not(.is-active) {
-      background-color: var(--surface-2);
+      @apply bg-surface-2;
     }
-  }
-
-  .tab-label {
-    width: 100%;
-    padding-right: 24px;
-    white-space: normal;
-    word-break: break-word;
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .tab-actions {
-    border-left: none;
-    border-top: 1px solid var(--border-color);
-    padding: 8px;
-    height: auto;
-    justify-content: flex-end;
   }
 }
 
-/* 经典布局样式 */
+/* Classic Layout 样式 */
 .layout-classic {
   .tabs-container {
-    width: 100%;
-    height: 40px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  :deep(.el-tabs) {
-    flex: 1;
-  }
-
-  :deep(.el-tabs__header) {
-    margin: 0;
-  }
-
-  :deep(.el-tabs__nav) {
-    border: none !important;
+    @apply w-full h-8 flex flex-row items-center;
   }
 
   :deep(.el-tabs__item) {
-    height: 40px;
-    line-height: 40px;
-    padding: 0 16px;
-    background-color: transparent;
-    border: none !important;
-    margin: 0;
-    position: relative;
+    @apply h-8 leading-8 px-4 bg-transparent border-none m-0 relative;
 
     &::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: var(--el-color-primary);
-      opacity: 0;
-      transition: opacity 0.2s;
+      @apply content-[''] absolute bottom-0 left-0 right-0 h-0.5 bg-primary opacity-0 transition-opacity;
     }
 
     &.is-active {
-      background-color: var(--surface-1);
+      @apply bg-surface-1;
       &::after {
-        opacity: 1;
+        @apply opacity-100;
       }
     }
 
     &:hover:not(.is-active) {
-      background-color: var(--surface-2);
+      @apply bg-surface-2;
     }
   }
-
-  .tab-actions {
-    border-left: 1px solid var(--border-color);
-    padding: 0 8px;
-  }
 }
 
-/* 添加内容区域的样式 */
-:deep(.el-tab-pane) {
-  height: 100%;
-  overflow: auto;
-  padding: 16px;
-}
-
-/* 内容区域样式 - 移到最前面，作为基础样式 */
 :deep(.el-tabs__content) {
-  display: none !important; /* 默认隐藏所有布局下的内容区域 */
-}
-
-:deep(.el-tab-pane) {
-  height: 100%;
-  overflow: auto;
-  padding: 0 !important; /* 强制移除所有布局下的内边距 */
-}
-
-/* 移除重复的样式定义 */
-.layout-classic :deep(.el-tabs__content),
-.layout-modern :deep(.el-tabs__content),
-.layout-compact :deep(.el-tabs__content),
-.layout-minimal :deep(.el-tabs__content) {
-  display: none !important;
-}
-
-/* 标签页面板样式 */
-:deep(.el-tab-pane) {
-  height: 100%;
-  overflow: auto;
+  @apply !hidden;
 }
 </style>
