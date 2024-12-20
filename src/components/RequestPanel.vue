@@ -15,376 +15,14 @@
 		}"
 	>
 		<div class="content-layout">
-			<template v-if="settings.sidebarPosition === 'left'">
-				<!-- 左侧区域 -->
+			<!-- 左侧或右侧边栏 -->
+			<template v-if="settings.showSidebar">
 				<div
-					v-if="settings.showSidebar"
 					class="left-section"
 					:class="{
 						'is-collapsed': settings.isCollapsed,
 						'is-collapsible': settings.isCollapsible,
-					}"
-					:style="{
-						width: settings.isCollapsed
-							? '48px'
-							: `${settings.sidebarWidth}px`,
-					}"
-				>
-					<!-- New 按钮区域 -->
-					<div class="new-area">
-						<div
-							class="new-button"
-							@click="showNewRequestDialog"
-						>
-							<!-- <el-icon><Plus /></el-icon> -->
-							<span>{{
-								t(
-									"request.panel.sidebar.collections.newRequest"
-								)
-							}}</span>
-						</div>
-					</div>
-
-					<!-- 活动栏和边栏容器 -->
-					<div class="sidebar-container">
-						<!-- 活动栏 -->
-						<div class="activity-bar">
-							<div
-								class="activity-item"
-								:class="{
-									active: activeView === 'collections',
-								}"
-								@click="toggleView('collections')"
-							>
-								<el-tooltip
-									:content="
-										t(
-											'request.panel.sidebar.collections.title'
-										)
-									"
-									placement="right"
-								>
-									<el-icon><Collection /></el-icon>
-								</el-tooltip>
-							</div>
-							<div
-								class="activity-item"
-								:class="{ active: activeView === 'apis' }"
-								@click="toggleView('apis')"
-							>
-								<el-tooltip
-									:content="t('request.panel.sidebar.apis')"
-									placement="right"
-								>
-									<el-icon><Connection /></el-icon>
-								</el-tooltip>
-							</div>
-
-							<!-- 历史记录视图 -->
-							<div
-								class="activity-item"
-								:class="{ active: activeView === 'history' }"
-								@click="toggleView('history')"
-							>
-								<el-tooltip
-									:content="
-										t('request.panel.sidebar.history')
-									"
-									placement="right"
-								>
-									<el-icon><Timer /></el-icon>
-								</el-tooltip>
-							</div>
-
-							<!-- 环境变量管理 -->
-							<div
-								class="activity-item"
-								:class="{
-									active: activeView === 'environments',
-								}"
-								@click="toggleView('environments')"
-							>
-								<el-tooltip
-									:content="
-										t('request.panel.sidebar.environments')
-									"
-									placement="right"
-								>
-									<el-icon><Monitor /></el-icon>
-								</el-tooltip>
-							</div>
-
-							<div class="activity-divider"></div>
-
-							<!-- 导入导出功能 -->
-							<div
-								class="activity-item"
-								:class="{
-									active: activeView === 'import-export',
-								}"
-								@click="toggleView('import-export')"
-							>
-								<el-tooltip
-									:content="
-										t('request.panel.sidebar.importExport')
-									"
-									placement="right"
-								>
-									<el-icon><Upload /></el-icon>
-								</el-tooltip>
-							</div>
-
-							<!-- 全局设置 -->
-							<div
-								class="activity-item"
-								:class="{ active: activeView === 'settings' }"
-								@click="toggleView('settings')"
-							>
-								<el-tooltip
-									:content="
-										t('request.panel.sidebar.settings')
-									"
-									placement="right"
-								>
-									<el-icon><Tools /></el-icon>
-								</el-tooltip>
-							</div>
-						</div>
-
-						<!-- Collections 边栏 -->
-						<div
-							class="collections-sidebar"
-							:class="{
-								'is-collapsed':
-									settings.isCollapsed ||
-									activeView !== 'collections',
-								'is-hidden': activeView !== 'collections',
-							}"
-						>
-							<!-- 动条和折叠按钮 -->
-							<div class="sidebar-controls">
-								<div
-									class="sidebar-resizer"
-									@mousedown="startSidebarResize"
-								></div>
-								<div
-									class="sidebar-toggle"
-									@click="toggleSidebar"
-								>
-									<el-icon
-										:class="{
-											'is-collapsed':
-												settings.isCollapsed,
-										}"
-									>
-										<CaretLeft />
-									</el-icon>
-								</div>
-							</div>
-
-							<!-- 内容区域 -->
-							<div class="sidebar-header">
-								<span class="sidebar-title">{{
-									t("request.panel.sidebar.collections.title")
-								}}</span>
-								<div class="header-actions">
-									<el-tooltip
-										:content="
-											t(
-												'request.panel.sidebar.collections.newFolder'
-											)
-										"
-										placement="top"
-									>
-										<el-button
-											link
-											size="small"
-											@click="
-												workspaceStore.handleCreateCollection
-											"
-										>
-											<el-icon><Plus /></el-icon>
-										</el-button>
-									</el-tooltip>
-								</div>
-							</div>
-							<div class="sidebar-content">
-								<FolderManager
-									@create-request="handleCreateRequest"
-									@open-request="handleOpenRequest"
-									@delete-request="handleDeleteRequest"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- 右侧主内容 -->
-				<div class="main-content">
-					<!-- 标签页管理器 -->
-					<TabManager
-						v-model="activeTab"
-						:tabs="tabs"
-						:unsaved-tabs="unsavedTabsSet"
-						:position="settings.tabsPosition"
-						@add="addTab"
-						@remove="removeTab"
-					/>
-
-					<!-- 请求和响应区域包装器 -->
-					<div class="request-response-wrapper">
-						<template v-if="tabs.length === 0">
-							<!-- 空状态提示 -->
-							<div class="empty-state">
-								<el-empty>
-									<template #description>
-										<h3>
-											{{
-												t(
-													"request.panel.emptyState.title"
-												)
-											}}
-										</h3>
-										<p>
-											{{
-												t(
-													"request.panel.emptyState.description"
-												)
-											}}
-										</p>
-									</template>
-									<template #default>
-										<el-button
-											type="primary"
-											@click="createNewRequest"
-										>
-											{{
-												t(
-													"request.panel.emptyState.createNew"
-												)
-											}}
-										</el-button>
-									</template>
-								</el-empty>
-							</div>
-						</template>
-						<template
-							v-else-if="currentTab && currentTab.type === 'rpc'"
-						>
-							<div class="request-workspace">
-								<keep-alive>
-									<RpcRequestRegion
-										:key="currentTab.id"
-										:tab-id="currentTab.id"
-										:request-type="currentTab.type"
-										@update:unsaved="
-											(value: any) =>
-												currentTab?.id &&
-												handleUnsavedChange(
-													currentTab.id,
-													value
-												)
-										"
-										@save="saveRequest"
-										@name-change="handleNameChange"
-									/>
-								</keep-alive>
-							</div>
-						</template>
-						<template
-							v-else-if="currentTab && currentTab.type === 'http'"
-						>
-						</template>
-					</div>
-				</div>
-			</template>
-
-			<template v-else>
-				<div class="main-content">
-					<!-- 标签页管理器 -->
-					<TabManager
-						v-model="activeTab"
-						:tabs="tabs"
-						:unsaved-tabs="unsavedTabsSet"
-						:position="settings.tabsPosition"
-						@add="addTab"
-						@remove="removeTab"
-					/>
-
-					<!-- 请求和响应区域包装器 -->
-					<div class="request-response-wrapper">
-						<template v-if="tabs.length === 0">
-							<!-- 空状态提示 -->
-							<div class="empty-state">
-								<el-empty>
-									<template #description>
-										<h3>
-											{{
-												t(
-													"request.panel.emptyState.title"
-												)
-											}}
-										</h3>
-										<p>
-											{{
-												t(
-													"request.panel.emptyState.description"
-												)
-											}}
-										</p>
-									</template>
-									<template #default>
-										<el-button
-											type="primary"
-											@click="createNewRequest"
-										>
-											{{
-												t(
-													"request.panel.emptyState.createNew"
-												)
-											}}
-										</el-button>
-									</template>
-								</el-empty>
-							</div>
-						</template>
-						<template
-							v-else-if="currentTab && currentTab.type === 'rpc'"
-						>
-							<div class="request-workspace">
-								<keep-alive>
-									<RpcRequestRegion
-										:key="currentTab.id"
-										:tab-id="currentTab.id"
-										:request-type="currentTab.type"
-										@update:unsaved="
-											(value) =>
-												currentTab?.id &&
-												handleUnsavedChange(
-													currentTab.id,
-													value
-												)
-										"
-										@save="saveRequest"
-										@name-change="handleNameChange"
-									/>
-								</keep-alive>
-							</div>
-						</template>
-						<template
-							v-else-if="currentTab && currentTab.type === 'http'"
-						>
-						</template>
-					</div>
-				</div>
-
-				<!-- 右侧区域 -->
-				<div
-					v-if="settings.showSidebar"
-					class="left-section position-right"
-					:class="{
-						'is-collapsed': settings.isCollapsed,
-						'is-collapsible': settings.isCollapsible,
+						'position-right': settings.sidebarPosition !== 'left',
 					}"
 					:style="{
 						width: settings.isCollapsed
@@ -561,9 +199,7 @@
 										<el-button
 											link
 											size="small"
-											@click="
-												workspaceStore.handleCreateCollection
-											"
+											@click="handleAddFolder"
 										>
 											<el-icon><Plus /></el-icon>
 										</el-button>
@@ -581,9 +217,86 @@
 					</div>
 				</div>
 			</template>
+
+			<!-- 主内容 -->
+			<div class="main-content">
+				<!-- 标签页管理器 -->
+				<TabManager
+					v-model="activeTab"
+					:tabs="tabs"
+					:unsaved-tabs="unsavedTabsSet"
+					:position="settings.tabsPosition"
+					@add="addTab"
+					@remove="removeTab"
+				/>
+
+				<!-- 请求和响应区域包装器 -->
+				<div class="request-response-wrapper">
+					<template v-if="tabs.length === 0">
+						<!-- 空状态提示 -->
+						<div class="empty-state">
+							<el-empty>
+								<template #description>
+									<h3>
+										{{
+											t("request.panel.emptyState.title")
+										}}
+									</h3>
+									<p>
+										{{
+											t(
+												"request.panel.emptyState.description"
+											)
+										}}
+									</p>
+								</template>
+								<template #default>
+									<el-button
+										type="primary"
+										@click="createNewRequest"
+									>
+										{{
+											t(
+												"request.panel.emptyState.createNew"
+											)
+										}}
+									</el-button>
+								</template>
+							</el-empty>
+						</div>
+					</template>
+					<template
+						v-else-if="currentTab && currentTab.type === 'rpc'"
+					>
+						<div class="request-workspace">
+							<keep-alive>
+								<RpcRequestRegion
+									:key="currentTab.id"
+									:tab-id="currentTab.id"
+									:request-type="currentTab.type"
+									@update:unsaved="
+										(value: any) =>
+											currentTab?.id &&
+											handleUnsavedChange(
+												currentTab.id,
+												value
+											)
+									"
+									@save="saveRequest"
+									@name-change="handleNameChange"
+								/>
+							</keep-alive>
+						</div>
+					</template>
+					<template
+						v-else-if="currentTab && currentTab.type === 'http'"
+					>
+					</template>
+				</div>
+			</div>
 		</div>
 
-		<!-- 请类型选择对话框 -->
+		<!-- 请求类型选择对话框 -->
 		<el-dialog
 			v-model="showRequestTypeDialog"
 			:title="t('request.panel.requestType.title')"
@@ -654,7 +367,7 @@
 	import { HistoryItem } from "../types";
 	import FolderManager from "./FolderManager.vue";
 	import TabManager from "./tabs/TabManager.vue";
-
+	// import Collections from "./Collections.vue";
 	const workspaceStore = useWorkspaceStore();
 
 	const { t } = useI18n();
@@ -1021,35 +734,37 @@
 		},
 		{ deep: true }
 	);
-	// const handleAddFolder = async () => {
-	//   try {
-	//     const { value: folderName } = await ElMessageBox.prompt(
-	//       t("request.panel.sidebar.collections.newFolder"),
-	//       t("request.panel.sidebar.collections.addFolder"),
-	//       {
-	//         confirmButtonText: t("common.confirm"),
-	//         cancelButtonText: t("common.cancel"),
-	//         inputValidator: (value) => {
-	//           if (!value) {
-	//             return t("common.validation.required");
-	//           }
-	//           return true;
-	//         },
-	//       }
-	//     );
+	const handleAddFolder = async () => {
+		try {
+			const { value: folderName } = await ElMessageBox.prompt(
+				t("request.panel.sidebar.collections.newFolder"),
+				t("request.panel.sidebar.collections.addFolder"),
+				{
+					confirmButtonText: t("common.confirm"),
+					cancelButtonText: t("common.cancel"),
+					inputValidator: (value) => {
+						if (!value) {
+							return t("common.validation.required");
+						}
+						return true;
+					},
+				}
+			);
 
-	//     if (folderName) {
-	//       const folder = addFolder(folderName.trim());
-	//       console.log("Folder created:", folder);
-	//       ElMessage.success(t("common.success"));
-	//     }
-	//   } catch (error) {
-	//     console.error("Error creating folder:", error);
-	//     if (error !== "cancel") {
-	//       ElMessage.error(t("common.error"));
-	//     }
-	//   }
-	// };
+			if (folderName) {
+				// const folder = addFolder(folderName.trim());
+				// console.log("Folder created:", folder);
+				// ElMessage.success(t("common.success"));
+				workspaceStore.collectionName = folderName.trim();
+				workspaceStore.handleCreateCollection();
+			}
+		} catch (error) {
+			console.error("Error creating folder:", error);
+			if (error !== "cancel") {
+				ElMessage.error(t("common.error"));
+			}
+		}
+	};
 
 	// 处理在件夹中创建新请
 	const handleCreateRequest = (folderId: string) => {
@@ -1176,7 +891,7 @@
 			// 保存到本地存储
 			localStorage.setItem("layoutSettings", JSON.stringify(newSettings));
 
-			// 应用布相关的 CSS 变量
+			// 应用布��关的 CSS 变量
 			document.documentElement.style.setProperty(
 				"--sidebar-width",
 				`${newSettings.sidebarWidth}px`
@@ -1233,7 +948,7 @@
 		border-right: none;
 	}
 
-	/* 确保主内容区域正确响应侧边栏位置 */
+	/* 确保主内容区域正确响应侧边��位置 */
 	.main-content {
 		flex: 1;
 		display: flex;
@@ -1724,7 +1439,7 @@
 		opacity: 1;
 	}
 
-	/* 文件夹和请求项的图标 */
+	/* 文件夹和请��项的图标 */
 	:deep(.folder-item .el-icon),
 	:deep(.request-item .el-icon) {
 		color: var(--text-secondary);

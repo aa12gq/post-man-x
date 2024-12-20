@@ -24,3 +24,14 @@ export interface Collection {
   collection_id: string;
   created_at: string;
 }
+
+export interface GetAllWorkspaceResponse {
+  list: Workspace[];
+}
+
+export interface Workspace {
+  id: string;
+  name: string;
+  description: string;
+  owner_id: string;
+}

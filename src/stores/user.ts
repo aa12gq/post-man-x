@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { PersistenceOptions } from 'pinia-plugin-persistedstate'
 import { ref } from 'vue'
 import { post } from '../api/fetch'
 import { $t } from '../i18n'
@@ -17,7 +16,6 @@ export const useUserStore = defineStore('user', () => {
     username: "",
     password: ""
   })
-
 
   const handleRegister = async () => {
     try {
@@ -51,12 +49,16 @@ export const useUserStore = defineStore('user', () => {
     handleRegister,
     handleLogin
   }
-},
-  {
-    persist: {
-      key: 'token',
-      storage: localStorage,
-      paths: ['token']
-    } as PersistenceOptions,
-  }
-);
+}, {
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'token',
+        storage: localStorage,
+        paths: ['token'],
+      },
+    ],
+  },
+});
+

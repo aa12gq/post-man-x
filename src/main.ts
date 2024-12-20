@@ -1,19 +1,19 @@
-import './monaco-config'
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import App from './App.vue'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import './styles/dark.css'
-import router from './router'
-import { useThemeStore } from './stores/theme'
-import { setupI18n } from './i18n'
-import './assets/styles/global.css'
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import { createPinia } from 'pinia';
+import piniaPluginPersist from 'pinia-plugin-persist';
+import { createApp } from 'vue';
+import App from './App.vue';
+import './assets/styles/global.css';
+import { setupI18n } from './i18n';
+import './monaco-config';
+import router from './router';
+import { useThemeStore } from './stores/theme';
+import './styles/dark.css';
 
 const app = createApp(App)
 const pinia = createPinia()
-pinia.use(piniaPluginPersistedstate)
+pinia.use(piniaPluginPersist)
 app.use(pinia)
 app.use(ElementPlus)
 app.use(router)
