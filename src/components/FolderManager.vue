@@ -560,10 +560,6 @@
 
 					if (name) {
 						// addFolder(name.trim(), folder.id);
-						workspaceStore.handleCreateFolder(
-							name.trim(),
-							folder.collection_id
-						);
 					}
 				} catch {}
 				break;
