@@ -1,19 +1,17 @@
 <template>
-  <div
-    class="min-h-screen w-full py-16 px-8 relative overflow-x-hidden sm:py-8 sm:px-4"
-  >
+  <div class="min-h-screen w-full py-16 px-8 relative overflow-x-hidden sm:py-8 sm:px-4">
     <!-- 背景装饰 -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
       <div
         class="absolute w-[800px] aspect-square rounded-full opacity-10 -top-[400px] -right-[200px] animate-float"
         :style="{
-          background: `linear-gradient(to bottom right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`
+          background: `linear-gradient(to bottom right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
         }"
       ></div>
       <div
         class="absolute w-[600px] aspect-square rounded-full opacity-10 -bottom-[300px] -left-[150px] animate-float delay-[5s]"
         :style="{
-          background: `linear-gradient(to bottom right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`
+          background: `linear-gradient(to bottom right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
         }"
       ></div>
     </div>
@@ -24,32 +22,30 @@
     >
       <!-- Logo 区域 -->
       <div class="flex flex-col items-center gap-4 mb-12">
-        <LogoIcon 
+        <LogoIcon
           class="w-16 h-16 animate-bounce"
           :style="{ color: themeStore.currentTheme.colors.primary }"
         />
         <div class="flex flex-col items-center gap-3">
           <h1
             class="text-4xl sm:text-3xl m-0"
-            :style="{ 
+            :style="{
               background: `linear-gradient(to right, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
+              backgroundClip: 'text',
             }"
           >
-            {{ t("home.title") }}
+            {{ t('home.title') }}
           </h1>
           <p class="text-lg sm:text-base text-text-secondary m-0">
-            {{ t("home.subtitle") }}
+            {{ t('home.subtitle') }}
           </p>
         </div>
       </div>
 
       <!-- 特性展示区 -->
-      <div
-        class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6 my-12 mx-auto max-w-4xl"
-      >
+      <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6 my-12 mx-auto max-w-4xl">
         <FeatureCard
           v-for="(feature, index) in features"
           :key="index"
@@ -57,35 +53,29 @@
           :title="t(feature.titleKey)"
           :description="t(feature.descKey)"
           :style="{
-            '--card-gradient': `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`
+            '--card-gradient': `linear-gradient(45deg, ${themeStore.currentTheme.colors.primary}, ${themeStore.currentTheme.colors.success})`,
           }"
           class="feature-card"
         />
       </div>
 
       <!-- 操作按钮 -->
-      <div
-        class="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center"
-      >
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
         <el-button
           type="primary"
           size="large"
           class="flex items-center justify-center gap-2 px-6 py-3 group"
           @click="$router.push('/request')"
         >
-          <span>{{ t("home.getStarted") }}</span>
+          <span>{{ t('home.getStarted') }}</span>
           <el-icon class="transition-transform group-hover:translate-x-1">
             <ArrowRight />
           </el-icon>
         </el-button>
         <el-button size="large" @click="handleLearnMore">
-          {{ t("home.learnMore") }}
+          {{ t('home.learnMore') }}
         </el-button>
-        <el-button
-          type="info"
-          size="large"
-          @click="$router.push('/theme-test')"
-        >
+        <el-button type="info" size="large" @click="$router.push('/theme-test')">
           主题测试
         </el-button>
       </div>
@@ -94,52 +84,52 @@
 </template>
 
 <script setup lang="ts">
-import LogoIcon from "../components/icons/LogoIcon.vue";
-import FeatureCard from "../components/home/FeatureCard.vue";
-import { ArrowRight } from "@element-plus/icons-vue";
-import { useI18n } from "vue-i18n";
-import { useThemeStore } from "../stores/theme";
+import LogoIcon from '../components/icons/LogoIcon.vue'
+import FeatureCard from '../components/home/FeatureCard.vue'
+import { ArrowRight } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+import { useThemeStore } from '../stores/theme'
 
-const { t } = useI18n();
-const themeStore = useThemeStore();
+const { t } = useI18n()
+const themeStore = useThemeStore()
 
 // 特性列表数据
 const features = [
   {
-    icon: "Connection",
-    titleKey: "home.features.list.grpcFirst.title",
-    descKey: "home.features.list.grpcFirst.desc",
+    icon: 'Connection',
+    titleKey: 'home.features.list.grpcFirst.title',
+    descKey: 'home.features.list.grpcFirst.desc',
   },
   {
-    icon: "Box",
-    titleKey: "home.features.list.workspaces.title",
-    descKey: "home.features.list.workspaces.desc",
+    icon: 'Box',
+    titleKey: 'home.features.list.workspaces.title',
+    descKey: 'home.features.list.workspaces.desc',
   },
   {
-    icon: "Collection",
-    titleKey: "home.features.list.collections.title",
-    descKey: "home.features.list.collections.desc",
+    icon: 'Collection',
+    titleKey: 'home.features.list.collections.title',
+    descKey: 'home.features.list.collections.desc',
   },
   {
-    icon: "Document",
-    titleKey: "home.features.list.protoExplorer.title",
-    descKey: "home.features.list.protoExplorer.desc",
+    icon: 'Document',
+    titleKey: 'home.features.list.protoExplorer.title',
+    descKey: 'home.features.list.protoExplorer.desc',
   },
   {
-    icon: "Monitor",
-    titleKey: "home.features.list.debugTools.title",
-    descKey: "home.features.list.debugTools.desc",
+    icon: 'Monitor',
+    titleKey: 'home.features.list.debugTools.title',
+    descKey: 'home.features.list.debugTools.desc',
   },
   {
-    icon: "Link",
-    titleKey: "home.features.list.httpSupport.title",
-    descKey: "home.features.list.httpSupport.desc",
+    icon: 'Link',
+    titleKey: 'home.features.list.httpSupport.title',
+    descKey: 'home.features.list.httpSupport.desc',
   },
-];
+]
 
 const handleLearnMore = () => {
-  window.open("https://github.com/vtyug/rpc-master", "_blank");
-};
+  window.open('https://github.com/vtyug/rpc-master', '_blank')
+}
 </script>
 
 <style>
@@ -183,7 +173,7 @@ const handleLearnMore = () => {
 }
 
 /* 确保渐变文字有平滑过渡 */
-[style*="background-clip: text"] {
+[style*='background-clip: text'] {
   transition: all 0.3s ease;
 }
 

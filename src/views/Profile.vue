@@ -56,21 +56,11 @@
             <!-- 粒子效果 -->
             <div class="absolute inset-0">
               <div class="particle-container">
-                <div
-                  class="particle bg-[#0EA5E9]/60 w-1.5 h-1.5 shadow-[0_0_5px_#0EA5E9]"
-                ></div>
-                <div
-                  class="particle bg-[#4F46E5]/60 w-2 h-2 shadow-[0_0_5px_#4F46E5]"
-                ></div>
-                <div
-                  class="particle bg-[#0EA5E9]/50 w-2.5 h-2.5 shadow-[0_0_5px_#0EA5E9]"
-                ></div>
-                <div
-                  class="particle bg-[#4F46E5]/50 w-1.5 h-1.5 shadow-[0_0_5px_#4F46E5]"
-                ></div>
-                <div
-                  class="particle bg-[#0EA5E9]/40 w-2 h-2 shadow-[0_0_5px_#0EA5E9]"
-                ></div>
+                <div class="particle bg-[#0EA5E9]/60 w-1.5 h-1.5 shadow-[0_0_5px_#0EA5E9]"></div>
+                <div class="particle bg-[#4F46E5]/60 w-2 h-2 shadow-[0_0_5px_#4F46E5]"></div>
+                <div class="particle bg-[#0EA5E9]/50 w-2.5 h-2.5 shadow-[0_0_5px_#0EA5E9]"></div>
+                <div class="particle bg-[#4F46E5]/50 w-1.5 h-1.5 shadow-[0_0_5px_#4F46E5]"></div>
+                <div class="particle bg-[#0EA5E9]/40 w-2 h-2 shadow-[0_0_5px_#0EA5E9]"></div>
               </div>
             </div>
           </div>
@@ -128,9 +118,7 @@
                       />
                     </template>
                     <template v-else>
-                      <div
-                        class="w-36 h-36 flex items-center justify-center bg-surface-2"
-                      >
+                      <div class="w-36 h-36 flex items-center justify-center bg-surface-2">
                         <el-icon class="text-5xl text-text-secondary">
                           <UserFilled />
                         </el-icon>
@@ -141,9 +129,7 @@
                       class="absolute inset-0 bg-surface-4/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center backdrop-blur-sm gap-2"
                     >
                       <el-icon class="text-2xl text-text"><Camera /></el-icon>
-                      <span class="text-xs text-text-secondary"
-                        >Change Avatar</span
-                      >
+                      <span class="text-xs text-text-secondary">Change Avatar</span>
                     </div>
                   </div>
                 </el-upload>
@@ -164,25 +150,15 @@
                 {{ userData.username }}
               </h1>
               <div class="flex items-center gap-2">
-                <el-tag
-                  size="small"
-                  type="success"
-                  effect="dark"
-                  class="!border-0"
-                  >{{ userData.membership }}</el-tag
-                >
-                <el-tag
-                  size="small"
-                  type="warning"
-                  effect="dark"
-                  class="!border-0"
-                  >{{ userData.role }}</el-tag
-                >
+                <el-tag size="small" type="success" effect="dark" class="!border-0">{{
+                  userData.membership
+                }}</el-tag>
+                <el-tag size="small" type="warning" effect="dark" class="!border-0">{{
+                  userData.role
+                }}</el-tag>
               </div>
             </div>
-            <p
-              class="text-text-secondary text-lg font-light mb-8 flex items-center gap-2"
-            >
+            <p class="text-text-secondary text-lg font-light mb-8 flex items-center gap-2">
               <el-icon><Message /></el-icon>
               {{ userData.email }}
             </p>
@@ -195,9 +171,7 @@
                   }}</span>
                   <div class="stat-trend success">+12.5%</div>
                 </div>
-                <div class="text-sm text-text-secondary font-light">
-                  Requests
-                </div>
+                <div class="text-sm text-text-secondary font-light">Requests</div>
               </div>
               <div class="stat-divider">
                 <div class="stat-divider-line"></div>
@@ -210,9 +184,7 @@
                   }}</span>
                   <div class="stat-trend success">+5.2%</div>
                 </div>
-                <div class="text-sm text-text-secondary font-light">
-                  Collections
-                </div>
+                <div class="text-sm text-text-secondary font-light">Collections</div>
               </div>
               <div class="stat-divider">
                 <div class="stat-divider-line"></div>
@@ -225,9 +197,7 @@
                   }}</span>
                   <div class="stat-trend warning">-2.1%</div>
                 </div>
-                <div class="text-sm text-text-secondary font-light">
-                  Workspaces
-                </div>
+                <div class="text-sm text-text-secondary font-light">Workspaces</div>
               </div>
             </div>
           </div>
@@ -245,9 +215,7 @@
             class="bg-surface-2/50 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-border transition-all duration-300 hover:bg-surface-2/70"
           >
             <div class="p-6 relative">
-              <h3 class="text-base font-medium text-text mb-4">
-                Quick Actions
-              </h3>
+              <h3 class="text-base font-medium text-text mb-4">Quick Actions</h3>
               <div class="grid grid-cols-2 gap-3">
                 <button
                   v-for="action in quickActions"
@@ -271,9 +239,7 @@
             class="bg-surface-2/50 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-border transition-all duration-300 hover:bg-surface-2/70"
           >
             <div class="p-6 relative">
-              <h3
-                class="text-base font-medium text-text mb-6 flex items-center gap-2"
-              >
+              <h3 class="text-base font-medium text-text mb-6 flex items-center gap-2">
                 <el-icon class="text-[#0EA5E9]"><Timer /></el-icon>
                 Recent Activities
               </h3>
@@ -314,9 +280,7 @@
             class="bg-surface-2/50 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-border transition-all duration-300 hover:bg-surface-2/70"
           >
             <div class="p-6 relative">
-              <h3
-                class="text-base font-medium text-text mb-6 flex items-center gap-2"
-              >
+              <h3 class="text-base font-medium text-text mb-6 flex items-center gap-2">
                 <el-icon class="text-[#0EA5E9]"><User /></el-icon>
                 Basic Information
               </h3>
@@ -329,12 +293,7 @@
                   />
                 </el-form-item>
                 <el-form-item label="Email">
-                  <el-input
-                    v-model="form.email"
-                    type="email"
-                    disabled
-                    class="profile-input"
-                  />
+                  <el-input v-model="form.email" type="email" disabled class="profile-input" />
                 </el-form-item>
                 <el-form-item label="Bio">
                   <el-input
@@ -363,9 +322,7 @@
             class="bg-surface-2/50 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-border transition-all duration-300 hover:bg-surface-2/70"
           >
             <div class="p-6 relative">
-              <h3
-                class="text-base font-medium text-text mb-6 flex items-center gap-2"
-              >
+              <h3 class="text-base font-medium text-text mb-6 flex items-center gap-2">
                 <el-icon class="text-[#4F46E5]"><Lock /></el-icon>
                 Security
               </h3>
@@ -400,30 +357,17 @@
                     @click="showPasswordChange = !showPasswordChange"
                   >
                     <el-icon class="mr-1"><Edit /></el-icon>
-                    {{ showPasswordChange ? "Cancel" : "Change" }}
+                    {{ showPasswordChange ? 'Cancel' : 'Change' }}
                   </el-button>
                 </div>
 
                 <!-- 密码修改流程 -->
                 <div v-show="showPasswordChange" class="space-y-6 mt-4">
                   <!-- 步骤指示器 -->
-                  <el-steps
-                    :active="currentStep"
-                    finish-status="success"
-                    class="mb-8"
-                  >
-                    <el-step
-                      title="Current Password"
-                      description="Verify your identity"
-                    />
-                    <el-step
-                      title="New Password"
-                      description="Set a strong password"
-                    />
-                    <el-step
-                      title="Confirm"
-                      description="Verify new password"
-                    />
+                  <el-steps :active="currentStep" finish-status="success" class="mb-8">
+                    <el-step title="Current Password" description="Verify your identity" />
+                    <el-step title="New Password" description="Set a strong password" />
+                    <el-step title="Confirm" description="Verify new password" />
                   </el-steps>
 
                   <el-form
@@ -435,10 +379,7 @@
                   >
                     <!-- 当前密码 -->
                     <div v-show="currentStep === 0">
-                      <el-form-item
-                        prop="currentPassword"
-                        label="Current Password"
-                      >
+                      <el-form-item prop="currentPassword" label="Current Password">
                         <el-input
                           v-model="passwordForm.currentPassword"
                           type="password"
@@ -461,12 +402,8 @@
                         <!-- 密码强度指示器 -->
                         <div class="mt-4">
                           <div class="flex items-center justify-between">
-                            <span class="text-sm text-text-secondary"
-                              >Password Strength</span
-                            >
-                            <span class="text-sm" :class="strengthColor">{{
-                              strengthText
-                            }}</span>
+                            <span class="text-sm text-text-secondary">Password Strength</span>
+                            <span class="text-sm" :class="strengthColor">{{ strengthText }}</span>
                           </div>
                           <div class="h-1.5 bg-surface-2 rounded-full mt-2">
                             <div
@@ -481,9 +418,7 @@
                               v-for="(req, key) in requirements"
                               :key="key"
                               class="flex items-center gap-2"
-                              :class="
-                                req.met ? 'text-success' : 'text-text-secondary'
-                              "
+                              :class="req.met ? 'text-success' : 'text-text-secondary'"
                             >
                               <el-icon><Check /></el-icon>
                               <span class="text-sm">{{ req.text }}</span>
@@ -495,10 +430,7 @@
 
                     <!-- 确认密码 -->
                     <div v-show="currentStep === 2">
-                      <el-form-item
-                        prop="confirmPassword"
-                        label="Confirm Password"
-                      >
+                      <el-form-item prop="confirmPassword" label="Confirm Password">
                         <el-input
                           v-model="passwordForm.confirmPassword"
                           type="password"
@@ -510,20 +442,14 @@
 
                     <!-- 操作按钮 -->
                     <div class="flex justify-end gap-2 mt-6">
-                      <el-button v-if="currentStep > 0" @click="currentStep--"
-                        >Previous</el-button
-                      >
+                      <el-button v-if="currentStep > 0" @click="currentStep--">Previous</el-button>
                       <el-button
                         type="primary"
                         :loading="changing"
                         :disabled="!canProceed"
-                        @click="
-                          currentStep === 2
-                            ? handleChangePassword()
-                            : nextStep()
-                        "
+                        @click="currentStep === 2 ? handleChangePassword() : nextStep()"
                       >
-                        {{ currentStep === 2 ? "Confirm Change" : "Next" }}
+                        {{ currentStep === 2 ? 'Confirm Change' : 'Next' }}
                       </el-button>
                     </div>
                   </el-form>
@@ -555,225 +481,222 @@ import {
   Key,
   Timer,
   Monitor,
-} from "@element-plus/icons-vue";
-import { ref, computed } from "vue";
-import { ElMessage } from "element-plus";
+} from '@element-plus/icons-vue'
+import { ref, computed } from 'vue'
+import { ElMessage } from 'element-plus'
 
 const userData = ref({
-  username: "VT YUG",
-  email: "vtyug@gmail.com",
+  username: 'VT YUG',
+  email: 'vtyug@gmail.com',
   avatar:
-    "https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-  membership: "Pro",
-  role: "Admin",
-  bio: "Full-stack developer passionate about creating amazing tools",
+    'https://images.pexels.com/photos/9072343/pexels-photo-9072343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+  membership: 'Pro',
+  role: 'Admin',
+  bio: 'Full-stack developer passionate about creating amazing tools',
   stats: {
-    requests: "2.5k",
+    requests: '2.5k',
     collections: 36,
     workspaces: 12,
   },
-});
+})
 
 const quickActions = [
   {
-    label: "New Collection",
+    label: 'New Collection',
     icon: Collection,
-    iconColor: "text-blue-500",
+    iconColor: 'text-blue-500',
   },
   {
-    label: "New Workspace",
+    label: 'New Workspace',
     icon: FolderAdd,
-    iconColor: "text-green-500",
+    iconColor: 'text-green-500',
   },
   {
-    label: "Share Profile",
+    label: 'Share Profile',
     icon: Share,
-    iconColor: "text-purple-500",
+    iconColor: 'text-purple-500',
   },
   {
-    label: "Settings",
+    label: 'Settings',
     icon: Setting,
-    iconColor: "text-orange-500",
+    iconColor: 'text-orange-500',
   },
-];
+]
 
 const recentActivities = [
   {
     title: 'Created new collection "API Testing"',
-    time: "2 hours ago",
+    time: '2 hours ago',
     icon: Collection,
-    iconBg: "bg-blue-500/10",
-    iconColor: "text-blue-500",
+    iconBg: 'bg-blue-500/10',
+    iconColor: 'text-blue-500',
   },
   {
-    title: "Updated workspace settings",
-    time: "5 hours ago",
+    title: 'Updated workspace settings',
+    time: '5 hours ago',
     icon: Setting,
-    iconBg: "bg-orange-500/10",
-    iconColor: "text-orange-500",
+    iconBg: 'bg-orange-500/10',
+    iconColor: 'text-orange-500',
   },
   {
-    title: "Shared collection with team",
-    time: "Yesterday",
+    title: 'Shared collection with team',
+    time: 'Yesterday',
     icon: Share,
-    iconBg: "bg-purple-500/10",
-    iconColor: "text-purple-500",
+    iconBg: 'bg-purple-500/10',
+    iconColor: 'text-purple-500',
   },
   {
-    title: "Created new environment",
-    time: "2 days ago",
+    title: 'Created new environment',
+    time: '2 days ago',
     icon: Monitor,
-    iconBg: "bg-green-500/10",
-    iconColor: "text-green-500",
+    iconBg: 'bg-green-500/10',
+    iconColor: 'text-green-500',
   },
-];
+]
 
 const handleAvatarSuccess = (response: { url: string }) => {
-  userData.value.avatar = response.url;
-};
+  userData.value.avatar = response.url
+}
 
 const saveProfile = () => {
-  console.log("saveProfile");
-};
+  console.log('saveProfile')
+}
 
 const form = ref({
   username: userData.value.username,
   email: userData.value.email,
   bio: userData.value.bio,
-});
+})
 
 const security = ref({
   twoFactor: false,
-  passwordLastChanged: "2 months ago",
-  lastLogin: "2 hours ago",
+  passwordLastChanged: '2 months ago',
+  lastLogin: '2 hours ago',
   connectedDevices: 3,
-});
+})
 
-const showPasswordChange = ref(false);
-const changing = ref(false);
-const passwordFormRef = ref();
+const showPasswordChange = ref(false)
+const changing = ref(false)
+const passwordFormRef = ref()
 const passwordForm = ref({
-  currentPassword: "",
-  newPassword: "",
-  confirmPassword: "",
-});
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
 
 const passwordRules = {
-  currentPassword: [
-    { required: true, message: "Please input current password" },
-  ],
+  currentPassword: [{ required: true, message: 'Please input current password' }],
   newPassword: [
-    { required: true, message: "Please input new password" },
-    { min: 8, message: "Password must be at least 8 characters" },
+    { required: true, message: 'Please input new password' },
+    { min: 8, message: 'Password must be at least 8 characters' },
   ],
   confirmPassword: [
-    { required: true, message: "Please confirm new password" },
+    { required: true, message: 'Please confirm new password' },
     {
       validator: (_rule: any, value: string, callback: Function) => {
         if (value !== passwordForm.value.newPassword) {
-          callback(new Error("Passwords do not match"));
+          callback(new Error('Passwords do not match'))
         } else {
-          callback();
+          callback()
         }
       },
     },
   ],
-};
+}
 
-const currentStep = ref(0);
-const strengthScore = ref(0);
+const currentStep = ref(0)
+const strengthScore = ref(0)
 const requirements = ref({
-  length: { met: false, text: "At least 8 characters" },
-  uppercase: { met: false, text: "Contains uppercase letter" },
-  lowercase: { met: false, text: "Contains lowercase letter" },
-  number: { met: false, text: "Contains number" },
-  special: { met: false, text: "Contains special character" },
-});
+  length: { met: false, text: 'At least 8 characters' },
+  uppercase: { met: false, text: 'Contains uppercase letter' },
+  lowercase: { met: false, text: 'Contains lowercase letter' },
+  number: { met: false, text: 'Contains number' },
+  special: { met: false, text: 'Contains special character' },
+})
 
 const strengthText = computed(() => {
-  if (strengthScore.value === 0) return "Very Weak";
-  if (strengthScore.value === 1) return "Weak";
-  if (strengthScore.value === 2) return "Medium";
-  if (strengthScore.value === 3) return "Strong";
-  return "Very Strong";
-});
+  if (strengthScore.value === 0) return 'Very Weak'
+  if (strengthScore.value === 1) return 'Weak'
+  if (strengthScore.value === 2) return 'Medium'
+  if (strengthScore.value === 3) return 'Strong'
+  return 'Very Strong'
+})
 
 const strengthColor = computed(() => {
-  if (strengthScore.value <= 1) return "text-error";
-  if (strengthScore.value === 2) return "text-warning";
-  return "text-success";
-});
+  if (strengthScore.value <= 1) return 'text-error'
+  if (strengthScore.value === 2) return 'text-warning'
+  return 'text-success'
+})
 
 const strengthBarClass = computed(() => {
-  if (strengthScore.value <= 1) return "bg-error";
-  if (strengthScore.value === 2) return "bg-warning";
-  return "bg-success";
-});
+  if (strengthScore.value <= 1) return 'bg-error'
+  if (strengthScore.value === 2) return 'bg-warning'
+  return 'bg-success'
+})
 
 const canProceed = computed(() => {
-  if (currentStep.value === 0)
-    return passwordForm.value.currentPassword.length >= 6;
-  if (currentStep.value === 1) return strengthScore.value >= 2;
-  return passwordForm.value.newPassword === passwordForm.value.confirmPassword;
-});
+  if (currentStep.value === 0) return passwordForm.value.currentPassword.length >= 6
+  if (currentStep.value === 1) return strengthScore.value >= 2
+  return passwordForm.value.newPassword === passwordForm.value.confirmPassword
+})
 
 const checkPasswordStrength = () => {
-  const password = passwordForm.value.newPassword;
-  let score = 0;
+  const password = passwordForm.value.newPassword
+  let score = 0
 
-  requirements.value.length.met = password.length >= 8;
-  if (requirements.value.length.met) score++;
+  requirements.value.length.met = password.length >= 8
+  if (requirements.value.length.met) score++
 
-  requirements.value.uppercase.met = /[A-Z]/.test(password);
-  if (requirements.value.uppercase.met) score++;
+  requirements.value.uppercase.met = /[A-Z]/.test(password)
+  if (requirements.value.uppercase.met) score++
 
-  requirements.value.lowercase.met = /[a-z]/.test(password);
-  if (requirements.value.lowercase.met) score++;
+  requirements.value.lowercase.met = /[a-z]/.test(password)
+  if (requirements.value.lowercase.met) score++
 
-  requirements.value.number.met = /[0-9]/.test(password);
-  if (requirements.value.number.met) score++;
+  requirements.value.number.met = /[0-9]/.test(password)
+  if (requirements.value.number.met) score++
 
-  requirements.value.special.met = /[^A-Za-z0-9]/.test(password);
-  if (requirements.value.special.met) score++;
+  requirements.value.special.met = /[^A-Za-z0-9]/.test(password)
+  if (requirements.value.special.met) score++
 
-  strengthScore.value = Math.min(4, Math.floor(score / 2));
-};
+  strengthScore.value = Math.min(4, Math.floor(score / 2))
+}
 
 const nextStep = async () => {
   if (currentStep.value === 0) {
     // 验证当前密码
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    currentStep.value++;
+    await new Promise(resolve => setTimeout(resolve, 500))
+    currentStep.value++
   } else if (currentStep.value === 1 && strengthScore.value >= 2) {
-    currentStep.value++;
+    currentStep.value++
   }
-};
+}
 
 const handleChangePassword = async () => {
-  if (!passwordFormRef.value) return;
+  if (!passwordFormRef.value) return
 
   try {
-    await passwordFormRef.value.validate();
-    changing.value = true;
+    await passwordFormRef.value.validate()
+    changing.value = true
 
     // 模拟API调用
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
-    ElMessage.success("Password changed successfully");
-    showPasswordChange.value = false;
-    currentStep.value = 0;
+    ElMessage.success('Password changed successfully')
+    showPasswordChange.value = false
+    currentStep.value = 0
     passwordForm.value = {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    };
-    strengthScore.value = 0;
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    }
+    strengthScore.value = 0
   } catch (error) {
-    console.error(error);
+    console.error(error)
   } finally {
-    changing.value = false;
+    changing.value = false
   }
-};
+}
 </script>
 
 <style scoped>
@@ -883,12 +806,8 @@ const handleChangePassword = async () => {
 
 .glass-card::before {
   @apply absolute inset-0 rounded-2xl;
-  content: "";
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
+  content: '';
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   transform: translateZ(-1px);
 }
 
@@ -942,10 +861,10 @@ const handleChangePassword = async () => {
 @keyframes wave {
   0%,
   100% {
-    d: path("M0,50 Q25,45 50,50 T100,50 V100 H0 Z");
+    d: path('M0,50 Q25,45 50,50 T100,50 V100 H0 Z');
   }
   50% {
-    d: path("M0,50 Q25,55 50,50 T100,50 V100 H0 Z");
+    d: path('M0,50 Q25,55 50,50 T100,50 V100 H0 Z');
   }
 }
 
@@ -991,14 +910,14 @@ const handleChangePassword = async () => {
 
 /* 状网格背景 */
 .bg-dot-pattern {
-  background-image: radial-gradient(
-      circle,
-      currentColor 0.5px,
-      transparent 0.5px
-    ),
+  background-image: radial-gradient(circle, currentColor 0.5px, transparent 0.5px),
     radial-gradient(circle, currentColor 0.5px, transparent 0.5px);
-  background-size: 24px 24px, 36px 36px;
-  background-position: 0 0, 12px 12px;
+  background-size:
+    24px 24px,
+    36px 36px;
+  background-position:
+    0 0,
+    12px 12px;
 }
 
 /* 线条动画 */
@@ -1047,11 +966,11 @@ const handleChangePassword = async () => {
 @keyframes wave {
   0%,
   100% {
-    d: path("M0,60 Q25,55 50,60 T100,60 V100 H0 Z");
+    d: path('M0,60 Q25,55 50,60 T100,60 V100 H0 Z');
     transform: translateX(0);
   }
   50% {
-    d: path("M0,60 Q25,65 50,60 T100,60 V100 H0 Z");
+    d: path('M0,60 Q25,65 50,60 T100,60 V100 H0 Z');
     transform: translateX(-2%);
   }
 }
@@ -1082,23 +1001,19 @@ const handleChangePassword = async () => {
 }
 
 .bg-gradient-radial {
-  background-image: radial-gradient(
-    circle,
-    var(--tw-gradient-from) 0%,
-    var(--tw-gradient-to) 70%
-  );
+  background-image: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 70%);
 }
 
 /* 优化点状网格 */
 .bg-dot-pattern {
-  background-image: radial-gradient(
-      circle,
-      currentColor 0.5px,
-      transparent 0.5px
-    ),
+  background-image: radial-gradient(circle, currentColor 0.5px, transparent 0.5px),
     radial-gradient(circle, currentColor 0.5px, transparent 0.5px);
-  background-size: 24px 24px, 36px 36px;
-  background-position: 0 0, 12px 12px;
+  background-size:
+    24px 24px,
+    36px 36px;
+  background-position:
+    0 0,
+    12px 12px;
 }
 
 /* 光束动画 */

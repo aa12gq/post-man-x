@@ -21,6 +21,7 @@ release
 
 # Editor directories and files
 .vscode/*
+!.vscode/settings.json
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -66,4 +67,4 @@ Thumbs.db
 # pnpm-lock.yaml
 
 # Application specific
-rpc-request.json 
+rpc-request.json
