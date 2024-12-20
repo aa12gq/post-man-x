@@ -395,7 +395,7 @@
         "imageUploadError": "图片上传失败",
         "imageTips": "图片上传提示",
         "imageTipsContent": "建议上传分辨率不低于 1920x1080 的图片，支持 JPG、PNG 格式",
-        "optimizeImage": "优化���片",
+        "optimizeImage": "优化图片",
         "optimizeSuccess": "图片优化成功",
         "optimizeError": "图片优化失败"
       }
