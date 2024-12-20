@@ -20,8 +20,13 @@ export interface GetCollectionListResponse {
 export interface Collection {
   id: string
   name: string
+  type?: string
+  method?: string
+  request_id?: string
   workspace_id: string
   collection_id: string
+  folder_id?: string
+  kind?: string
   children?: Collection[]
 }
 

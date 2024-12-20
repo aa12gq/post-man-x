@@ -28,16 +28,19 @@ export const useWorkspaceStore = defineStore(
       collection_id: string
       folder_id: string
       name: string
+      type: string
     }>({
       id: '',
       collection_id: '',
       folder_id: '',
       name: '',
+      type: '',
     })
 
     // 弹窗显示
     const dialogVisible = ref({
       addFolder: false,
+      addRequest: false,
     })
 
     // 当前workspace的文件夹列表
@@ -78,7 +81,7 @@ export const useWorkspaceStore = defineStore(
         const resp = await post<ApiResponse<null>>('/folder/create', {
           name: selectedCollectionInfo.value.name,
           collection_id: selectedCollectionInfo.value.collection_id,
-          parent_id: selectedCollectionInfo.value.folder_id,
+          folder_id: selectedCollectionInfo.value.folder_id,
         })
         console.log(resp)
         if (resp.success) {
@@ -101,6 +104,7 @@ export const useWorkspaceStore = defineStore(
         collection_id: '',
         folder_id: '',
         name: '',
+        type: '',
       }
     }
 
@@ -166,6 +170,28 @@ export const useWorkspaceStore = defineStore(
       }
     }
 
+    // 创建request
+    const handleCreateRequest = async () => {
+      try {
+        const data = {
+          name: selectedCollectionInfo.value.name || '',
+          collection_id: selectedCollectionInfo.value.collection_id,
+          folder_id: selectedCollectionInfo.value.folder_id,
+          method: 'GET',
+          type: selectedCollectionInfo.value.type,
+        }
+        const resp = await post<ApiResponse<null>>('/request/create', data)
+        if (resp.success) {
+          displayNotification('创建成功', 'success')
+          initWorkspace()
+          resetSelectedCollectionInfo()
+        }
+      } catch (error) {
+        console.log(error)
+        displayNotification('创建失败', 'error')
+      }
+    }
+
     return {
       folderName,
       createWorkSpaceName,
@@ -177,14 +203,15 @@ export const useWorkspaceStore = defineStore(
       createWorkspacePage,
       selectedCollectionInfo,
       dialogVisible,
+      initWorkspace,
       setCreateWorkspacePage,
       handleCreateWorkspace,
       handleAddFolder,
       handleGetCollectionList,
-      initWorkspace,
       handleCreateCollection,
       handleGetAllWorkspaceList,
       handleGetFolderList,
+      handleCreateRequest,
     }
   },
   {
