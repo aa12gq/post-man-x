@@ -541,7 +541,7 @@ const messages = ref([
     id: 3,
     sender: "Carol White",
     role: "Project Manager",
-    content: "@你 ��于新接口的设计讨论",
+    content: "@你 于新接口的设计讨论",
     type: "mention",
     time: "5小时前",
     workspace: "用户中心",

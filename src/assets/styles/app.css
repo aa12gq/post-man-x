@@ -1,0 +1,319 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 基础变量 - 默认使用 githubLight 主题的颜色 */
+:root {
+  /* 主色调 */
+  --primary-color: theme('colors.blue.600');
+  --primary-light: theme('colors.blue.50');
+  --primary-dark: theme('colors.blue.700');
+
+  /* 背景色系 */
+  --background: theme('colors.white');
+  --background-light: theme('colors.gray.50');
+  --background-dark: theme('colors.gray.100');
+
+  /* 表面色系 */
+  --surface-1: theme('colors.white');
+  --surface-2: theme('colors.gray.50');
+  --surface-3: theme('colors.gray.100');
+  --surface-4: theme('colors.gray.200');
+
+  /* 文字颜色 */
+  --text-color: theme('colors.gray.900');
+  --text-secondary: theme('colors.gray.600');
+
+  /* 边框和分割线 */
+  --border-color: theme('colors.gray.200');
+  --border-active: theme('colors.blue.300');
+
+  /* 交互状态 */
+  --hover-color: theme('colors.gray.50');
+  --selected: theme('colors.blue.50');
+  --selected-hover: theme('colors.blue.100');
+
+  /* 功能色 */
+  --success: theme('colors.green.500');
+  --warning: theme('colors.yellow.500');
+  --danger: theme('colors.red.500');
+  --info: theme('colors.blue.500');
+
+  /* 阴影 */
+  --shadow-color: theme('colors.gray.900/0.1');
+  --header-bg: theme('colors.gray.50');
+}
+
+/* 暗色主题变量 - 使用 githubDark 主题的颜色 */
+:root[data-theme='dark'] {
+  /* 主色调 */
+  --primary-color: theme('colors.blue.400');
+  --primary-light: theme('colors.gray.800');
+  --primary-dark: theme('colors.blue.500');
+
+  /* 背景色系 */
+  --background: #0d1117;
+  --background-light: #161b22;
+  --background-dark: #010409;
+
+  /* 表面色系 */
+  --surface-1: #161b22;
+  --surface-2: #0d1117;
+  --surface-3: #010409;
+  --surface-4: #090c10;
+
+  /* 文字颜色 */
+  --text-color: theme('colors.gray.100');
+  --text-secondary: theme('colors.gray.400');
+
+  /* 边框和分割线 */
+  --border-color: #30363d;
+  --border-active: theme('colors.blue.700');
+
+  /* 交互状态 */
+  --hover-color: #161b22;
+  --selected: theme('colors.blue.900');
+  --selected-hover: theme('colors.blue.800');
+
+  /* 功能色 */
+  --success: #3fb950;
+  --warning: #d29922;
+  --danger: #f85149;
+  --info: #58a6ff;
+
+  /* 阴影 */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --header-bg: #161b22;
+}
+
+/* 护眼主题 */
+:root[data-theme='eye_care'] {
+  --primary-color: #5b8c5a;
+  --primary-light: #f3f6f3;
+  --primary-dark: #3d5e3c;
+  --background: #f0f2eb;
+  --background-light: #f3f6f3;
+  --background-dark: #e6e9e1;
+  --surface-1: #ffffff;
+  --surface-2: #f3f6f3;
+  --surface-3: #e6e9e1;
+  --surface-4: #d1d9cc;
+  --text-color: #2c3338;
+  --text-secondary: #5f6b73;
+  --border-color: #d1d9cc;
+  --hover-color: #f3f6f3;
+  --header-bg: #f3f6f3;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --success: #5b8c5a;
+  --warning: #8c7355;
+  --danger: #8c5a5a;
+  --info: #557b8c;
+}
+
+/* 高对比度主题 */
+:root[data-theme='high_contrast'] {
+  --primary-color: #ffff00;
+  --primary-light: #2a2a2a;
+  --primary-dark: #ffff33;
+  --background: #000000;
+  --background-light: #1a1a1a;
+  --background-dark: #000000;
+  --surface-1: #2a2a2a;
+  --surface-2: #1a1a1a;
+  --surface-3: #0a0a0a;
+  --surface-4: #000000;
+  --text-color: #f0f0f0;
+  --text-secondary: #bfbfbf;
+  --border-color: #ffffff;
+  --hover-color: #2a2a2a;
+  --header-bg: #1a1a1a;
+  --shadow-color: rgba(255, 255, 255, 0.2);
+  --success: #00ff00;
+  --warning: #ffff00;
+  --danger: #ff0000;
+  --info: #00ffff;
+}
+
+/* 全局基础样式 */
+@layer base {
+  html,
+  body {
+    @apply m-0 p-0 h-full;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--background);
+    color: var(--text-color);
+  }
+
+  * {
+    @apply box-border;
+  }
+}
+
+/* 滚动条样式 */
+@layer components {
+  .custom-scrollbar {
+    @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400/50 hover:scrollbar-thumb-gray-400/70;
+  }
+}
+/* Element Plus 暗色主题覆盖 */
+[data-theme='dark'] {
+  --el-bg-color: var(--bg-color);
+  --el-text-color-primary: var(--text-color);
+  --el-border-color: var(--border-color);
+  --el-fill-color-blank: var(--bg-color);
+  --el-bg-color-overlay: var(--header-bg);
+  --el-text-color-regular: var(--text-color);
+  --el-fill-color: var(--hover-color);
+  --el-fill-color-light: var(--hover-color);
+  --el-border-color-light: var(--border-color);
+  --el-border-color-lighter: var(--border-color);
+  --el-mask-color: rgba(0, 0, 0, 0.8);
+
+  /* Select 下拉框 */
+  .el-select-dropdown {
+    background-color: var(--surface-1);
+    border-color: var(--border-color);
+  }
+
+  .el-select-dropdown__item {
+    color: var(--text-color);
+    &.hover,
+    &:hover {
+      background-color: var(--hover-color);
+    }
+    &.selected {
+      background-color: var(--hover-color);
+      color: #409eff;
+    }
+  }
+
+  /* Input 输入框 */
+  .el-input__wrapper {
+    background-color: var(--surface-1);
+    border-color: var(--border-color);
+  }
+
+  .el-input__inner {
+    color: var(--text-color);
+    &::placeholder {
+      color: #909399;
+    }
+  }
+
+  /* Button 按钮 */
+  .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(
+      .el-button--danger
+    ) {
+    background-color: var(--surface-1);
+    border-color: var(--border-color);
+    color: var(--text-color);
+    &:hover {
+      background-color: var(--hover-color);
+    }
+  }
+
+  /* Tabs 标签页 */
+  .el-tabs--border-card {
+    background-color: var(--surface-1);
+    border-color: var(--border-color);
+  }
+
+  .el-tabs__header {
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .el-tabs__item {
+    color: var(--text-color);
+    &.is-active {
+      color: #409eff;
+    }
+  }
+
+  /* Dialog 对话框 */
+  .el-dialog {
+    background-color: var(--surface-1);
+    .el-dialog__header {
+      background-color: var(--header-bg);
+    }
+    .el-dialog__title {
+      color: var(--text-color);
+    }
+    .el-dialog__body {
+      color: var(--text-color);
+    }
+  }
+
+  /* Drawer 抽屉 */
+  .el-drawer {
+    background-color: var(--surface-1);
+    border-color: var(--border-color);
+  }
+
+  .el-drawer__header {
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .el-drawer__body {
+    background-color: var(--surface-1);
+    color: var(--text-color);
+  }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: var(--surface-1);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(144, 147, 153, 0.3);
+    border-radius: 4px;
+    &:hover {
+      background-color: rgba(144, 147, 153, 0.5);
+    }
+  }
+}
+
+/* 重置输入框的 focus 样式 */
+[type='text']:focus,
+input:where(:not([type])):focus,
+[type='email']:focus,
+[type='url']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='date']:focus,
+[type='datetime-local']:focus,
+[type='month']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='time']:focus,
+[type='week']:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: var(--el-color-primary);
+  border-color: var(--el-color-primary);
+  /* 只移除内部边框相关的属性 */
+  --tw-ring-offset-shadow: none;
+  --tw-ring-shadow: none;
+  box-shadow: none;
+}
+
+/* Element Plus 输入框样式 */
+.el-input__wrapper:focus-within,
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--el-color-primary) !important;
+}

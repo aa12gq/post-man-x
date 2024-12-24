@@ -30,82 +30,8 @@ function hexToRgb(hex: string) {
   };
 }
 
-// 默认主题设置
-const defaultLightTheme: Theme = {
-  id: "light",
-  name: "Light",
-  isDark: false,
-  colors: {
-    primary: "#409eff",
-    "primary-light": "#ecf5ff",
-    "primary-dark": "#337ecc",
-    background: "#ffffff",
-    "background-light": "#f5f7fa",
-    "background-dark": "#e4e7ed",
-    "surface-1": "#ffffff",
-    "surface-2": "#f5f7fa",
-    "surface-3": "#f0f2f5",
-    "surface-4": "#e4e7ed",
-    text: "#333333",
-    "text-secondary": "#909399",
-    border: "#dcdfe6",
-    hover: "rgba(64, 158, 255, 0.1)",
-    header: "#f0f2f5",
-    shadow: "rgba(0, 0, 0, 0.1)",
-    success: "#67c23a",
-    warning: "#e6a23c",
-    danger: "#f56c6c",
-    info: "#909399",
-    selected: "rgba(64, 158, 255, 0.15)",
-    "selected-hover": "rgba(64, 158, 255, 0.25)",
-    "border-active": "rgba(64, 158, 255, 0.3)",
-  },
-  backgroundImage: {
-    enabled: false,
-    image: "",
-    blendMode: "normal",
-    opacity: 0.1,
-    type: "image",
-  },
-};
-
-const defaultDarkTheme: Theme = {
-  id: "dark",
-  name: "Dark",
-  isDark: true,
-  colors: {
-    primary: "#409eff",
-    "primary-light": "#18222c",
-    "primary-dark": "#337ecc",
-    background: "#1e1e1e",
-    "background-light": "#252525",
-    "background-dark": "#141414",
-    "surface-1": "#2d2d2d",
-    "surface-2": "#252525",
-    "surface-3": "#1e1e1e",
-    "surface-4": "#181818",
-    text: "#ffffff",
-    "text-secondary": "#a0a0a0",
-    border: "#333333",
-    hover: "rgba(64, 158, 255, 0.15)",
-    header: "#1e1e1e",
-    shadow: "rgba(0, 0, 0, 0.3)",
-    success: "#67c23a",
-    warning: "#e6a23c",
-    danger: "#f56c6c",
-    info: "#909399",
-    selected: "rgba(64, 158, 255, 0.25)",
-    "selected-hover": "rgba(64, 158, 255, 0.35)",
-    "border-active": "rgba(64, 158, 255, 0.4)",
-  },
-  backgroundImage: {
-    enabled: false,
-    image: "",
-    blendMode: "normal",
-    opacity: 0.1,
-    type: "image",
-  },
-};
+const defaultLightTheme = officialThemes[0]
+const defaultDarkTheme = officialThemes[4]
 
 // Element Plus 主题变量映射
 const elementPlusVariables = {
@@ -220,7 +146,7 @@ export const useThemeStore = defineStore(
           }
         } else {
           const theme =
-            preset === "dark" ? defaultDarkTheme : defaultLightTheme;
+            preset === "dark" ? officialThemes[1] : officialThemes[0];
           currentTheme.value = theme;
           applyTheme(theme);
         }

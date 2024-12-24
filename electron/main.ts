@@ -534,7 +534,7 @@ ipcMain.handle("rpc:invoke", async (event, params) => {
   }
 });
 
-// 添加 get-rpc-example ���理程序
+// 添加 get-rpc-example 整理理程序
 ipcMain.handle("get-rpc-example", async (event, params) => {
   try {
     if (!params?.url || !params?.method) {

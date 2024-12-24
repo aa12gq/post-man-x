@@ -3,13 +3,13 @@
     <div class="p-8">
       <div class="max-w-5xl mx-auto space-y-8 pb-8">
         <h1 class="text-3xl font-bold text-text">主题测试页面</h1>
-        
+
         <!-- 主题切换器 -->
         <section class="space-y-4">
           <h2 class="text-2xl text-text">主题切换</h2>
           <div class="flex flex-wrap gap-4">
-            <el-button 
-              v-for="theme in officialThemes" 
+            <el-button
+              v-for="theme in officialThemes"
               :key="theme.id"
               :type="currentThemeId === theme.id ? 'primary' : 'default'"
               @click="handleThemeChange(theme)"
@@ -24,9 +24,11 @@
         <section class="space-y-4">
           <h2 class="text-2xl text-text">主题颜色</h2>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div v-for="(value, key) in currentTheme.colors" 
-                 :key="key"
-                 class="p-4 rounded-lg border border-border hover:shadow-md transition-shadow">
+            <div
+              v-for="(value, key) in currentTheme.colors"
+              :key="key"
+              class="p-4 rounded-lg border border-border hover:shadow-md transition-shadow"
+            >
               <div class="h-12 rounded-md mb-2" :style="{ background: value }"></div>
               <div class="text-sm text-text font-medium">{{ key }}</div>
               <div class="text-sm text-text-secondary break-all">{{ value }}</div>
@@ -60,7 +62,11 @@
           <h2 class="text-2xl text-text">表单元素</h2>
           <div class="space-y-4 max-w-md">
             <el-input v-model="inputText" placeholder="请输入内容"></el-input>
-            <el-input type="textarea" v-model="textareaText" placeholder="请输入多行内容"></el-input>
+            <el-input
+              type="textarea"
+              v-model="textareaText"
+              placeholder="请输入多行内容"
+            ></el-input>
             <el-select v-model="selectValue" placeholder="请选择">
               <el-option label="选项1" value="1"></el-option>
               <el-option label="选项2" value="2"></el-option>
@@ -81,8 +87,11 @@
         <section class="space-y-4">
           <h2 class="text-2xl text-text">卡片样式</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div v-for="i in 4" :key="i"
-                 :class="`p-4 rounded-lg bg-surface-${i} border border-border hover:shadow-md transition-shadow`">
+            <div
+              v-for="i in 4"
+              :key="i"
+              :class="`p-4 rounded-lg bg-surface-${i} border border-border hover:shadow-md transition-shadow`"
+            >
               <h3 class="text-lg text-text mb-2">Surface {{ i }}</h3>
               <p class="text-text-secondary">这是一个使用 surface-{{ i }} 背景色的卡片</p>
             </div>
@@ -122,13 +131,13 @@ function handleThemeChange(theme: Theme) {
 function applyTheme(theme: Theme) {
   const root = document.documentElement
   const style = document.getElementById('theme-test-style') || document.createElement('style')
-  
+
   // 生成 CSS 变量
   const cssVars = Object.entries(theme.colors).map(([key, value]) => `--${key}: ${value};`)
-  
+
   // 应用 CSS 变量到根元素
   root.setAttribute('style', cssVars.join(' '))
-  
+
   // 更新 Element Plus 主题变量
   const elementVars = [
     `--el-color-primary: ${theme.colors.primary};`,
@@ -148,7 +157,7 @@ function applyTheme(theme: Theme) {
     `--el-mask-color: ${theme.isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)'};`,
     `--el-mask-color-extra-light: ${theme.isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)'};`,
   ]
-  
+
   // 更新主题样式
   const themeStyles = `
     .theme-button.el-button--default {
@@ -156,9 +165,16 @@ function applyTheme(theme: Theme) {
       --el-button-bg-color: ${theme.colors['surface-1']};
       --el-button-border-color: ${theme.colors.border};
       --el-button-hover-text-color: ${theme.colors.text} !important;
-      --el-button-hover-bg-color: ${theme.colors.hover};
+      --el-button-hover-bg-color: ${theme.colors['surface-2']} !important;
       --el-button-hover-border-color: ${theme.colors['border-active']};
     }
+
+    .theme-button.el-button--primary {
+      --el-button-hover-bg-color: ${theme.colors['primary-dark']} !important;
+      --el-button-hover-text-color: #ffffff !important;
+      --el-button-hover-border-color: ${theme.colors['primary-dark']} !important;
+    }
+
     .el-input__wrapper {
       background-color: ${theme.colors['surface-1']} !important;
     }
@@ -176,10 +192,10 @@ function applyTheme(theme: Theme) {
       background-color: ${theme.colors.hover} !important;
     }
   `
-  
+
   style.id = 'theme-test-style'
   style.textContent = `:root { ${elementVars.join(' ')} } ${themeStyles}`
-  
+
   if (!style.parentNode) {
     document.head.appendChild(style)
   }
@@ -192,10 +208,13 @@ function applyTheme(theme: Theme) {
 handleThemeChange(officialThemes[0])
 </script>
 
-<style>
+<style scoped>
 /* 确保过渡效果平滑 */
 * {
-  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s;
 }
 
 /* 使用 Tailwind 的暗色模式类 */
@@ -211,4 +230,4 @@ handleThemeChange(officialThemes[0])
 .text-text-secondary {
   color: var(--text-secondary) !important;
 }
-</style> 
+</style>

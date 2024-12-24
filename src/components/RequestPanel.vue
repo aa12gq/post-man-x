@@ -350,7 +350,7 @@ const removeTab = async (targetId: string) => {
         // 用户点 X 按钮,不关闭标签页
         return
       }
-      // 用户选��放弃更改,继续关闭
+      // 用户选择放弃更改,继续关闭
     }
   }
 
@@ -774,10 +774,10 @@ const handleNameChange = ({ id, name }: { id: string; name: string }) => {
 watch(
   () => settings.value,
   newSettings => {
-    // ��存到本地存储
+    // 存到本地存储
     localStorage.setItem('layoutSettings', JSON.stringify(newSettings))
 
-    // 应用布��关的 CSS 变量
+    // 应用布局关的 CSS 变量
     document.documentElement.style.setProperty('--sidebar-width', `${newSettings.sidebarWidth}px`)
     document.documentElement.style.setProperty(
       '--header-height',
@@ -831,7 +831,7 @@ watch(
   border-right: none;
 }
 
-/* 确保主内容区域正确响应侧边��位置 */
+/* 确保主内容区域正确响应侧边侧边栏位置 */
 .main-content {
   flex: 1;
   display: flex;
