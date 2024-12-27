@@ -103,4 +103,8 @@ import TeamSettings from './components/TeamSettings.vue'
 const themeStore = useThemeStore()
 const activeWorkspace = ref('1')
 const activeTab = ref('project')
+const router = useRouter()
+function goHome() {
+  router.push('/')
+}
 </script>
