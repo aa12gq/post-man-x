@@ -65,7 +65,7 @@
           type="primary"
           size="large"
           class="flex items-center justify-center gap-2 px-6 py-3 group"
-          @click="$router.push('/request')"
+          @click="$router.push('/workspace-manage')"
         >
           <span>{{ t('home.getStarted') }}</span>
           <el-icon class="transition-transform group-hover:translate-x-1">

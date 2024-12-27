@@ -8,6 +8,9 @@ export interface RegisterRequest {
 export interface LoginRequest {
   username: string
   password: string
+  email: string
+  captcha: string
+  phone: string
 }
 
 // 注册响应接口

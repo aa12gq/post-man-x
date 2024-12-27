@@ -2,34 +2,32 @@
   <div
     class="main-layout"
     :class="{
-      'toolbar-bottom':
-        layoutStore.currentSettings.toolbarPosition === 'bottom',
+      'toolbar-bottom': layoutStore.currentSettings.toolbarPosition === 'bottom',
       'sidebar-collapsed':
-        layoutStore.currentSettings.isCollapsed ||
-        !layoutStore.currentSettings.showSidebar,
+        layoutStore.currentSettings.isCollapsed || !layoutStore.currentSettings.showSidebar,
       'hide-sidebar': !layoutStore.currentSettings.showSidebar,
     }"
   >
-    <AppHeader v-if="layoutStore.currentSettings.toolbarPosition === 'top'" />
+    <!-- 通过路由元数据判断是否显示头部,如果为false则不显示 -->
+    <AppHeader
+      v-if="layoutStore.currentSettings.toolbarPosition === 'top' && route.meta.showHeader"
+    />
     <div class="main-content">
-      <!-- <router-view
-				v-if="$route.path === '/'"
-				class="content"
-			></router-view>
-			<RequestPanel v-else></RequestPanel> -->
       <router-view></router-view>
     </div>
-    <AppHeader
-      v-if="layoutStore.currentSettings.toolbarPosition === 'bottom'"
-    />
+    <AppHeader v-if="layoutStore.currentSettings.toolbarPosition === 'bottom'" />
   </div>
 </template>
 
 <script setup lang="ts">
-import AppHeader from "./components/AppHeader.vue";
-import { useLayoutStore } from "../stores/layout";
+import AppHeader from './components/AppHeader.vue'
+import { useLayoutStore } from '../stores/layout'
+import { useUserStore } from '../stores/user'
+import { useRoute } from 'vue-router'
 
-const layoutStore = useLayoutStore();
+const route = useRoute()
+const layoutStore = useLayoutStore()
+const userStore = useUserStore()
 </script>
 
 <style scoped>
