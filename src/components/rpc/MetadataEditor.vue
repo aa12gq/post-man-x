@@ -381,10 +381,6 @@ const removeSelected = async () => {
   color: var(--el-color-primary);
 }
 
-:deep(.el-button--primary.is-link:hover) {
-  color: var(--el-color-primary-light-3);
-}
-
 :deep(.el-button--danger.is-link) {
   color: var(--el-color-danger);
 }

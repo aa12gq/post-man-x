@@ -36,8 +36,6 @@ const defaultDarkTheme = officialThemes[4]
 // Element Plus 主题变量映射
 const elementPlusVariables = {
   primary: "--el-color-primary",
-  "primary-light": "--el-color-primary-light-3",
-  "primary-dark": "--el-color-primary-dark-2",
   success: "--el-color-success",
   warning: "--el-color-warning",
   danger: "--el-color-danger",

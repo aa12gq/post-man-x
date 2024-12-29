@@ -12,8 +12,6 @@
 :root {
   /* 基础颜色 */
   --primary-color: var(--el-color-primary);
-  --primary-light: var(--el-color-primary-light-3);
-  --primary-dark: var(--el-color-primary-dark-2);
 
   /* 背景颜色 */
   --bg-color: #ffffff;

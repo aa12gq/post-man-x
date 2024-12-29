@@ -100,11 +100,6 @@ const handleInvoke = async () => {
   color: white;
 }
 
-:deep(.el-button:hover) {
-  background-color: var(--el-color-primary-light-3);
-  border-color: var(--el-color-primary-light-3);
-}
-
 :deep(.el-button:disabled) {
   background-color: var(--surface-3);
   border-color: var(--border);
@@ -117,4 +112,4 @@ const handleInvoke = async () => {
   border-color: var(--el-color-primary);
   opacity: 0.8;
 }
-</style> 
+</style>

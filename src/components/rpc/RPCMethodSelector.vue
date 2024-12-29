@@ -770,8 +770,6 @@ onMounted(() => {
 }
 
 :deep(.el-button--primary:hover) {
-  background-color: var(--el-color-primary-light-3);
-  border-color: var(--el-color-primary-light-3);
   color: white;
 }
 

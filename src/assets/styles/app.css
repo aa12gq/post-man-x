@@ -204,7 +204,7 @@
   }
 
   /* Button 按钮 */
-  .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(
+  /* .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(
       .el-button--danger
     ) {
     background-color: var(--surface-1);
@@ -213,6 +213,10 @@
     &:hover {
       background-color: var(--hover-color);
     }
+  } */
+
+  .el-button:hover {
+    background-color: var(--surface-2);
   }
 
   /* Tabs 标签页 */
@@ -301,7 +305,7 @@ textarea:focus,
 select:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-  --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+  --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
   --tw-ring-offset-width: 0px;
   --tw-ring-offset-color: #fff;
   --tw-ring-color: var(--el-color-primary);

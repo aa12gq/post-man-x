@@ -46,4 +46,4 @@ const emit = defineEmits<{
 .toolbar-icons .el-button:hover {
   color: var(--el-color-primary);
 }
-</style> 
+</style>
