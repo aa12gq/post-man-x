@@ -258,10 +258,6 @@
 	};
 
 	const nextStepOrCreate = () => {
-		if (workspaceStore.createWorkspacePage === "blank") {
-			workspaceStore.setCreateWorkspacePage("init");
-		} else {
-			workspaceStore.handleCreateWorkspace();
-		}
+
 	};
 </script>

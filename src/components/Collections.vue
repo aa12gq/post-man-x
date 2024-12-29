@@ -80,10 +80,9 @@
 </template>
 
 <script setup lang="ts">
+import { Connection, Files, MoreFilled, Plus } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
-import { MoreFilled, Plus, Files, Connection } from '@element-plus/icons-vue'
 import { useWorkspaceStore } from '../stores/workspace'
-import { ElMessage } from 'element-plus'
 
 const workspaceStore = useWorkspaceStore()
 

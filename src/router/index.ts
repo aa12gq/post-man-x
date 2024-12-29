@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: 'WorkspaceManagement',
       requiresAuth: true,
-      showHeader: false,
+      showHeader: true,
     },
   },
   {

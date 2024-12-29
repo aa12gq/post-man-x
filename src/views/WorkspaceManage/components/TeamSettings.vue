@@ -5,18 +5,19 @@
       <h2 class="text-xl font-semibold mb-4">基础信息</h2>
       <div class="grid grid-cols-3 gap-4 border-b border-gray-200 pb-2">
         <div class="col-span-1">团队名称</div>
-        <div class="col-span-1">个人空间</div>
+        <div class="col-span-1">{{ workspaceStore.currentWorkspaceInfo.name }}</div>
         <div class="col-span-1 text-right">
           <el-button @click="openEditDialog('teamName')">编辑</el-button>
         </div>
       </div>
       <div class="grid grid-cols-3 gap-4 border-b border-gray-200 py-2">
         <div class="col-span-1">团队 ID</div>
-        <div class="col-span-2">2335275</div>
+        <div class="col-span-2">{{ workspaceStore.currentWorkspaceInfo.id }}</div>
       </div>
       <div class="grid grid-cols-3 gap-4 py-2">
         <div class="col-span-1">我的团队内昵称</div>
-        <div class="col-span-2 text-right">
+        <div class="col-span-1">{{ workspaceStore.currentWorkspaceInfo.name }}</div>
+        <div class="col-span-1 text-right">
           <el-button @click="openEditDialog('nickName')">编辑</el-button>
         </div>
       </div>
@@ -67,12 +68,7 @@
       </p>
       <p class="text-gray-600">请输入团队名以确认操作：</p>
     </div>
-    <el-input
-      v-model="confirmTeamName"
-      placeholder="请输入团队名"
-      class="mb-4"
-      clearable
-    />
+    <el-input v-model="confirmTeamName" placeholder="请输入团队名" class="mb-4" clearable />
     <template #footer>
       <div class="flex justify-end">
         <el-button @click="isDisbandDialogVisible = false">取消</el-button>
@@ -85,8 +81,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useWorkspaceStore } from '../../../stores/workspace'
 
+const workspaceStore = useWorkspaceStore()
 const isDialogVisible = ref(false)
 const isDisbandDialogVisible = ref(false)
 const currentEditType = ref('')

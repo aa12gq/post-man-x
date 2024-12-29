@@ -1,196 +1,191 @@
 <template>
-  <div class="p-4 flex items-center justify-end w-full space-x-2">
-    <!-- 搜索和添加按钮水平排列 -->
-    <el-input v-model="search" placeholder="搜索" style="width: 200px">
-      <template #prefix>
-        <el-icon><Search /></el-icon>
-      </template>
-    </el-input>
-    <el-button type="">
-      <template #icon>
-        <el-icon><Plus /></el-icon>
-      </template>
-      导入项目
-    </el-button>
-    <el-button type="primary">
-      <template #icon>
-        <el-icon><Plus /></el-icon>
-      </template>
-      新建项目
-    </el-button>
+  <div
+    v-if="workspaceStore.isLoading"
+    class="flex justify-center items-center w-full h-[calc(100vh-300px)]"
+  >
+    <LoadingSpinner />
   </div>
 
-  <!-- 项目列表卡片展示 -->
-  <div class="p-4 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+  <div v-else>
+    <div class="p-4 flex items-center justify-end w-full space-x-2">
+      <el-input v-model="search" placeholder="搜索" style="width: 200px">
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+      </el-input>
+      <el-button type="">
+        <template #icon>
+          <el-icon><Plus /></el-icon>
+        </template>
+        导入项目
+      </el-button>
+      <el-button type="primary" @click="workspaceStore.dialogVisible.createProject = true">
+        <template #icon>
+          <el-icon><Plus /></el-icon>
+        </template>
+        新建项目
+      </el-button>
+    </div>
+
     <div
-      @click="handleProjectClick(project.id)"
-      v-for="project in projects"
-      :key="project.id"
-      class="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-md p-4 flex flex-col justify-between h-44 cursor-pointer"
+      v-if="workspaceStore.collectionList.length > 0"
+      class="p-4 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto h-[calc(100vh-200px)] scrollbar-none"
     >
-      <div class="flex items-center mb-2">
-        <div class="flex items-center justify-between gap-2 w-full">
-          <div class="flex items-center gap-2">
-            <h4 class="font-semibold">{{ project.name }}</h4>
-            <p
-              class="text-[10px] text-gray-500 bg-orange-200 w-[40px] h-[15px] flex items-center justify-center rounded-md p-1"
+      <div
+        v-for="project in workspaceStore.collectionList"
+        :key="project.id"
+        class="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-md p-4 flex flex-col justify-between h-44"
+      >
+        <div class="flex items-center mb-2">
+          <div class="flex items-center justify-between gap-2 w-full">
+            <div
+              class="flex items-center cursor-pointer gap-2"
+              @click="handleProjectClick(project.id)"
             >
-              {{ project.type }}
-            </p>
+              <h4 class="font-semibold">{{ project.name }}</h4>
+              <p
+                class="text-[10px] text-gray-500 bg-orange-200 w-[40px] h-[15px] flex items-center justify-center rounded-md p-1"
+              >
+                {{ project.protocol }}
+              </p>
+            </div>
+            <el-dropdown trigger="hover">
+              <el-icon><MoreFilled /></el-icon>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="showDeleteDialog(project.id, project.name)"
+                    >删除</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </div>
-          <el-dropdown>
-            <el-icon><MoreFilled /></el-icon>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="showDeleteDialog(project.id)">删除</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+        </div>
+        <p v-if="project.description" class="text-sm text-gray-600 mb-2">
+          {{ project.description }}
+        </p>
+        <p v-else class="text-sm text-gray-600 mb-2">暂无描述</p>
+        <div class="text-xs text-gray-400">
+          <p>所有者: {{ project.owner }}</p>
+          <p>成员数: {{ project.members_count }}</p>
+          <p>创建日期: {{ project.created_at }}</p>
         </div>
       </div>
-      <p class="text-sm text-gray-600 mb-2">{{ project.description }}</p>
-      <div class="text-xs text-gray-400">
-        <p>所有者: {{ project.owner }}</p>
-        <p>成员数: {{ project.memberCount }}</p>
-        <p>创建日期: {{ project.creationDate }}</p>
-      </div>
+    </div>
+
+    <div v-else class="flex justify-center items-center w-full h-[calc(100vh-300px)]">
+      <img src="@/assets/images/nodata.png" alt="empty" class="w-[200px] h-[200px]" />
     </div>
   </div>
 
   <el-dialog
     title="确认删除"
-    v-model="isDeleteDialogVisible"
+    v-model="workspaceStore.dialogVisible.deleteProject"
     width="30%"
-    @close="handleDialogClose"
+    @close="workspaceStore.dialogVisible.deleteProject = false"
   >
-    <span>您确定要删除这个项目吗？</span>
+    <div class="text-center flex flex-col items-start justify-center mb-4">
+      <p class="text-red-500 font-semibold">
+        删除项目后，该项目下的所有请求都将被同步删除，且不可恢复！
+      </p>
+      <p class="text-gray-600">请输入项目名以确认操作：{{ currentProjectName }}</p>
+    </div>
+    <el-input v-model="deleteProjectName" placeholder="请输入项目名" class="mb-4" clearable />
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="isDeleteDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleDelete">确 定</el-button>
+        <el-button @click="workspaceStore.dialogVisible.deleteProject = false">取 消</el-button>
+        <el-button type="primary" @click="deleteProject">确 定</el-button>
       </span>
+    </template>
+  </el-dialog>
+
+  <el-dialog title="新建项目" v-model="workspaceStore.dialogVisible.createProject" width="40%">
+    <el-row>
+      <el-col :span="8" class="border-r pr-4">
+        <div class="flex flex-col items-center justify-center gap-2 h-full">
+          <div
+            :class="[
+              'flex items-center justify-center w-[60%] h-[25%] border rounded-md gap-1',
+              workspaceStore.createProjectData.protocol === 'gRPC'
+                ? 'border-[--primary-color] text-[--primary-color]'
+                : '',
+            ]"
+            @click="workspaceStore.createProjectData.protocol = 'gRPC'"
+          >
+            <i class="iconfont icon-gRPC text-[40px] rounded-md p-1" />
+          </div>
+          <div
+            :class="[
+              'flex items-center justify-center w-[60%] h-[25%] border rounded-md gap-1',
+              workspaceStore.createProjectData.protocol === 'HTTP'
+                ? 'border-[--primary-color] text-[--primary-color]'
+                : '',
+            ]"
+            @click="workspaceStore.createProjectData.protocol = 'HTTP'"
+          >
+            <i class="iconfont icon-http text-[40px] rounded-md p-1" />
+          </div>
+        </div>
+      </el-col>
+
+      <el-col :span="16" class="pl-4">
+        <el-form label-position="top" :model="workspaceStore.createProjectData">
+          <el-form-item label="名称" prop="name">
+            <el-input
+              maxlength="20"
+              placeholder="请输入项目名称"
+              show-word-limit
+              v-model="workspaceStore.createProjectData.name"
+            />
+          </el-form-item>
+          <el-form-item label="描述" prop="description">
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入项目描述"
+              v-model="workspaceStore.createProjectData.description"
+            />
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+    <template #footer>
+      <el-button @click="workspaceStore.dialogVisible.createProject = false">取消</el-button>
+      <el-button type="primary" @click="workspaceStore.handleCreateCollection">确定</el-button>
     </template>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
+import { MoreFilled, Plus, Search } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { Plus, Search, MoreFilled } from '@element-plus/icons-vue'
+import { useWorkspaceStore } from '../../../stores/workspace'
 import { displayNotification } from '../../../utils/message'
 const search = ref('')
-const projectToDelete = ref<number | null>(null)
+const deleteProjectName = ref('')
+const currentProjectName = ref('')
+
 const router = useRouter()
-function handleDialogClose() {
-  isDeleteDialogVisible.value = false
-  projectToDelete.value = null
-}
-const isDeleteDialogVisible = ref(false)
-const handleDelete = () => {
-  isDeleteDialogVisible.value = false
-  displayNotification('删除成功', 'success')
+
+const workspaceStore = useWorkspaceStore()
+
+function handleProjectClick(projectId: string) {
+  router.push('/request')
 }
 
-function handleProjectClick(projectId: number) {
-  console.log('点击了项目', projectId)
-  router.push("/request")
+function showDeleteDialog(projectId: string, projectName: string) {
+  currentProjectName.value = projectName
+  workspaceStore.deleteProjectId = projectId
+  workspaceStore.dialogVisible.deleteProject = true
 }
 
-// 示例项目数据
-const projects = ref([
-  {
-    id: 1,
-    name: '集成测试项目',
-    type: 'HTTP',
-    description: '此项目涉及多个模块的集成与测试，旨在确保系统的整体功能。',
-    creationDate: '2023-01-01',
-    owner: '张三',
-    memberCount: 5,
-  },
-  {
-    id: 2,
-    name: '跨平台通信项目',
-    type: 'gRPC',
-    description: '该项目主要用于实现跨平台通信，提升系统的互操作性。',
-    creationDate: '2023-02-01',
-    owner: '李四',
-    memberCount: 8,
-  },
-  {
-    id: 3,
-    name: '前端优化项目',
-    type: 'HTTP',
-    description: '专注于前端性能优化，提升用户体验和页面加载速度。',
-    creationDate: '2023-03-01',
-    owner: '王五',
-    memberCount: 10,
-  },
-  {
-    id: 4,
-    name: '大数据处理项目',
-    type: 'gRPC',
-    description: '涉及大数据处理，旨在提高数据分析和处理能力。',
-    creationDate: '2023-04-01',
-    owner: '赵六',
-    memberCount: 12,
-  },
-  {
-    id: 5,
-    name: '用户体验提升项目',
-    type: 'HTTP',
-    description: '重点在于提升用户体验，优化界面设计和交互流程。',
-    creationDate: '2023-05-01',
-    owner: '孙七',
-    memberCount: 15,
-  },
-  {
-    id: 6,
-    name: '实时传输项目',
-    type: 'gRPC',
-    description: '提供实时数据传输服务，确保数据的及时性和准确性。',
-    creationDate: '2023-06-01',
-    owner: '周八',
-    memberCount: 20,
-  },
-  {
-    id: 7,
-    name: '安全增强项目',
-    type: 'HTTP',
-    description: '涉及到安全性增强，保护系统免受潜在威胁。',
-    creationDate: '2023-07-01',
-    owner: '吴九',
-    memberCount: 25,
-  },
-  {
-    id: 8,
-    name: '高并发处理项目',
-    type: 'gRPC',
-    description: '专注于高并发处理，提升系统的响应能力和稳定性。',
-    creationDate: '2023-08-01',
-    owner: '郑十',
-    memberCount: 30,
-  },
-  {
-    id: 9,
-    name: '移动端优化项目',
-    type: 'HTTP',
-    description: '主要用于移动端优化，提升移动设备上的用户体验。',
-    creationDate: '2023-09-01',
-    owner: '冯十一',
-    memberCount: 35,
-  },
-  {
-    id: 10,
-    name: '人工智能应用项目',
-    type: 'gRPC',
-    description: '涉及到人工智能应用，探索AI技术在实际场景中的应用。',
-    creationDate: '2023-10-01',
-    owner: '陈十二',
-    memberCount: 40,
-  },
-])
-
-function showDeleteDialog(projectId: number) {
-  projectToDelete.value = projectId
-  isDeleteDialogVisible.value = true
+function deleteProject() {
+  if (deleteProjectName.value === currentProjectName.value) {
+    workspaceStore.handleDeleteCollection()
+  } else {
+    deleteProjectName.value = ''
+    workspaceStore.dialogVisible.deleteProject = false
+    displayNotification('项目名不匹配', 'error')
+  }
 }
 </script>

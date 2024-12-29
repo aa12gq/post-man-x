@@ -8,28 +8,6 @@ export interface CreateWorkspaceResponse {
   name: string
 }
 
-export interface CreateCollectionRequest {
-  name: string
-  workspace_id: string
-}
-
-export interface GetCollectionListResponse {
-  list: Collection[]
-}
-
-export interface Collection {
-  id: string
-  name: string
-  type?: string
-  method?: string
-  request_id?: string
-  workspace_id: string
-  collection_id: string
-  folder_id?: string
-  kind?: string
-  children?: Collection[]
-}
-
 export interface GetAllWorkspaceResponse {
   list: Workspace[]
 }
@@ -40,3 +18,45 @@ export interface Workspace {
   description: string
   owner_id: string
 }
+
+export interface CreateCollectionRequest {
+  name: string
+  workspace_id: string
+  description: string
+  protocol: string
+}
+
+export interface GetCollectionListResponse {
+  list: Collection[]
+}
+
+export interface Collection {
+  id: string
+  name: string
+  protocol: string
+  owner: string
+  description: string
+  workspace_id: string
+  collection_id: string
+  members_count: number
+  created_at: string
+}
+
+export interface EditWorkspaceRequest {
+  id: string
+  name: string
+  description: string
+  owner_id: string
+}
+
+export interface DeleteWorkspaceRequest {
+  id: string
+}
+
+//   request_id?: string
+//   workspace_id: string
+//   collection_id: string
+//   folder_id?: string
+//   kind?: string
+//   children?: Collection[]
+// }

@@ -29,18 +29,19 @@
           }"
         >
           <!-- New 按钮区域 -->
-          <div class="new-area">
+          <!-- <div class="new-area">
             <div class="new-button" @click="showNewRequestDialog">
               <el-icon><Plus /></el-icon>
               <span>{{ t('request.panel.sidebar.collections.newRequest') }}</span>
             </div>
-          </div>
+          </div> -->
 
           <!-- 活动栏和边栏容器 -->
           <div class="sidebar-container">
             <!-- 活动栏 -->
             <div class="activity-bar">
-              <div
+              <!-- collections -->
+              <!-- <div
                 class="activity-item"
                 :class="{
                   active: activeView === 'collections',
@@ -53,7 +54,8 @@
                 >
                   <el-icon><Collection /></el-icon>
                 </el-tooltip>
-              </div>
+              </div> -->
+              <!-- apis -->
               <div
                 class="activity-item"
                 :class="{ active: activeView === 'apis' }"
@@ -115,12 +117,12 @@
               </div>
             </div>
 
-            <!-- Collections 边栏 -->
+            <!-- apis 边栏 -->
             <div
               class="collections-sidebar"
               :class="{
-                'is-collapsed': settings.isCollapsed || activeView !== 'collections',
-                'is-hidden': activeView !== 'collections',
+                'is-collapsed': settings.isCollapsed || activeView !== 'apis',
+                'is-hidden': activeView !== 'apis',
               }"
             >
               <!-- 动条和折叠按钮 -->
@@ -138,19 +140,22 @@
               </div>
 
               <!-- 内容区域 -->
-              <div class="sidebar-header">
-                <span class="sidebar-title">{{
-                  t('request.panel.sidebar.collections.title')
-                }}</span>
-                <div class="header-actions">
-                  <el-tooltip
-                    :content="t('request.panel.sidebar.collections.newFolder')"
-                    placement="top"
-                  >
-                    <el-button link size="small" @click="handleAddFolder">
+              <div class="sidebar-header px-4 py-2">
+                <!-- 搜索/添加 -->
+                <div class="flex justify-between items-center gap-2">
+                  <el-input v-model="search" placeholder="搜索" />
+                  <!-- 下拉菜单 -->
+                  <el-dropdown trigger="hover" placement="bottom-start">
+                    <el-button type="primary" class="h-8 w-8">
                       <el-icon><Plus /></el-icon>
                     </el-button>
-                  </el-tooltip>
+                    <template #dropdown>
+                      <el-dropdown-menu class="w-40">
+                        <el-dropdown-item> 新建接口 </el-dropdown-item>
+                        <el-dropdown-item> 新建目录 </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
                 </div>
               </div>
               <div class="sidebar-content">
@@ -254,7 +259,6 @@
 <script lang="ts" setup>
 import {
   CaretLeft,
-  Collection,
   Connection,
   Link,
   Monitor,
@@ -273,9 +277,8 @@ import { storage } from '../services/storage'
 import { useLayoutStore } from '../stores/layout'
 import { useWorkspaceStore } from '../stores/workspace'
 import { HistoryItem } from '../types'
-import FolderManager from './FolderManager.vue'
-import TabManager from './tabs/TabManager.vue'
 import Collections from './Collections.vue'
+import TabManager from './tabs/TabManager.vue'
 const workspaceStore = useWorkspaceStore()
 
 const { t } = useI18n()
@@ -395,7 +398,6 @@ onMounted(() => {
 
   // 添加键盘事件监听
   window.addEventListener('keydown', handleKeyDown)
-  workspaceStore.initWorkspace()
 })
 
 onBeforeUnmount(() => {
@@ -886,8 +888,7 @@ watch(
 .activity-bar {
   width: 48px;
   height: 100%;
-  background-color: var(--surface-4);
-  border-right: 1px solid var(--border);
+  background-color: var(--surface-2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -953,9 +954,7 @@ watch(
 }
 
 .sidebar-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--surface-3);
+  background-color: var(--surface-1);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -967,6 +966,7 @@ watch(
   flex: 1;
   overflow: auto;
   padding: 8px;
+  background-color: var(--surface-1);
   color: var(--text-secondary);
 }
 

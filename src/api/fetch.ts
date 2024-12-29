@@ -25,10 +25,7 @@ export type ApiResponse<T> = BaseResponse & {
  * @param params 请求参数
  * @returns Promise<ApiResponse<T>>
  */
-export const get = <T = any>(
-  url: string,
-  params?: RequestParams
-): Promise<ApiResponse<T>> => {
+export const get = <T = any>(url: string, params?: RequestParams): Promise<ApiResponse<T>> => {
   return request({
     method: 'GET',
     url,
@@ -46,12 +43,46 @@ export const get = <T = any>(
 export const post = <T = any>(
   url: string,
   data?: RequestParams,
-  params?: RequestParams
+  params?: RequestParams,
 ): Promise<ApiResponse<T>> => {
   return request({
     method: 'POST',
     url,
     data,
+    params,
+  })
+}
+
+/**
+ * 通用PUT请求方法
+ * @param url 请求地址
+ * @param data 请求数据
+ * @param params 查询参数（可选）
+ * @returns Promise<ApiResponse<T>>
+ */
+export const put = <T = any>(
+  url: string,
+  data?: RequestParams,
+  params?: RequestParams,
+): Promise<ApiResponse<T>> => {
+  return request({
+    method: 'PUT',
+    url,
+    data,
+    params,
+  })
+}
+
+/**
+ * 通用DELETE请求方法
+ * @param url 请求地址
+ * @param params 查询参数（可选）
+ * @returns Promise<ApiResponse<T>>
+ */
+export const del = <T = any>(url: string, params?: RequestParams): Promise<ApiResponse<T>> => {
+  return request({
+    method: 'DELETE',
+    url,
     params,
   })
 }
