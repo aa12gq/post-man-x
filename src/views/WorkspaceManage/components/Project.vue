@@ -29,18 +29,18 @@
 
     <div
       v-if="workspaceStore.collectionList.length > 0"
-      class="p-4 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto h-[calc(100vh-200px)] scrollbar-none"
+      class="p-4 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto min-h-auto max-h-[calc(100vh-200px)] scrollbar-none"
     >
       <div
         v-for="project in workspaceStore.collectionList"
         :key="project.id"
-        class="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-md p-4 flex flex-col justify-between h-44"
+        class="bg-gradient-to-r from-green-100 to-blue-50 shadow-md hover:shadow-lg transition-shadow duration-300 rounded-md p-4 flex flex-col justify-between h-44"
       >
         <div class="flex items-center mb-2">
           <div class="flex items-center justify-between gap-2 w-full">
             <div
               class="flex items-center cursor-pointer gap-2"
-              @click="handleProjectClick(project.id)"
+              @click="handleProjectClick(project)"
             >
               <h4 class="font-semibold">{{ project.name }}</h4>
               <p
@@ -66,9 +66,18 @@
         </p>
         <p v-else class="text-sm text-gray-600 mb-2">暂无描述</p>
         <div class="text-xs text-gray-400">
-          <p>所有者: {{ project.owner }}</p>
-          <p>成员数: {{ project.members_count }}</p>
-          <p>创建日期: {{ project.created_at }}</p>
+          <p class="flex items-center gap-1">
+            <i class="iconfont text-[12px] icon-chuangjianren" />
+            {{ project.owner }}
+          </p>
+          <p class="flex items-center gap-1">
+            <i class="iconfont text-[12px] icon-renshu" />
+            {{ project.members_count }}
+          </p>
+          <p class="flex items-center gap-1">
+            <i class="iconfont text-[12px] icon-chuangjianshijian" />
+            {{ project.created_at }}
+          </p>
         </div>
       </div>
     </div>
@@ -160,6 +169,7 @@
 import { MoreFilled, Plus, Search } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { useWorkspaceStore } from '../../../stores/workspace'
+import { Collection } from '../../../types/workspace'
 import { displayNotification } from '../../../utils/message'
 const search = ref('')
 const deleteProjectName = ref('')
@@ -169,7 +179,19 @@ const router = useRouter()
 
 const workspaceStore = useWorkspaceStore()
 
-function handleProjectClick(projectId: string) {
+function handleProjectClick(project: Collection) {
+  workspaceStore.currentProjectInfo = {
+    id: project.id,
+    name: project.name,
+    protocol: project.protocol,
+    owner: project.owner,
+    description: project.description,
+    workspace_id: project.workspace_id,
+    collection_id: project.collection_id,
+    members_count: project.members_count,
+    created_at: project.created_at,
+  }
+  console.log(workspaceStore.currentProjectInfo)
   router.push('/request')
 }
 

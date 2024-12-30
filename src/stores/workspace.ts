@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { ApiResponse, del, get, post, put } from '../api/fetch'
+import router from '../router'
 import {
   Collection,
   CreateCollectionRequest,
+  CreateCollectionResponse,
   CreateWorkspaceRequest,
   CreateWorkspaceResponse,
   DeleteWorkspaceRequest,
@@ -45,6 +47,19 @@ export const useWorkspaceStore = defineStore(
       folder_id: '',
       name: '',
       type: '',
+    })
+
+    // 当前project信息
+    const currentProjectInfo = ref<Collection>({
+      id: '',
+      name: '',
+      description: '',
+      workspace_id: '',
+      protocol: '',
+      owner: '',
+      collection_id: '',
+      members_count: 0,
+      created_at: '',
     })
 
     // 弹窗显示
@@ -152,10 +167,12 @@ export const useWorkspaceStore = defineStore(
     }
 
     // 获取collection列表
-    const handleGetCollectionList = async (workspaceId: string, workspaceName?: string) => {
+    const handleGetCollectionList = async (workspaceId: string, workspaceName: string) => {
       isLoading.value = true
+      console.log(workspaceId)
+      console.log(workspaceName)
       currentWorkspaceInfo.value.id = workspaceId
-      currentWorkspaceInfo.value.name = workspaceName || ''
+      currentWorkspaceInfo.value.name = workspaceName 
       try {
         const resp = await get<ApiResponse<GetCollectionListResponse>>('/collections/list', {
           workspace_id: workspaceId,
@@ -172,21 +189,34 @@ export const useWorkspaceStore = defineStore(
 
     const handleCreateCollection = async () => {
       try {
-        const resp = await post<ApiResponse<null>>('/collections/create', {
+        const resp = await post<ApiResponse<CreateCollectionResponse>>('/collections/create', {
           name: createProjectData.value.name,
           workspace_id: String(currentWorkspaceInfo.value.id),
           description: createProjectData.value.description,
           protocol: createProjectData.value.protocol,
         })
         if (resp.success) {
-          handleGetCollectionList(currentWorkspaceInfo.value.id)
+          console.log(resp)
+          handleGetCollectionList(currentWorkspaceInfo.value.id, currentWorkspaceInfo.value.name)
           dialogVisible.value.createProject = false
           createProjectData.value = {
             name: '',
             description: '',
             workspace_id: '',
-            protocol: '',
+            protocol: 'gRPC',
           }
+          currentProjectInfo.value = {
+            id: resp.data.id,
+            name: resp.data.name,
+            protocol: resp.data.protocol,
+            owner: resp.data.owner,
+            description: resp.data.description,
+            workspace_id: resp.data.workspace_id,
+            collection_id: resp.data.collection_id,
+            members_count: resp.data.members_count,
+            created_at: resp.data.created_at,
+          }
+          router.push('/request')
           displayNotification('创建成功', 'success')
         }
       } catch (error) {
@@ -194,7 +224,7 @@ export const useWorkspaceStore = defineStore(
           name: '',
           description: '',
           workspace_id: '',
-          protocol: '',
+          protocol: 'gRPC',
         }
         dialogVisible.value.createProject = false
         displayNotification('创建失败', 'error')
@@ -293,7 +323,7 @@ export const useWorkspaceStore = defineStore(
           displayNotification('删除成功', 'success')
           dialogVisible.value.deleteProject = false
           deleteProjectId.value = ''
-          handleGetCollectionList(currentWorkspaceInfo.value.id)
+          handleGetCollectionList(currentWorkspaceInfo.value.id, currentWorkspaceInfo.value.name)
         }
       } catch (error) {
         dialogVisible.value.deleteProject = false
@@ -318,6 +348,7 @@ export const useWorkspaceStore = defineStore(
       createWorkspaceData,
       createProjectData,
       deleteProjectId,
+      currentProjectInfo,
       initWorkspace, // 初始化workspace
       setCreateWorkspacePage, // 设置创建workspace页面
       handleCreateWorkspace, // 创建workspace
@@ -336,11 +367,11 @@ export const useWorkspaceStore = defineStore(
     persist: {
       enabled: true,
       // strategies: [
-      //   {
-      //     key: 'workspace',
-      //     storage: localStorage,
-      //     paths: ['collectionList'],
-      //   },
+      // {
+      //   key: 'workspace',
+      //   storage: localStorage,
+      //   paths: ['currentProjectInfo', 'currentWorkspaceInfo'],
+      // },
       // ],
     },
   },

@@ -36,7 +36,11 @@
         </div>
       </div>
     </el-collapse-item>
-    <el-button type="primary" class="mt-2 w-full" @click="workspaceStore.dialogVisible.createWorkspace = true">
+    <el-button
+      type="primary"
+      class="mt-2 w-full"
+      @click="workspaceStore.dialogVisible.createWorkspace = true"
+    >
       <template #icon>
         <el-icon><Plus /></el-icon>
       </template>

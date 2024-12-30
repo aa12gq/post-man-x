@@ -26,6 +26,18 @@ export interface CreateCollectionRequest {
   protocol: string
 }
 
+export interface CreateCollectionResponse {
+  id: string
+  name: string
+  protocol: string
+  owner: string
+  description: string
+  workspace_id: string
+  collection_id: string
+  members_count: number
+  created_at: string
+}
+
 export interface GetCollectionListResponse {
   list: Collection[]
 }

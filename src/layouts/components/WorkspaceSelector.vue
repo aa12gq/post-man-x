@@ -3,7 +3,9 @@
     <div
       class="workspace-selector flex items-center gap-2 p-1.5 rounded cursor-pointer transition-all duration-200 ease-in-out text-secondary hover:bg-surface-2 hover:text"
     >
-      <span class="workspace-name text-sm font-medium">akita的个人空间 / yug科技</span>
+      <span class="workspace-name text-sm font-medium"
+        >{{ currentWorkspaceName }} / {{ currentProjectName }}</span
+      >
       <el-icon class="text-sm transition-transform duration-200 ease-in-out hover:translate-y-0.5"
         ><ArrowDown
       /></el-icon>
@@ -80,8 +82,9 @@
 <script setup lang="ts">
 import { ArrowDown, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-// import { useWorkspaceStore } from '../../stores/workspace'
+import { useWorkspaceStore } from '../../stores/workspace'
 
+const workspaceStore = useWorkspaceStore()
 const router = useRouter()
 // interface Workspace {
 //   id: string
@@ -98,6 +101,26 @@ const search = ref('')
 const handleWorkspaceChange = (command: string) => {
   console.log(command)
 }
+
+const currentWorkspaceName = ref('')
+const currentProjectName = ref('')
+
+// 监听路由，更新当前workspace和project
+watch(
+  () => router.currentRoute.value,
+  () => {
+    if (router.currentRoute.value.path === '/request') {
+      currentProjectName.value = workspaceStore.currentProjectInfo.name
+      const workspaceId = workspaceStore.currentProjectInfo.workspace_id
+      const workspace = workspaceStore.workspaceList.find(w => w.id == workspaceId)
+      console.log(workspace)
+      if (workspace) {
+        currentWorkspaceName.value = workspace.name
+      }
+    }
+  },
+  { immediate: true },
+)
 
 // const workspaceStore = useWorkspaceStore()
 
